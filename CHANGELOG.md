@@ -1,5 +1,15 @@
 # Neuerungen
 
+## 1.4.0 – 07.11.2026
+- **Fast doppelt so viele Songs:** rund 1.900 statt 915 – dazu alle Milliarden-Hits von Spotify, die noch fehlten
+  (die neuen nur bei Fragen, bei denen das Jahr keine Rolle spielt)
+- **Fairer:** Bei „meiste Streams“ liegt der richtige Song jetzt klar vorn (anfangs 60 %, zum Schluss 8 % Vorsprung),
+  bei „am ältesten“ hat der älteste Song immer ein paar Jahre Abstand
+- Schwierigkeit steigt sanfter: die mittleren Fragen bleiben machbar, die letzten ziehen an
+- Ruhigere Farben: tiefes Mitternachtsblau mit weichem Licht und silbernen Rändern statt grellem Blau
+- Antworten stehen exakt bündig in zwei gleich breiten Spalten
+- Lautstärke hat einen festen Platz: unter der Stufenleiter (am Handy ganz unten)
+
 ## 1.3.0 – 07.11.2026
 - Joker heißen jetzt wie im Fernsehen: **50:50-Joker, Publikumsjoker, Telefonjoker** und neu der **Zusatzjoker**
 - **Zusatzjoker** statt „Frage tauschen“: Wer im Publikum die Antwort zu wissen glaubt, steht auf und sagt sie – steht niemand auf, behältst du den Joker

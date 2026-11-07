@@ -2,7 +2,7 @@
    Quiz-Leiter mit 15 Stufen: Jede richtige Antwort bringt eine Stufe höher, von der Kassette bis zum Diamanten.
    Gold (Stufe 5) und Platin (Stufe 10) sind sicher: Bei einem Fehler fällt man auf die letzte erreichte Sicherheitsstufe.
    Aussteigen geht jederzeit vor dem Antworten – dann bleibt die erreichte Stufe. */
-const APP_VERSION = '1.3.0', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
+const APP_VERSION = '1.4.0', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
@@ -82,11 +82,13 @@ const lerp = (a, b, k) => a + (b - a) * k;
 let SONGS = [], STREAMS = [], FAME = new Map();
 async function loadData() {
   if (SONGS.length) return;
-  const [a, b] = await Promise.all([
+  const [a, b, x] = await Promise.all([
     fetch('data/songs.json?v=' + APP_VERSION).then(r => { if (!r.ok) throw new Error(); return r.json(); }),
     fetch('data/billions.json?v=' + APP_VERSION).then(r => r.ok ? r.json() : { tracks: [] }).catch(() => ({ tracks: [] })),
+    fetch('data/extra.json?v=' + APP_VERSION).then(r => r.ok ? r.json() : { songs: [] }).catch(() => ({ songs: [] })),
   ]);
-  SONGS = a.songs;
+  // songs.json: Jahr geprüft (MusicBrainz). extra.json: weitere Hits, Jahr ungeprüft (ya) – nur für Fragen ohne Jahr
+  SONGS = [...a.songs, ...x.songs];
   // Bekanntheit 0 (größter Hit) … 1 (am wenigsten bekannt) nach Deezer-Rang
   [...SONGS].sort((x, y) => (y.r || 0) - (x.r || 0)).forEach((s, i, all) => FAME.set(s.id, i / all.length));
   STREAMS = b.tracks.filter(t => t.streams).sort((x, y) => y.streams - x.streams);
@@ -105,11 +107,13 @@ const TYPES = {
   oldest: { q: 'Welcher dieser Songs ist am ältesten?' },
   streams: { q: 'Welcher Song hat bei Spotify die meisten Streams?' },
 };
-const hOf = i => { const D = DIFF[cfg().diff]; return lerp(D.h0, D.h1, i / 14); };
-function famePool(i) {
+const curve = i => Math.pow(i / 14, 1.4);
+const hOf = i => { const D = DIFF[cfg().diff]; return lerp(D.h0, D.h1, curve(i)); };
+// checked = nur Songs mit geprüftem Jahr (für Jahres- und Älteste-Fragen)
+function famePool(i, checked = false) {
   const D = DIFF[cfg().diff];
-  const all = poolOf(cfg().pool).sort((a, b) => (b.r || 0) - (a.r || 0) || a.id - b.id);
-  return all.slice(0, Math.max(60, Math.round(all.length * lerp(D.f0, D.f1, i / 14))));
+  const all = poolOf(cfg().pool).filter(s => !checked || !s.ya).sort((a, b) => (b.r || 0) - (a.r || 0) || a.id - b.id);
+  return all.slice(0, Math.max(60, Math.round(all.length * lerp(D.f0, D.f1, curve(i)))));
 }
 // Ähnlichste Kandidaten zuerst – bei leichten Fragen überdeckt Zufall die Ähnlichkeit
 function similar(subj, cands, h, extra = () => 0) {
@@ -131,7 +135,7 @@ function pickTypes() {
 }
 
 function makeQuestion(i, type) {
-  const h = hOf(i), pool = famePool(i);
+  const h = hOf(i), pool = famePool(i, type === 'year' || type === 'oldest');
   const free = pool.filter(s => !G.used.has(s.id));
   const subj = free[rnd(free.length)] || pool[rnd(pool.length)];
   const Q = { type, i, h, fame: FAME.get(subj.id) ?? .5 };
@@ -170,18 +174,30 @@ function makeQuestion(i, type) {
       }
     }
     pick ??= shuffle(free).filter((s, k, arr) => arr.findIndex(x => x.y === s.y) === k).slice(0, 4);
+    const ys = pick.map(s => s.y).sort((p, q) => p - q);
+    // Sicherheitsnetz: liegen die zwei ältesten zu eng beieinander, den zweitältesten ersetzen
+    const lead = Math.max(2, Math.round(lerp(10, 2, h)));
+    if (ys[1] - ys[0] < lead) {
+      const old = pick.find(s => s.y === ys[1]);
+      const repl = free.find(s => s.y - ys[0] >= lead && s.y - ys[0] <= win + lead && !pick.includes(s) && pick.every(p => p.a !== s.a && p.y !== s.y));
+      if (repl) pick[pick.indexOf(old)] = repl;
+    }
     const minY = Math.min(...pick.map(s => s.y));
     Q.answers = shuffle(pick).map(s => ({ s, ok: s.y === minY }));
     Q.fame = pick.reduce((n, s) => n + (FAME.get(s.id) ?? .5), 0) / 4;
   } else if (type === 'streams') {
-    // eng beieinander liegende Plätze der Milliarden-Liste = ähnlich viele Streams
-    const w = Math.round(lerp(STREAMS.length, 24, h));
-    const start = rnd(Math.max(1, STREAMS.length - w));
-    const picks = [];
-    for (const t of shuffle(STREAMS.slice(start, start + w))) {
-      if (!picks.some(p => p.artist === t.artist || p.streams === t.streams)) picks.push(t);
-      if (picks.length === 4) break;
+    // Vorsprung des Siegers vor dem Zweitplatzierten: anfangs 60 %, zum Schluss 8 %;
+    // die drei anderen liegen umso näher beieinander, je höher die Frage
+    const lead = lerp(1.6, 1.08, h), w = Math.round(lerp(STREAMS.length, 60, h));
+    let picks = [];
+    for (let t = 0; t < 60 && picks.length < 4; t++) {
+      const wi = rnd(STREAMS.length), win = STREAMS[wi];
+      const rest = shuffle(STREAMS.filter((s, k) => k > wi && k <= wi + w && s.streams * lead <= win.streams && s.artist !== win.artist));
+      picks = [win];
+      for (const s of rest) { if (!picks.some(p => p.artist === s.artist)) picks.push(s); if (picks.length === 4) break; }
     }
+    // Notfall (kommt praktisch nicht vor): mit beliebigen, deutlich schwächeren Songs auffüllen
+    for (const s of STREAMS) { if (picks.length >= 4) break; if (s.streams * 1.05 <= picks[0].streams && !picks.some(p => p.artist === s.artist)) picks.push(s); }
     const top = Math.max(...picks.map(t => t.streams));
     Q.answers = shuffle(picks).map(t => ({ st: t, ok: t.streams === top }));
     Q.fame = lerp(.2, .7, h);

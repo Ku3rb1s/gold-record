@@ -12,6 +12,8 @@ Lokal starten: `node server.js` → http://127.0.0.1:8893/
 
 - **Songs:** `data/songs.json` aus Older or Newer (über 900 Hits mit geprüftem Originaljahr, Deezer-ID, Cover und Deezer-Rang).
   **Streams:** `data/billions.json` aus Needle Drop (Spotify-Songs mit über einer Milliarde Streams, kworb.net).
+- **Mehr Songs:** `data/extra.json` (rund 1.000 weitere Hits aus der Milliarden-Liste, per `node scripts/build-extra.js` bei Deezer nachgeschlagen).
+  Ihr Jahr ist ungeprüft (`ya: 1`) – sie kommen nur in Fragen ohne Jahr (Hören, Interpret, Cover) und als falsche Antworten.
 - **Fragearten** (`TYPES` in `js/game.js`): Welcher Song läuft? (Hörprobe) · Von wem? · Aus welchem Jahr? · Welcher ist am ältesten? · Meiste Streams? · Welches Cover?
 - **Schwierigkeit** steigt mit der Frage-Nummer: `DIFF` (f0/f1) legt fest, aus wie vielen der bekanntesten Songs (Deezer-Rang) gezogen wird;
   `similar()` wählt falsche Antworten anfangs zufällig, später aus derselben Zeit/Sprache bzw. vom selben Interpreten.
