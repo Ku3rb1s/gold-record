@@ -1,0 +1,53 @@
+name: Songlisten aktualisieren
+
+# Jede Woche (Montag kurz nach Mitternacht deutscher Zeit) – wie in Needle Drop, nur wöchentlich, damit die
+# Zwischenspeicher bei GitHub erhalten bleiben (werden nach 7 Tagen ohne Nutzung gelöscht) und die Läufe kurz sind:
+#   neue Songs aus den Playlists und der Milliarden-Liste (von Needle Drop), Originaljahre (MusicBrainz),
+#   Genres, Gast-Interpreten, Original-Cover. Hochgeladen wird nur, wenn sich Songdaten geändert haben (dann auch DATA_V).
+# Needle Drop, Older or Newer und die Jukebox (Skripte) werden nur gelesen – geschrieben wird nur in dieses Repo.
+# Alles läuft über Spiele-Hub/scripts/update-songs.js (lokal genauso aufrufbar).
+# Per Hand: Actions → „Songlisten aktualisieren“ → Run workflow.
+on:
+  schedule:
+    - cron: '10 23 * * 0'   # Sonntag 23:10 UTC = Montag 0:10 (Winter) bzw. 1:10 (Sommer) – die Tägliche Challenge bleibt so den ganzen Tag gleich
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-songs
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330   # erster Lauf ohne Zwischenspeicher: MusicBrainz 1 Abfrage/Sekunde für alle Songs
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: Gold-Record }
+      - uses: actions/checkout@v4
+        with: { repository: Ku3rb1s/jukebox, path: Spiele-Hub }
+      - uses: actions/checkout@v4
+        with: { repository: Ku3rb1s/needle-drop, path: Musik-Quiz }
+      - uses: actions/checkout@v4
+        with: { repository: Ku3rb1s/older-or-newer, path: Older-or-Newer }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Zwischenspeicher holen
+        uses: actions/cache@v4
+        with:
+          path: |
+            Gold-Record/data/extra-cache.json
+            Gold-Record/data/genres-cache.json
+            Gold-Record/data/more-cache.json
+            Gold-Record/data/mb-more.json
+            Gold-Record/data/feat-cache.json
+            Spiele-Hub/scripts/.cache
+          key: gr-songs-${{ github.run_id }}
+          restore-keys: gr-songs-
+      - name: Songlisten bauen und hochladen
+        run: |
+          git -C Gold-Record config user.name "github-actions[bot]"
+          git -C Gold-Record config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          node Spiele-Hub/scripts/update-songs.js --only gr,covers --commit

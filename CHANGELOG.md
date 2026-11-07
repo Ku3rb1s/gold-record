@@ -1,5 +1,9 @@
 # Neuerungen
 
+## 1.10.15 – 07.11.2026
+- - Songlisten aktualisiert, Original-Cover ergänzt
+- - Neue Songs werden jetzt jede Woche automatisch ergänzt
+
 ## 1.10.14 – 07.11.2026
 - „Numb“ von Linkin Park kam doppelt vor (zusätzlich als Film-Fassung von 2026) – entfernt; dazu zwei neue Hits aus der aktuellen Milliarden-Liste (Get You, Cinnamon Girl)
 

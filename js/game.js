@@ -2,7 +2,7 @@
    Quiz-Leiter mit 15 Stufen: Jede richtige Antwort bringt eine Stufe höher, von der Kassette bis zum Diamanten.
    Gold (Stufe 5) und Platin (Stufe 10) sind sicher: Bei einem Fehler fällt man auf die letzte erreichte Sicherheitsstufe.
    Aussteigen geht jederzeit vor dem Antworten – dann bleibt die erreichte Stufe. */
-const APP_VERSION = '1.10.14', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
+const APP_VERSION = '1.10.15', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
@@ -110,7 +110,7 @@ const lerp = (a, b, k) => a + (b - a) * k;
 // Eigene Versionsnummer für die Songdaten (data/*.json), unabhängig von APP_VERSION: So bleiben die rund 375 KB bei einem
 // normalen Update im Zwischenspeicher des Handys. Bei GEÄNDERTEN Songdaten DATA_V erhöhen – sonst sieht man sie erst beim
 // übernächsten Öffnen (der Zwischenspeicher lädt sie im Hintergrund trotzdem nach, siehe sw.js).
-const DATA_V = 'd5';
+const DATA_V = 'd6';
 let SONGS = [], STREAMS = [], FAME = new Map(), GENRE = new Map(), FEAT = new Map();
 async function loadData() {
   if (SONGS.length) return;
