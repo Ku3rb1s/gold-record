@@ -26,6 +26,13 @@ const Q = [
   ['60s Hits', 0, 1960], ['70s Hits', 0, 1970], ['80s Hits', 0, 1980], ['90s Hits', 0, 1990], ['2000s Hits', 0, 2000], ['2010s Hits', 0, 2010],
   ['Rock Classics', 0], ['Hip Hop Classics', 0], ['Dance Classics', 0], ['R&B Classics', 0], ['Disco Classics', 0, 1970], ['Eurodance', 0, 1990],
   ['One Hit Wonders', 0], ['Indie Classics', 0], ['Soul Classics', 0], ['Pop Hits', 0], ['Summer Hits', 0], ['Party Hits', 0],
+  // mehr International (1.8.0)
+  ['Global Top 100', 0], ['Top Worldwide', 0], ['Biggest Hits of All Time', 0], ['Greatest Hits 2000s', 0, 2000], ['Greatest Hits 2010s', 0, 2010],
+  ['Throwback Hits', 0], ['Britpop', 0, 1990], ['Grunge', 0, 1990], ['Motown Classics', 0, 1960], ['Boy Bands', 0], ['Girl Power', 0],
+  ['Rock Ballads', 0], ['Power Ballads', 0, 1980], ['Classic Rock', 0], ['Alternative Rock Hits', 0], ['Punk Rock Classics', 0], ['Pop Punk', 0, 2000],
+  ['Country Hits', 0], ['Latin Hits', 0], ['Reggaeton Classics', 0], ['K-Pop Hits', 0], ['Love Songs', 0], ['Wedding Songs', 0],
+  ['Movie Soundtrack Hits', 0], ['Road Trip Songs', 0], ['Workout Hits', 0], ['Chill Hits', 0], ['Acoustic Covers', 0], ['TikTok Hits', 0],
+  ['80s Rock', 0, 1980], ['90s Pop', 0, 1990], ['00s Rock', 0, 2000], ['2000s RnB', 0, 2000], ['90s Hip Hop', 0, 1990], ['70s Rock', 0, 1970], ['60s Rock', 0, 1960],
 ];
 const MAP = { 132: 'pop', 116: 'hiphop', 152: 'rock', 85: 'rock', 464: 'rock', 113: 'dance', 106: 'dance', 165: 'rnb', 197: 'latin', 173: 'pop', 84: 'pop', 466: 'pop', 129: 'pop', 98: 'pop', 169: 'rnb', 144: 'reggae' };
 const deWord = /\b(ich|du|der|die|das|und|nicht|ein|eine|mein|dein|wir|ist|mit|für|auf|liebe|herz|nacht|immer|kein|wenn|so|zu|bis|vom|im|am)\b|[äöüß]/i;

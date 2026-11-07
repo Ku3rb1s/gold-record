@@ -2,7 +2,7 @@
    Quiz-Leiter mit 15 Stufen: Jede richtige Antwort bringt eine Stufe höher, von der Kassette bis zum Diamanten.
    Gold (Stufe 5) und Platin (Stufe 10) sind sicher: Bei einem Fehler fällt man auf die letzte erreichte Sicherheitsstufe.
    Aussteigen geht jederzeit vor dem Antworten – dann bleibt die erreichte Stufe. */
-const APP_VERSION = '1.7.1', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
+const APP_VERSION = '1.8.0', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
@@ -109,7 +109,8 @@ const DEC = { d70: [0, 1979], d80: [1980, 1989], d90: [1990, 1999], d00: [2000, 
 const poolCache = new Map();
 function poolOf(p) {
   if (poolCache.has(p)) return poolCache.get(p);
-  const r = SONGS.filter(s => p === 'all' ? true : p === 'de' ? s.de : p === 'intl' ? !s.de
+  // „Alle“: international geprägt – die vielen deutschen Playlist-Songs (more.json, ya 2) gibt es nur im Thema „Deutsch“
+  const r = SONGS.filter(s => p === 'all' ? !(s.de && s.ya === 2) : p === 'de' ? s.de : p === 'intl' ? !s.de
     : DEC[p] ? (!s.ya || (p === 'd10' && s.ya === 1)) && s.y >= DEC[p][0] && s.y <= DEC[p][1]
       : GENRE.get(s.id) === p);
   poolCache.set(p, r);

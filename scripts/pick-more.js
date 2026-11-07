@@ -14,7 +14,9 @@ const deArtists = new Set(known.filter(s => s.de).map(s => norm(s.a)));
 const DE_Q = new Set(['Deutschpop Hits', 'Deutschrap Hits', 'Deutschrap Klassiker', 'Schlager Hits', 'Schlager Klassiker', 'Neue Deutsche Welle', 'Deutsche Hits 80er',
   'Deutsche Hits 90er', 'Deutsche Hits 2000er', 'Deutschrock', 'Deutsche Kultsongs', 'Liedermacher', 'Ballermann Hits', 'Top Deutschland', 'Deutsche Indie']);
 const HINT = { 'Neue Deutsche Welle': 1980, 'Deutsche Hits 80er': 1980, 'Deutsche Hits 90er': 1990, 'Deutsche Hits 2000er': 2000, '60s Hits': 1960, '70s Hits': 1970,
-  '80s Hits': 1980, '90s Hits': 1990, '2000s Hits': 2000, '2010s Hits': 2010, 'Disco Classics': 1970, 'Eurodance': 1990 };
+  '80s Hits': 1980, '90s Hits': 1990, '2000s Hits': 2000, '2010s Hits': 2010, 'Disco Classics': 1970, 'Eurodance': 1990,
+  'Greatest Hits 2000s': 2000, 'Greatest Hits 2010s': 2010, 'Britpop': 1990, 'Grunge': 1990, 'Motown Classics': 1960, 'Power Ballads': 1980, 'Pop Punk': 2000,
+  '80s Rock': 1980, '90s Pop': 1990, '00s Rock': 2000, '2000s RnB': 2000, '90s Hip Hop': 1990, '70s Rock': 1970, '60s Rock': 1960 };
 const MAP = { 132: 'pop', 116: 'hiphop', 152: 'rock', 85: 'rock', 464: 'rock', 113: 'dance', 106: 'dance', 165: 'rnb', 197: 'latin', 173: 'pop', 84: 'pop', 466: 'pop', 129: 'pop', 98: 'pop', 169: 'rnb', 144: 'reggae' };
 const deWord = /\b(ich|du|der|die|das|und|nicht|nie|ein|eine|mein|dein|wir|ist|mit|für|auf|liebe|herz|nacht|immer|kein|wenn|zu|bis|vom|im|am|zeit|leben|welt|land|tag|geht|bist|hab|doch|lass|weg|mehr|noch|nur|schon|sein|alles|mal|wie|was|wer|wo|heute|morgen|gestern|sommer|regen|sonne|stadt|kinder|männer|frauen|mädchen|junge|schön|gegenwart|verschwendete|knutschen)\b|[äöüß]/i;
 const french = /(le|la|les|des|une|est|je|pour|avec|dans|mon|ma|toi|moi|qui|pas)/i;
