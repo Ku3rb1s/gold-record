@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.10.16 – 07.11.2026
+- - Maroon 5 – This Love: 2002 (Album Songs About Jane)
+
 ## 1.10.15 – 07.11.2026
 - - Songlisten aktualisiert, Original-Cover ergänzt
 - - Neue Songs werden jetzt jede Woche automatisch ergänzt
