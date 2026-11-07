@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.9.2 – 07.11.2026
+- Einstellungen: „Auf anderen Geräten weiterspielen“ bzw. „Dein Code“ statt „Auf allen Geräten“ – klarer, und mit Hinweis, wenn der Code noch nicht gesichert ist
+
 ## 1.9.1 – 07.11.2026
 - Weitere Jahre geprüft: jetzt rund 1.950 der neuen Songs mit Originaljahr (80er 278, 90er 295, 2000er 473 Songs mit geprüftem Jahr)
 

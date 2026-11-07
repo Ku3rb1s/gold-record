@@ -256,5 +256,10 @@
     "Zusatz": "Extra",
     "Zusatzjoker": "Comodín extra",
     "Zwei falsche Antworten verschwinden.": "Desaparecen dos respuestas incorrectas.",
+    "Dein Code": "Tu código",
+    "Auf anderen Geräten weiterspielen": "Seguir jugando en otros dispositivos",
+    "Noch nicht gesichert – in der Jukebox sichern": "Aún sin guardar: guárdalo en la Jukebox",
+    "Code {c} · verwalten in der Jukebox": "Código {c} · gestiónalo en la Jukebox",
+    "Rekorde, Serien und Profil mit einem Code mitnehmen – ohne E-Mail und Passwort": "Llévate récords, rachas y perfil con un código, sin correo ni contraseña",
   },
 };
