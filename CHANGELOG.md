@@ -1,5 +1,9 @@
 # Neuerungen
 
+## 1.9.2 – 07.11.2026
+- Fehler behoben: Ein Song, der schon einmal geladen war, spielte nach etwa 15 Minuten nicht mehr (iPhone: „The operation is not supported“) – Deezer-Links laufen ab. Jetzt wird ein abgelaufener Link automatisch neu geholt
+- Weitere Jahre geprüft
+
 ## 1.9.4 – 07.11.2026
 - Ruhigerer Hintergrund: die großen farbigen Kreise hinter der Seite sind weg
 

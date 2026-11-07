@@ -5,6 +5,7 @@
   name: "English",
   flag: "🇬🇧",
   dict: {
+    "Diese Hörprobe lädt gerade nicht – tippe gleich nochmal auf die Platte.": "This preview won’t load right now – tap the record again in a moment.",
     "Serie: 1 Tag": "Streak: 1 day",
     "Löschen": "Delete",
     "Abbrechen": "Cancel",

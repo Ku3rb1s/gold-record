@@ -5,6 +5,7 @@
   name: "Français",
   flag: "🇫🇷",
   dict: {
+    "Diese Hörprobe lädt gerade nicht – tippe gleich nochmal auf die Platte.": "Cet extrait ne se charge pas – touche à nouveau le disque dans un instant.",
     "Serie: 1 Tag": "Série : 1 jour",
     "Löschen": "Supprimer",
     "Abbrechen": "Annuler",

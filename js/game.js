@@ -288,33 +288,43 @@ if (/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'Mac
 const player = new Audio();
 player.preload = 'auto';
 let playingId = null, limit = SNIPPET;
-const previews = new Map();
-function previewOf(s) {
-  if (!previews.has(s.id)) {
-    const p = DZ.track(s.id).then(t => {
+// Deezer-Links laufen nach ca. 15 Minuten ab (Parameter exp=… im Link). Gemerkt wird darum auch, bis wann der Link gilt;
+// ein abgelaufener (oder bald ablaufender) Link wird neu geholt. Vorher blieb er die ganze Sitzung gespeichert –
+// spielte man einen Song später nochmal, kam auf dem iPhone „The operation is not supported“.
+const previews = new Map();   // id → { p: Promise<url>, until: ms }
+const linkUntil = url => { const m = String(url).match(/exp=(\d{9,})/); return m ? +m[1] * 1000 : Date.now() + 10 * 60e3; };
+function previewOf(s, fresh = false) {
+  const hit = previews.get(s.id);
+  if (fresh || !hit || hit.until < Date.now() + 60e3) {
+    const e = { until: Infinity };
+    e.p = DZ.track(s.id).then(t => {
       if (!t.preview) throw new Error(tx('Keine Vorschau'));
       if (!s.c && t.album?.md5_image) s.c = t.album.md5_image;
+      e.until = linkUntil(t.preview);
       return t.preview;
     });
-    p.catch(() => previews.delete(s.id));
-    previews.set(s.id, p);
+    e.p.catch(() => { if (previews.get(s.id) === e) previews.delete(s.id); });
+    previews.set(s.id, e);
   }
-  return previews.get(s.id);
+  return previews.get(s.id).p;
 }
-async function play(s, full = false) {
+async function play(s, full = false, retry = true) {
   playingId = s.id; limit = full ? 31 : SNIPPET;
   if (G?.q?.type === 'flash' && G.q.song === s && !G.locked) limit = 3;
   renderPlaying();
   try {
-    const url = await previewOf(s);
+    const url = await previewOf(s, !retry);
     if (playingId !== s.id) return;
     if (player.src !== url) player.src = url;
     player.currentTime = 0;
     applyVol();
     await player.play();
   } catch (e) {
-    if (playingId === s.id) { playingId = null; renderPlaying(); }
-    if (e?.name !== 'AbortError') toast(e?.name === 'NotAllowedError' ? tx('Tippe auf die Platte, um abzuspielen') : (e?.message || tx('Abspielen klappt gerade nicht')));
+    if (e?.name === 'AbortError' || playingId !== s.id) return;
+    // Link abgelaufen oder Datei kaputt (z. B. „The operation is not supported“): einmal mit frischem Link versuchen
+    if (retry && e?.name !== 'NotAllowedError') return play(s, full, false);
+    playingId = null; renderPlaying();
+    toast(e?.name === 'NotAllowedError' ? tx('Tippe auf die Platte, um abzuspielen') : tx('Diese Hörprobe lädt gerade nicht – tippe gleich nochmal auf die Platte.'));
   }
 }
 // Hörprobe vorab laden, damit die nächste Frage ohne Wartesekunde startet

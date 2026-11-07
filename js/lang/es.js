@@ -5,6 +5,7 @@
   name: "Español",
   flag: "🇪🇸",
   dict: {
+    "Diese Hörprobe lädt gerade nicht – tippe gleich nochmal auf die Platte.": "Este fragmento no carga ahora mismo: vuelve a tocar el disco en un momento.",
     "Serie: 1 Tag": "Racha: 1 día",
     "Löschen": "Borrar",
     "Abbrechen": "Cancelar",

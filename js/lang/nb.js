@@ -5,6 +5,7 @@
   name: "Norsk",
   flag: "🇳🇴",
   dict: {
+    "Diese Hörprobe lädt gerade nicht – tippe gleich nochmal auf die Platte.": "Lydprøven lastes ikke akkurat nå – trykk på platen igjen om litt.",
     "Serie: 1 Tag": "Rekke: 1 dag",
     "Löschen": "Slett",
     "Abbrechen": "Avbryt",
