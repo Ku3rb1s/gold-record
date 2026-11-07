@@ -1,6 +1,6 @@
 name: Songlisten aktualisieren
 
-# Jede Woche (Montag kurz nach Mitternacht deutscher Zeit) – wie in Needle Drop, nur wöchentlich, damit die
+# Jede Woche (Montag 0:05 deutscher Zeit) – wie in Needle Drop, nur wöchentlich, damit die
 # Zwischenspeicher bei GitHub erhalten bleiben (werden nach 7 Tagen ohne Nutzung gelöscht) und die Läufe kurz sind:
 #   neue Songs aus den Playlists und der Milliarden-Liste (von Needle Drop), Originaljahre (MusicBrainz),
 #   Genres, Gast-Interpreten, Original-Cover. Hochgeladen wird nur, wenn sich Songdaten geändert haben (dann auch DATA_V).
@@ -9,7 +9,7 @@ name: Songlisten aktualisieren
 # Per Hand: Actions → „Songlisten aktualisieren“ → Run workflow.
 on:
   schedule:
-    - cron: '10 23 * * 0'   # Sonntag 23:10 UTC = Montag 0:10 (Winter) bzw. 1:10 (Sommer) – die Tägliche Challenge bleibt so den ganzen Tag gleich
+    - cron: '5 23 * * 0'   # Sonntag 23:05 UTC = Montag 0:05 (Winter) bzw. 1:05 (Sommer) – kurz nach dem Wechsel der Tageschallenge
   workflow_dispatch:
 
 permissions:
