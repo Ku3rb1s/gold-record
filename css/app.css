@@ -1,0 +1,224 @@
+/* Gold Record – nur das, was es in der Basis (css/base.css aus Musik-Bingo) nicht gibt.
+   Look einer Quizshow-Bühne: Nachtblau mit Spotlight, längliche Antwortbalken mit spitzen Enden und silberblauem Rand,
+   eingeloggte Antwort orange, richtige Antwort grün, Stufenleiter an der Seite. Gold = Marke/Sicherheitsstufen. */
+:root{--bg:#040823;--sheet:#0a1238;--surf:20,32,92;--deep:2,4,16;--blob1:#162a86;--blob2:#33136b;--text:#f3f6ff;--muted:#9fb0dd;
+  --accent:#f5b301;--accent2:#38bdf8;--cat:#38bdf8;--gold1:#fde68a;--gold2:#d4a017;
+  --edge:#8fb4ff;--edge2:#c9d8ff;--box1:#0d1a5c;--box2:#050b2e;--lock1:#fbbf24;--lock2:#d97706;--ok1:#4ade80;--ok2:#15803d;--no1:#f87171;--no2:#991b1b}
+body{background:radial-gradient(120% 70% at 50% -10%,#1a2f9a 0%,#081046 38%,var(--bg) 70%)}
+.bg i:nth-child(3){background:#2b5cff;opacity:.16}
+button{color:#1f1500}
+.center{text-align:center}
+.logo img{box-shadow:0 6px 20px -6px rgba(212,160,23,.6)}
+.logo span{background:none;color:#fff}
+.logo-btn{background:none;color:inherit;padding:0;border-radius:12px;box-shadow:none;font-size:1.4rem}
+.logo-btn:active{transform:scale(.97)}
+@media (hover:hover){.logo-btn:hover{filter:brightness(1.12)}}
+main{max-width:680px}
+header{max-width:680px}
+body:has(#game:not(.hidden)) main,body:has(#game:not(.hidden)) header{max-width:980px}
+.panel{margin-top:16px;padding:6px 18px 20px}
+.panel .group-h:first-child{margin-top:16px}
+.cat-sub{font-size:.95rem;color:var(--muted);line-height:1.45;max-width:32em}
+.cat-kicker{color:var(--gold1)}
+.home-title{font-family:Outfit,system-ui,sans-serif;font-weight:900;font-size:clamp(2.1rem,8vw,3.1rem);line-height:1.2;padding:.1em .05em 0;letter-spacing:-.02em;color:#fff}
+.stage,.panel{background:linear-gradient(180deg,rgba(18,32,110,.55),rgba(6,12,48,.6));border:1px solid rgba(143,180,255,.22);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 30px 60px -30px #000}
+.seg button.on{background-color:rgba(143,180,255,.22)}
+button.big{background:linear-gradient(180deg,var(--gold1),var(--gold2));color:#2a1d00;box-shadow:0 10px 30px -10px rgba(245,179,1,.7),inset 0 1px 0 rgba(255,255,255,.6)}
+button.big small{display:block;font-size:.75rem;font-weight:600;opacity:.75}
+.jk-ic{width:40px;height:30px;flex:none;border-radius:99px;display:grid;place-items:center;font-size:.72rem;font-weight:900;color:#fff;
+  background:linear-gradient(180deg,#1e3a9e,#0b1652);border:1.5px solid var(--edge)}
+.jk-ic .ic{width:17px;height:17px}
+
+/* ---------- Stufenleiter ---------- */
+.ladder{display:flex;flex-direction:column;gap:2px;font-variant-numeric:tabular-nums}
+.rung{display:flex;align-items:center;gap:10px;padding:4px 12px;border-radius:99px;font-size:.88rem;font-weight:700;color:#d9b45a}
+.rung .rn{width:1.6em;text-align:right;color:var(--muted);font-weight:600}
+.rung .rs{flex:1}
+.rung .rd{font-size:.8rem}
+.rung.safe{color:#fff}
+.rung.safe .rs{font-weight:900}
+.rung.top{color:var(--gold1)}
+.rung.done{opacity:.55}
+.rung.done .rs::after{content:" ✓";color:var(--ok1)}
+.rung.now{opacity:1;background:linear-gradient(180deg,var(--lock1),var(--lock2));color:#2a1700;box-shadow:0 0 18px -4px var(--lock1)}
+.rung.now .rn{color:#2a1700}
+.home-ladder{margin-top:8px;padding:10px 6px;border-radius:18px;background:rgba(2,6,30,.4);border:1px solid var(--line)}
+.home-ladder .rung.done{opacity:1;background:rgba(245,179,1,.12)}
+.home-ladder .rung.done .rs::after{content:""}
+
+/* ---------- Spiel ---------- */
+.show{padding:18px 20px 22px}
+.show-grid{display:grid;grid-template-columns:1fr 210px;gap:22px;align-items:start}
+.side-ladder{padding:10px 6px;border-radius:20px;background:rgba(2,6,30,.55);border:1px solid rgba(143,180,255,.25);position:sticky;top:12px}
+.mini-ladder{display:none}
+.safe-pill{color:var(--gold1);border-color:rgba(245,179,1,.4)}
+.round-meta{margin-bottom:14px}
+
+/* Frage-Feld: länglich mit Spitzen, wie die Antworten */
+.lz{--tip:22px;position:relative;isolation:isolate;clip-path:polygon(0 50%,var(--tip) 0,calc(100% - var(--tip)) 0,100% 50%,calc(100% - var(--tip)) 100%,var(--tip) 100%);
+  background:linear-gradient(180deg,var(--edge2),var(--edge) 50%,#4a6bc4)}
+.lz::before{content:"";position:absolute;inset:2px;z-index:-1;clip-path:inherit;background:linear-gradient(180deg,var(--box1),var(--box2))}
+.q-box{min-height:112px;display:grid;align-items:center}
+.q-box.enter{animation:qin .45s cubic-bezier(.3,1.3,.5,1)}
+@keyframes qin{from{transform:scale(.94);opacity:0}}
+.q-song{display:flex;align-items:center;gap:16px;padding:14px 18px;border-radius:22px;text-align:left;
+  background:linear-gradient(180deg,rgba(13,26,92,.9),rgba(5,11,46,.9));border:2px solid var(--edge);box-shadow:0 0 0 1px rgba(0,0,0,.4),0 0 30px -10px var(--edge)}
+.q-only{padding:26px 34px;font-family:Outfit,system-ui,sans-serif;font-weight:800;font-size:clamp(1.2rem,4.4vw,1.55rem);line-height:1.25;color:#fff;
+  border-radius:22px;background:linear-gradient(180deg,rgba(13,26,92,.9),rgba(5,11,46,.9));border:2px solid var(--edge);box-shadow:0 0 30px -10px var(--edge)}
+.q-tx{display:flex;flex-direction:column;gap:3px;min-width:0}
+.q-tx .q-q{font-size:.85rem;font-weight:800;color:var(--gold1);text-transform:none}
+.q-tx b{font-family:Outfit,system-ui,sans-serif;font-size:clamp(1.25rem,4.6vw,1.6rem);font-weight:900;line-height:1.15;color:#fff;overflow-wrap:anywhere}
+.q-tx small{color:var(--muted);font-size:.95rem}
+
+/* Platte/Cover mit Abspiel-Knopf */
+.qdisc{position:relative;width:clamp(82px,22vw,108px);aspect-ratio:1;flex:none;padding:0;border-radius:16px;overflow:hidden;background:#05081c;box-shadow:0 8px 22px -10px #000;border:1px solid rgba(143,180,255,.3)}
+.qdisc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+.vinyl{position:absolute;inset:6%;border-radius:50%;background:radial-gradient(circle,#05081c 0 7%,var(--gold2) 7.5% 25%,#9a6b00 25.5% 27%,#111 27.5%),
+  repeating-radial-gradient(circle,#111 0 2px,#1d1d22 2px 4px)}
+.qdisc.playing .vinyl{animation:spin 2.4s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pp{position:absolute;inset:0;z-index:2;display:grid;place-items:center;background:rgba(0,0,0,.25)}
+.pp .i-play{width:32px;height:32px;color:#fff;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))}
+.eq{display:none;align-items:flex-end;gap:3px;height:26px}
+.eq i{width:4px;background:#fff;border-radius:2px;animation:eq .9s ease-in-out infinite}
+.eq i:nth-child(2){animation-delay:-.3s}.eq i:nth-child(3){animation-delay:-.6s}.eq i:nth-child(4){animation-delay:-.15s}
+@keyframes eq{0%,100%{height:6px}50%{height:26px}}
+.qdisc.playing .i-play{display:none}
+.qdisc.playing .eq{display:flex}
+.qdisc.waiting .i-play{animation:pulse 1s infinite}
+
+/* Antworten: 2 × 2 längliche Balken mit Spitzen, verbunden durch eine Linie */
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;margin-top:18px;position:relative}
+.ans{--tip:20px;--b1:var(--edge2);--b2:var(--edge);--f1:var(--box1);--f2:var(--box2);
+  position:relative;isolation:isolate;display:flex;align-items:center;gap:10px;min-height:62px;padding:8px calc(var(--tip) + 8px);text-align:left;white-space:normal;
+  color:#fff;border-radius:0;box-shadow:none;
+  clip-path:polygon(0 50%,var(--tip) 0,calc(100% - var(--tip)) 0,100% 50%,calc(100% - var(--tip)) 100%,var(--tip) 100%);
+  background:linear-gradient(180deg,var(--b1),var(--b2) 50%,#4a6bc4);transition:filter .2s,opacity .3s,transform .12s}
+.ans::before{content:"";position:absolute;inset:2px;z-index:-1;clip-path:inherit;background:linear-gradient(180deg,var(--f1),var(--f2))}
+.ans-l{font-family:Outfit,system-ui,sans-serif;font-weight:900;font-size:1.15rem;color:var(--lock1);flex:none}
+.ans-l::after{content:":"}
+.ans-b{flex:1;min-width:0;display:flex;align-items:center;gap:10px}
+.ans-b b{display:block;font-weight:800;font-size:1.02rem;line-height:1.2;overflow-wrap:anywhere}
+.ans-b small{display:block;font-size:.8rem;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ans-b .num{font-family:Outfit,system-ui,sans-serif;font-size:1.45rem;font-weight:900;font-variant-numeric:tabular-nums}
+.ans-2{min-width:0}
+.ans-th{width:40px;height:40px;border-radius:8px;object-fit:cover;flex:none;background:#0a0f2e}
+.ans-th.ph{visibility:hidden}
+.ans-x{flex:none;display:flex;align-items:center}
+.ans-x .tag{font-weight:900;font-size:.95rem;font-variant-numeric:tabular-nums;color:var(--gold1);white-space:nowrap}
+@media (hover:hover){.ans:not(:disabled):hover{filter:brightness(1.25)}}
+.ans:active:not(:disabled){transform:scale(.98)}
+.ans:disabled{cursor:default;opacity:1}
+.ans.gone{opacity:0;pointer-events:none}
+.ans.gone *{visibility:hidden}
+/* eingeloggt: orange · richtig: grün (blinkt kurz) · falsch: rot */
+.ans.locked{--b1:#ffe7a8;--b2:var(--lock1);--f1:var(--lock1);--f2:var(--lock2);color:#2a1700}
+.ans.locked .ans-l,.ans.right .ans-l,.ans.wrong .ans-l{color:#fff}
+.ans.locked small,.ans.right small,.ans.wrong small{color:inherit;opacity:.8}
+.ans.right{--b1:#d9ffe4;--b2:var(--ok1);--f1:var(--ok1);--f2:var(--ok2);color:#04200d;animation:blink .25s 4 alternate}
+.ans.wrong{--b1:#ffd5d5;--b2:var(--no1);--f1:#dc2626;--f2:var(--no2);color:#fff}
+.ans.right .tag,.ans.locked .tag{color:inherit}
+.ans.right .ans-l{color:#04200d}
+@keyframes blink{to{filter:brightness(1.5)}}
+/* Cover-Fragen: Bilder statt Text */
+.answers.t-cover .ans{min-height:0;padding:10px calc(var(--tip) + 6px)}
+.ans-cv{width:100%;max-width:120px;aspect-ratio:1;border-radius:10px;object-fit:cover;display:block;margin:0 auto;background:#0a0f2e}
+.answers.t-cover .ans-b{justify-content:center}
+/* Publikum: Balken im Antwortfeld */
+.poll{display:flex;align-items:center;gap:6px;width:104px}
+.poll b{flex:1;height:10px;border-radius:5px;background:rgba(255,255,255,.12);overflow:hidden}
+.poll i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--accent2),#a5f3fc);box-shadow:0 0 10px -2px var(--accent2);min-width:2px;animation:grow .8s cubic-bezier(.2,.8,.3,1)}
+@keyframes grow{from{width:0}}
+.poll em{font-style:normal;font-size:.78rem;font-weight:800;font-variant-numeric:tabular-nums;min-width:3.2em;text-align:right}
+
+/* Zeit */
+.timebar{position:relative;height:22px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:12px;border:1px solid rgba(143,180,255,.25)}
+.timebar i{position:absolute;inset:0;transform-origin:left;background:linear-gradient(90deg,#2563eb,var(--accent2))}
+.timebar span{position:relative;display:block;text-align:center;font-size:.78rem;font-weight:800;line-height:20px;color:#fff;font-variant-numeric:tabular-nums;text-shadow:0 1px 2px #000}
+.timebar.urgent i{background:linear-gradient(90deg,var(--lock2),var(--lock1))}
+
+/* Joker: runde Plaketten */
+.jokers{display:flex;justify-content:center;gap:12px;margin-top:18px}
+.jk{display:flex;align-items:center;gap:8px;padding:6px 14px 6px 6px;border-radius:99px;background:rgba(2,6,30,.5);border:1.5px solid rgba(143,180,255,.45);color:#fff;font-weight:700;font-size:.88rem}
+.jk .jk-ic{width:44px;height:30px}
+.jk:disabled{opacity:.35}
+.jk.used{opacity:.3;position:relative}
+.jk.used .jk-ic{background:#1f2440;border-color:#4b5563}
+.jk.used::after{content:"";position:absolute;left:8px;right:8px;top:50%;height:2px;background:#ef4444;transform:rotate(-8deg)}
+@media (hover:hover){.jk:not(:disabled):hover{border-color:var(--edge2);background:rgba(30,58,158,.5)}}
+
+.after{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:16px}
+.after:empty{display:none}
+.verdict{font-family:Outfit,system-ui,sans-serif;font-weight:900;font-size:1.5rem}
+.verdict.good{color:var(--ok1)}.verdict.bad{color:var(--no1)}
+.after .big{min-width:min(320px,100%);flex-direction:column}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;flex-wrap:wrap}
+#btnWalk{color:var(--text);border:1px solid rgba(143,180,255,.35);background:rgba(2,6,30,.4)}
+.ghost{color:var(--text)}
+.hint{color:var(--muted);font-size:.78rem;margin:14px 0 0}
+.hint kbd{font:inherit;font-size:.72rem;border:1px solid var(--line);border-radius:5px;padding:0 .35em;margin:0 1px}
+@media (hover:none){.hint{display:none}}
+
+/* Lautstärke direkt im Spiel (iPhone/iPad: nur Stumm – die Lautstärke regeln dort die Tasten) */
+.vol-game{display:flex;align-items:center;gap:10px;flex:1;max-width:280px;margin-left:auto;color:var(--muted)}
+.vol-game input{flex:1;min-width:0}
+.vol-game button{background:none;color:var(--text);padding:6px;border-radius:50%;box-shadow:none}
+.vol-game button .ic{width:1.4em;height:1.4em}
+.vol-game #volVal{min-width:3ch;text-align:right;font-size:.85rem;font-variant-numeric:tabular-nums}
+.vol-game.off input{opacity:.4}
+html.ios .vol-game input,html.ios .vol-game #volVal{display:none}
+html.ios .vol-game{flex:0}
+
+/* ---------- Ende ---------- */
+.end-medal{font-size:4rem;line-height:1.2;margin-top:6px}
+#endStage{font-family:Outfit,system-ui,sans-serif;color:var(--gold1);font-size:clamp(2.4rem,10vw,3.4rem)}
+.endlist{text-align:left;margin-top:8px}
+.endlist .trail{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.endlist .trail.ok{color:var(--ok1)}
+.endlist .trail.zero{color:var(--no1)}
+
+/* ---------- Meldungen ---------- */
+#toast{position:fixed;left:50%;bottom:calc(max(var(--sab),8px) + 18px);transform:translateX(-50%);z-index:90;padding:.8em 1.15em;border-radius:16px;
+  max-width:calc(100% - 32px);font-size:.95rem;font-weight:700;background:rgba(10,18,56,.97);border:1px solid var(--edge);box-shadow:0 14px 30px -10px #000}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:300;overflow:hidden}
+.confetti i{position:absolute;top:-20px;width:9px;height:14px;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+#statsBox .cell b{font-variant-numeric:tabular-nums;text-align:right}
+
+/* Versionsnummer → Neuerungen */
+.app-version{display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;margin-top:28px;padding:10px;background:none;box-shadow:none;
+  color:var(--muted);font-size:.8rem;font-weight:500;opacity:.75;white-space:normal;text-align:center}
+.app-version span{font-size:.78rem;font-weight:700;color:var(--accent)}
+.changes{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.chg{background:var(--cell);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.chg-h{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.chg-d{margin-left:auto;font-size:.78rem;color:var(--muted)}
+.chg-now{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 50%,transparent);border-radius:99px;padding:.1em .55em}
+.chg ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px}
+.chg li{font-size:.85rem;line-height:1.45}
+
+/* ---------- Handy ---------- */
+@media (max-width:820px){
+  .show-grid{grid-template-columns:1fr}
+  .side-ladder{display:none}
+  .mini-ladder{display:grid;grid-template-columns:repeat(15,1fr);gap:3px;margin:-4px 0 14px}
+  .mini-ladder i{height:7px;border-radius:3px;background:rgba(255,255,255,.13)}
+  .mini-ladder i.done{background:var(--gold2)}
+  .mini-ladder i.now{background:var(--lock1);box-shadow:0 0 8px var(--lock1)}
+  .mini-ladder i.safe{outline:1.5px solid #fff;outline-offset:1px}
+}
+@media (max-width:640px){
+  main{padding:0 10px calc(30px + var(--sab))}
+
+  .panel{padding:4px 12px 16px}
+  .show{padding:14px 10px 18px}
+  .answers{grid-template-columns:1fr;gap:9px}
+  .answers.t-cover{grid-template-columns:1fr 1fr}
+  .ans{--tip:16px;min-height:54px}
+  .q-song{gap:12px;padding:10px 12px}
+  .q-only{padding:20px 18px}
+  .jokers{gap:6px}
+  .jk{flex-direction:column;gap:4px;padding:8px 6px;border-radius:18px;flex:1;font-size:.74rem}
+  .foot{flex-direction:column;align-items:stretch;gap:10px}
+  .vol-game{margin:0;max-width:none;width:100%}
+}

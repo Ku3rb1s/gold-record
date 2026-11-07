@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#060b24">
+<title>Gold Record</title>
+<meta name="description" content="Musik-Quiz in 15 Stufen: von der Kassette bis zum Diamanten. Songs erkennen, Jahre raten, Joker einsetzen.">
+<link rel="apple-touch-icon" href="https://ku3rb1s.github.io/gold-record/apple-touch-icon.png?v=1">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=1">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1">
+<link rel="manifest" href="manifest.json?v=1">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gold Record">
+<link rel="preload" href="fonts/outfit-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/fonts.css?v=1">
+<link rel="stylesheet" href="css/base.css?v=1">
+<link rel="stylesheet" href="css/app.css?v=1">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.8"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.8"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12.5-7.5z" fill="currentColor"/></symbol>
+  <symbol id="i-install" viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 7v7M9 11l3 3 3-3M10.5 18.5h3"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3v12M7.5 7.5L12 3l4.5 4.5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></symbol>
+  <symbol id="i-restart" viewBox="0 0 24 24"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3.5 4v5h5"/></symbol>
+  <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-vol" viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z" fill="currentColor"/><path d="M15.5 9a4 4 0 0 1 0 6M18.5 6a8 8 0 0 1 0 12"/></symbol>
+  <symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z" fill="currentColor"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></symbol>
+  <symbol id="i-exit" viewBox="0 0 24 24"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M10 8l-4 4 4 4M6 12h10"/></symbol>
+  <symbol id="i-ladder" viewBox="0 0 24 24"><path d="M4 20h4v-4h4v-4h4V8h4V4"/></symbol>
+  <symbol id="i-people" viewBox="0 0 24 24"><circle cx="8" cy="8" r="3"/><circle cx="16.5" cy="9" r="2.5"/><path d="M2.5 19c.5-3.3 2.8-5 5.5-5s5 1.7 5.5 5M14 14.3c.8-.3 1.6-.4 2.5-.4 2.3 0 4.2 1.4 4.6 4.6"/></symbol>
+  <symbol id="i-replay" viewBox="0 0 24 24"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3.5 4v5h5"/><path d="M10 9v6l5-3z" fill="currentColor"/></symbol>
+</svg>
+<div class="bg"><i></i><i></i><i></i></div>
+
+<header>
+  <button class="logo logo-btn" id="logoBtn" aria-label="Zur Startseite"><img src="icon-192.png?v=1" alt=""><span>Gold Record</span></button>
+  <div class="hdr-r">
+    <button class="hbtn hidden" id="btnQuit" aria-label="Spiel beenden"><svg class="ic"><use href="#i-x"/></svg><span class="lbl">Beenden</span></button>
+    <button class="hbtn" id="btnSettings" aria-label="Einstellungen"><svg class="ic"><use href="#i-sliders"/></svg><span class="lbl">Einstellungen</span></button>
+  </div>
+</header>
+
+<main>
+  <!-- ============ Start ============ -->
+  <div id="home">
+    <section class="stage glass">
+      <div class="round-meta"><span class="pill">Musik-Quiz</span><span class="pill" id="bestPill">Noch kein Rekord</span></div>
+      <div class="cat">
+        <div class="cat-kicker">15 Fragen · 3 Joker</div>
+        <div class="home-title">Hol dir Diamant!</div>
+        <div class="cat-sub">Songs erkennen, Interpreten und Jahre raten – jede richtige Antwort bringt dich eine Stufe höher, von der Kassette bis zum Diamanten. Bei Gold und Platin bist du sicher.</div>
+      </div>
+      <div class="controls" style="margin-top:22px">
+        <button class="big" id="startBtn"><svg class="ic"><use href="#i-play"/></svg>Spielen</button>
+      </div>
+    </section>
+
+    <section class="glass panel">
+      <div class="group-h">Songs</div>
+      <div class="seg" id="setPool">
+        <button data-v="all">Alle<small id="nAll"></small></button>
+        <button data-v="intl">International<small id="nIntl"></small></button>
+        <button data-v="de">Deutsch<small id="nDe"></small></button>
+      </div>
+      <div class="group-h">Zeitlimit</div>
+      <div class="seg" id="setTimer">
+        <button data-v="on">⏱ An<small>ab Frage 6</small></button>
+        <button data-v="off">Aus<small>ganz in Ruhe</small></button>
+      </div>
+      <div class="group-f center" id="timerInfo"></div>
+
+      <div class="group-h">Joker</div>
+      <div class="group icons">
+        <div class="cell"><span class="jk-ic">50:50</span><span class="grow">Halbe-halbe<span class="sub">Zwei falsche Antworten verschwinden.</span></span></div>
+        <div class="cell"><span class="jk-ic"><svg class="ic"><use href="#i-replay"/></svg></span><span class="grow">Nochmal hören<span class="sub">Der ganze 30-s-Ausschnitt statt 15 s – und die Uhr startet neu.</span></span></div>
+        <div class="cell"><span class="jk-ic"><svg class="ic"><use href="#i-people"/></svg></span><span class="grow">Publikum<span class="sub">Das Publikum stimmt ab. Bei großen Hits liegt es meist richtig, bei unbekannteren Songs eher nicht.</span></span></div>
+      </div>
+
+      <div class="group-h">Die Stufen</div>
+      <div class="ladder home-ladder" id="homeLadder"></div>
+    </section>
+  </div>
+
+  <!-- ============ Spiel ============ -->
+  <section id="game" class="stage glass show hidden">
+    <div class="show-grid">
+      <div class="show-main">
+        <div class="round-meta"><span class="pill" id="qPill"></span><span class="pill safe-pill" id="safePill"></span></div>
+        <div class="mini-ladder" id="miniLadder" aria-hidden="true"></div>
+        <div class="q-box" id="qBox"></div>
+        <div class="timebar hidden" id="timebar"><i></i><span></span></div>
+        <div class="answers" id="answers"></div>
+        <div class="after" id="after"></div>
+        <div class="jokers" id="jokers">
+          <button class="jk" id="jk50" data-jk="fifty"><span class="jk-ic">50:50</span><span class="lbl">Halbe-halbe</span></button>
+          <button class="jk" id="jkReplay" data-jk="replay"><span class="jk-ic"><svg class="ic"><use href="#i-replay"/></svg></span><span class="lbl">Nochmal hören</span></button>
+          <button class="jk" id="jkPeople" data-jk="people"><span class="jk-ic"><svg class="ic"><use href="#i-people"/></svg></span><span class="lbl">Publikum</span></button>
+        </div>
+        <div class="foot">
+          <button class="ghost" id="btnWalk"><svg class="ic"><use href="#i-exit"/></svg><span id="walkTxt">Aussteigen</span></button>
+          <div class="vol-game" id="volBox">
+            <button id="volMute" aria-label="Stumm" title="Stumm (M)"><svg class="ic"><use href="#i-vol"/></svg></button>
+            <input type="range" id="vol" min="0" max="100" step="1" aria-label="Lautstärke">
+            <span id="volVal"></span>
+          </div>
+        </div>
+        <p class="hint"><kbd>A</kbd>–<kbd>D</kbd> antworten · <kbd>Leertaste</kbd> abspielen/pausieren · <kbd>M</kbd> stumm</p>
+      </div>
+      <div class="ladder side-ladder" id="gameLadder"></div>
+    </div>
+  </section>
+
+  <!-- ============ Ende ============ -->
+  <section id="end" class="stage glass hidden">
+    <div class="round-meta"><span class="pill" id="endMode"></span><span class="pill" id="endBest"></span></div>
+    <div class="lib-hero"><div class="cat-kicker" id="endKick">Erreicht</div><div class="end-medal" id="endMedal"></div><div class="lib-num" id="endStage"></div><div class="lib-sub" id="endSub"></div></div>
+    <div class="group-h" style="text-align:left">Deine Fragen</div>
+    <div class="group icons endlist" id="endList" data-no-tx></div>
+    <div class="controls" style="margin-top:20px">
+      <button class="big" id="againBtn"><svg class="ic"><use href="#i-restart"/></svg>Nochmal</button>
+      <button class="ghost" id="shareBtn"><svg class="ic"><use href="#i-share"/></svg>Teilen</button>
+      <button class="ghost" id="homeBtn"><svg class="ic"><use href="#i-grid"/></svg>Start</button>
+    </div>
+  </section>
+</main>
+
+<!-- ============ Einstellungen ============ -->
+<dialog id="sheetSettings" class="sheet">
+  <div class="sheet-head">
+    <span class="grab"></span>
+    <button class="nav-back invisible" id="navBack"><svg class="ic"><use href="#i-back"/></svg>Einstellungen</button>
+    <div class="nav-title" id="navTitle">Einstellungen</div>
+    <button class="nav-done" data-close>Fertig</button>
+  </div>
+  <div class="sheet-body">
+    <section class="page active" data-page="main" data-title="Einstellungen">
+      <div class="group icons prof-group" style="margin-top:14px">
+        <div class="cell prof">
+          <button class="prof-emo" id="profEmoji" type="button" aria-label="Avatar wechseln" title="Avatar wechseln">🎧</button>
+          <input id="profName" class="bare" placeholder="Dein Name" maxlength="24" autocomplete="nickname" enterkeyhint="done" data-no-tx>
+        </div>
+      </div>
+      <div class="group-f">Dein Profil gilt für alle Spiele der Jukebox. Es bleibt auf diesem Gerät.</div>
+      <div class="group icons" style="margin-top:12px">
+        <label class="cell">
+          <span class="cell-ic" style="background:#14b8a6"><svg class="ic"><use href="#i-globe"/></svg></span>
+          <span class="grow">Sprache</span>
+          <select id="langSel" aria-label="Sprache"></select>
+        </label>
+      </div>
+      <div class="group icons" style="margin-top:12px">
+        <button class="cell tap" data-go="help">
+          <span class="cell-ic" style="background:#0ea5e9"><svg class="ic"><use href="#i-bulb"/></svg></span>
+          <span class="grow">Wiedergabe &amp; Töne<span class="sub" id="subHelp"></span></span>
+          <svg class="ic chev"><use href="#i-chev"/></svg>
+        </button>
+        <button class="cell tap hidden" id="btnInstall">
+          <span class="cell-ic" style="background:linear-gradient(135deg,#10b981,#0ea5e9)"><svg class="ic"><use href="#i-install"/></svg></span>
+          <span class="grow">Als App installieren<span class="sub">Startet schneller, im Vollbild und mit eigenem Symbol</span></span>
+          <svg class="ic chev"><use href="#i-chev"/></svg>
+        </button>
+      </div>
+      <div class="group icons" style="margin-top:22px">
+        <button class="cell tap" data-go="stats">
+          <span class="cell-ic" style="background:linear-gradient(135deg,#fde68a,#d4a017)"><svg class="ic"><use href="#i-chart"/></svg></span>
+          <span class="grow">Deine Statistik<span class="sub" id="subStats"></span></span>
+          <svg class="ic chev"><use href="#i-chev"/></svg>
+        </button>
+        <button class="cell tap" data-go="data">
+          <span class="cell-ic" style="background:#6b7280"><svg class="ic"><use href="#i-music"/></svg></span>
+          <span class="grow">Daten &amp; Musik<span class="sub">Alles bleibt auf diesem Gerät</span></span>
+          <svg class="ic chev"><use href="#i-chev"/></svg>
+        </button>
+      </div>
+      <div class="group icons" style="margin-top:22px">
+        <a class="cell tap" href="https://ku3rb1s.github.io/jukebox/">
+          <span class="cell-ic" style="background:linear-gradient(135deg,#3a2a52,#ff5a7a)"><svg class="ic"><use href="#i-grid"/></svg></span>
+          <span class="grow">Alle Spiele<span class="sub">Musik-Bingo, Needle Drop und mehr</span></span>
+          <svg class="ic chev"><use href="#i-chev"/></svg>
+        </a>
+      </div>
+      <button class="app-version" id="appVersion" data-go="changes"></button>
+    </section>
+
+    <section class="page" data-page="stats" data-title="Deine Statistik">
+      <div id="statsBox"></div>
+    </section>
+
+    <section class="page" data-page="changes" data-title="Neuerungen">
+      <div id="changesList" class="changes"></div>
+    </section>
+
+    <section class="page" data-page="help" data-title="Wiedergabe &amp; Töne">
+      <div class="group" style="margin-top:14px">
+        <label class="cell"><span class="grow">Automatisch abspielen<span class="sub">Bei jeder Frage mit Song startet die Musik sofort</span></span><span class="switch"><input type="checkbox" id="setAuto"><span></span></span></label>
+        <label class="cell"><span class="grow">Töne &amp; Konfetti<span class="sub">Kurze Töne bei richtig und falsch, Konfetti bei Gold, Platin und Diamant</span></span><span class="switch"><input type="checkbox" id="setSfx"><span></span></span></label>
+      </div>
+      <div class="group-f">Die Lautstärke stellst du direkt im Spiel ein.</div>
+    </section>
+
+    <section class="page" data-page="data" data-title="Daten &amp; Musik">
+      <div class="group" style="margin-top:14px">
+        <div class="cell"><span class="grow">Musik von Deezer<span class="sub">Die Hörproben und Cover kommen direkt von deezer.com – dafür ruft dein Browser Deezer auf.</span></span></div>
+        <div class="cell"><span class="grow">Jahre geprüft<span class="sub">Jedes Jahr ist das der ersten Veröffentlichung, abgeglichen mit MusicBrainz.</span></span></div>
+        <div class="cell"><span class="grow">Streams<span class="sub">Spotify-Abrufzahlen der Songs mit über einer Milliarde Streams (Stand der Liste, kworb.net).</span></span></div>
+        <div class="cell"><span class="grow">Alles andere bleibt hier<span class="sub">Einstellungen und Rekorde liegen nur auf diesem Gerät. Kein Konto, kein Server.</span></span></div>
+      </div>
+      <div class="group" style="margin-top:22px">
+        <button class="cell tap danger" id="btnResetAll"><span class="grow">Alle gespeicherten Daten löschen<span class="sub">Rekorde, Statistik und Einstellungen</span></span></button>
+      </div>
+    </section>
+  </div>
+</dialog>
+
+<div id="toast" class="hidden"></div>
+
+<script src="js/lang/en.js?v=1"></script>
+<script src="js/lang/fr.js?v=1"></script>
+<script src="js/lang/es.js?v=1"></script>
+<script src="js/lang/nb.js?v=1"></script>
+<script src="js/profile.js?v=1"></script>
+<script src="js/i18n.js?v=1"></script>
+<script src="js/deezer.js?v=1"></script>
+<script src="js/game.js?v=1"></script>
+<script src="js/pwa.js?v=1"></script>
+</body>
+</html>
