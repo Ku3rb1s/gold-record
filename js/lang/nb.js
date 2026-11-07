@@ -76,7 +76,6 @@
     "Deezer-Fehler: {m}": "Deezer-feil: {m}",
     "Dein Musik-Freund am Telefon": "Musikkvennen din på telefonen",
     "Dein Name": "Navnet ditt",
-    "Dein Profil gilt für alle Spiele der Jukebox. Es bleibt auf diesem Gerät.": "Profilen din gjelder i alle Jukebox-spillene. Den blir på denne enheten.",
     "Deine besten Runden": "Dine beste runder",
     "Deine Fragen": "Dine spørsmål",
     "Deine Runde": "Din runde",
@@ -268,5 +267,6 @@
     "Sonstiges": "Annet",
     "Zur Jukebox": "Til Jukebox",
     "<b>Tipp:</b> Logo gedrückt halten – zur Jukebox und zu den anderen Spielen.": "<b>Tips:</b> Hold inne logoen – til Jukebox og de andre spillene.",
+    "Dein Profil gilt für alle Spiele der Jukebox.": "Profilen din gjelder for alle spillene i Jukebox.",
   },
 };

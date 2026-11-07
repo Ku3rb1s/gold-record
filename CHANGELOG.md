@@ -1,5 +1,9 @@
 # Neuerungen
 
+## 1.10.11 – 07.11.2026
+- Einstellungen: Hinweis zum Profil korrigiert („gilt für alle Spiele der Jukebox“)
+- Spiele-Menü: Ist es offen, schließt ein Tipp aufs Logo nur das Menü (statt zur Startseite zu springen)
+
 ## 1.10.10 – 07.11.2026
 - Nach einem Update kommt die neue Version jetzt sofort – vorher konnte der Browser bis zu 10 Minuten lang noch die alte Seite zeigen
 

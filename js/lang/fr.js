@@ -76,7 +76,6 @@
     "Deezer-Fehler: {m}": "Erreur Deezer : {m}",
     "Dein Musik-Freund am Telefon": "Ton ami mélomane au téléphone",
     "Dein Name": "Ton nom",
-    "Dein Profil gilt für alle Spiele der Jukebox. Es bleibt auf diesem Gerät.": "Ton profil vaut pour tous les jeux du Jukebox. Il reste sur cet appareil.",
     "Deine besten Runden": "Tes meilleures parties",
     "Deine Fragen": "Tes questions",
     "Deine Runde": "Ta partie",
@@ -268,5 +267,6 @@
     "Sonstiges": "Divers",
     "Zur Jukebox": "Vers la Jukebox",
     "<b>Tipp:</b> Logo gedrückt halten – zur Jukebox und zu den anderen Spielen.": "<b>Astuce :</b> maintiens le logo appuyé – vers la Jukebox et les autres jeux.",
+    "Dein Profil gilt für alle Spiele der Jukebox.": "Ton profil vaut pour tous les jeux de la Jukebox.",
   },
 };
