@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.10.4 – 07.11.2026
+- Jahre geprüft: Jetzt haben über 4.000 der neueren Songs ein mit MusicBrainz geprüftes Originaljahr (statt des Jahres einer späteren Neuauflage) – Jahresfragen werden dadurch fairer
+
 ## 1.10.3 – 07.11.2026
 - Schnellerer Start nach Updates: Die Songliste bleibt im Speicher des Handys und wird nur neu geladen, wenn sich die Songs wirklich geändert haben
 

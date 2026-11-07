@@ -19,6 +19,8 @@ let cache = {}; try { cache = JSON.parse(fs.readFileSync(CACHE, 'utf8')); } catc
 function readOon() { try { const oon = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'Older-or-Newer', 'data', 'mb-years.json'), 'utf8')); for (const k in oon) if (!(k in cache) && oon[k]) cache[k] = oon[k]; } catch {} }
 readOon();
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+// Von Hand korrigiert (MusicBrainz lag daneben)
+const FIX = { 136338504: 1984 };   // Metallica – For Whom the Bell Tolls (Ride the Lightning)
 function writeYears() {
   const out = {}; let ok = 0, late = 0, none = 0;
   for (const s of songs) {
@@ -31,6 +33,7 @@ function writeYears() {
     if (!s.h && y > s.y + 1) { late++; continue; }
     out[s.id] = y; ok++;
   }
+  for (const id in FIX) if (id in out) out[id] = FIX[id];
   fs.writeFileSync(path.join(DATA, 'years.json'), JSON.stringify(out));
   return { ok, late, none };
 }
