@@ -2,7 +2,7 @@
    Quiz-Leiter mit 15 Stufen: Jede richtige Antwort bringt eine Stufe höher, von der Kassette bis zum Diamanten.
    Gold (Stufe 5) und Platin (Stufe 10) sind sicher: Bei einem Fehler fällt man auf die letzte erreichte Sicherheitsstufe.
    Aussteigen geht jederzeit vor dem Antworten – dann bleibt die erreichte Stufe. */
-const APP_VERSION = '1.9.5', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
+const APP_VERSION = '1.10.0', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
@@ -79,7 +79,31 @@ function seeded(str) {
 const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 const rnd = n => Math.floor(R() * n);
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-const cover = (s, size = 500) => s.c ? `https://e-cdns-images.dzcdn.net/images/cover/${s.c}/${size}x${size}-000000-80-0-0.jpg` : '';
+// Cover: Deezer (md5) – oder "mb:<id>" aus data/covers.json = Original-Cover aus dem Cover Art Archive (MusicBrainz),
+// wenn Deezer den Song nur auf einem Sampler hat (Spiele-Hub/scripts/check-covers.js)
+const dzCover = (c, size) => `https://e-cdns-images.dzcdn.net/images/cover/${c}/${size}x${size}-000000-80-0-0.jpg`;
+const COVER_FALLBACK = new Map();   // Original-Cover-Adresse → bisheriges Deezer-Cover (falls archive.org gerade nicht liefert)
+const cover = (s, size = 500) => {
+  if (!s.c) return '';
+  if (!s.c.startsWith('mb:')) return dzCover(s.c, size);
+  const url = `https://coverartarchive.org/release-group/${s.c.slice(3)}/front-${size <= 250 ? 250 : 500}`;
+  if (s.c0) COVER_FALLBACK.set(url, dzCover(s.c0, size));
+  return url;
+};
+// Lädt ein Original-Cover nicht (archive.org langsam oder überlastet), springt das Bild auf das Deezer-Cover zurück
+addEventListener('error', e => { const i = e.target; if (i?.tagName === 'IMG' && COVER_FALLBACK.has(i.src)) i.src = COVER_FALLBACK.get(i.src); }, true);
+// … und ebenso, wenn es nach 4 Sekunden noch nicht da ist (sonst bleibt bei Fragen mit Zeitlimit das Bild leer)
+{
+  const seen = new WeakMap();
+  setInterval(() => {
+    for (const i of document.images) {
+      const fb = COVER_FALLBACK.get(i.src);
+      if (!fb || (i.complete && i.naturalWidth)) continue;
+      if (!seen.has(i)) seen.set(i, Date.now());
+      else if (Date.now() - seen.get(i) > 4000) { seen.delete(i); i.src = fb; }
+    }
+  }, 1000);
+}
 const lerp = (a, b, k) => a + (b - a) * k;
 
 /* ---------- Daten ---------- */
@@ -93,7 +117,11 @@ async function loadData() {
     fetch('data/genres.json?v=' + APP_VERSION).then(r => r.ok ? r.json() : {}).catch(() => ({})),
     fetch('data/more.json?v=' + APP_VERSION).then(r => r.ok ? r.json() : { songs: [] }).catch(() => ({ songs: [] })),
     fetch('data/years.json?v=' + APP_VERSION).then(r => r.ok ? r.json() : {}).catch(() => ({})),
-  ]).then(([a, b, x, g, m, yrs]) => {
+    fetch('data/covers.json?v=' + APP_VERSION).then(r => r.ok ? r.json() : {}).catch(() => ({})),
+  ]).then(([a, b, x, g, m, yrs, cv]) => {
+    // Original-Cover statt Sampler-Cover (data/covers.json)
+    const fix = cv.covers || {};
+    for (const s of [...a.songs, ...x.songs, ...m.songs]) if (fix[s.id]) { s.c0 = s.c; s.c = fix[s.id]; }
     for (const k in g) GENRE.set(+k, g[k]);
     for (const s of m.songs) { s.pl = 1; if (s.g) GENRE.set(s.id, s.g); }
     x.songs.push(...m.songs);

@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.10.0 – 07.11.2026
+- Original-Cover statt Sampler-Cover: Bei rund 180 Songs zeigte das Spiel das Cover einer Hit-Compilation („Sommer Hits“, „Bravo Hits“, späte Soundtracks …). Jetzt erscheint das Cover der Original-Single bzw. des Originalalbums (aus MusicBrainz/Cover Art Archive), z. B. „Hound Dog“ 1956 statt Forrest Gump. Lädt ein Original-Cover nicht schnell genug, kommt wie bisher das Deezer-Cover
+
 ## 1.9.5 – 07.11.2026
 - Fehler behoben: Ein Song, der schon einmal geladen war, spielte nach etwa 15 Minuten nicht mehr (iPhone: „The operation is not supported“) – Deezer-Links laufen ab. Jetzt wird ein abgelaufener Link automatisch neu geholt
 - Weitere Jahre geprüft
