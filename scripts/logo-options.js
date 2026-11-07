@@ -42,8 +42,10 @@ function logo(id, p = '') {
   if (id === 'plakette') {
     // Rahmen mit Passepartout, Platte, Namensschild
     b = `<g filter="url(#${p}sh)"><rect x="66" y="56" width="380" height="400" rx="26" fill="#0b0f1c" stroke="url(#${p}g)" stroke-width="10"/></g>
-      <rect x="92" y="82" width="328" height="348" rx="14" fill="url(#${p}a)" fill-opacity=".14"/>
-      ${record(p, 256, 228, 128, `<circle cx="256" cy="228" r="44" fill="url(#${p}a)"/><circle cx="256" cy="228" r="9" fill="#0b0f1c"/>`)}
+      <rect x="92" y="82" width="328" height="348" rx="14" fill="#16244d"/>
+      <rect x="92" y="82" width="328" height="348" rx="14" fill="url(#${p}g)" fill-opacity=".07"/>
+      ${record(p, 256, 228, 128, `<circle cx="256" cy="228" r="44" fill="#0b0f1c"/><circle cx="256" cy="228" r="44" fill="none" stroke="url(#${p}g)" stroke-width="5"/>
+        <circle cx="256" cy="228" r="29" fill="none" stroke="url(#${p}g)" stroke-opacity=".45" stroke-width="2"/><circle cx="256" cy="228" r="8" fill="url(#${p}g)"/>`)}
       <rect x="176" y="384" width="160" height="28" rx="6" fill="url(#${p}g)"/><path d="M200 398h112" stroke="#5a3d00" stroke-opacity=".5" stroke-width="5" stroke-linecap="round"/>`;
   } else if (id === 'leiter') {
     // aufsteigende Stufen, oben die Platte

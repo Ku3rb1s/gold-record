@@ -17,10 +17,10 @@ Lokal starten: `node server.js` → http://127.0.0.1:8893/
   `similar()` wählt falsche Antworten anfangs zufällig, später aus derselben Zeit/Sprache bzw. vom selben Interpreten.
   Jahresfragen: Abstand der Jahreszahlen von 8 Jahren runter auf 1. Ältester/Streams: Songs liegen später immer enger beieinander.
 - **Joker** (jeder einmal pro Spiel): 50:50, Publikum (Trefferquote hängt von Bekanntheit und Stufe ab), Telefon (Freund nennt eine Antwort mit Sicherheit 1–3),
-  Frage tauschen (Ersatzfrage derselben Stufe, beim Start mit gebaut), Nochmal hören (30 s statt 15 s, Uhr startet neu).
+  Frage tauschen (Ersatzfrage derselben Stufe, beim Start mit gebaut). **Nochmal hören** ist kein Joker: Der Knopf an der Frage spielt immer die ganzen 30 s von vorn.
 - **Schwierigkeit** (`DIFF` in `js/game.js`): Leicht/Normal/Schwer verschieben Bekanntheit der Songs und Ähnlichkeit der falschen Antworten – unabhängig von den Jokern.
 - **Tägliche Challenge:** alle 15 Fragen (und Ersatzfragen) werden mit einem Zufallsgenerator gebaut, dessen Startwert das Datum ist –
-  so bekommen alle am selben Tag dieselben Fragen, ganz ohne Server. Ein Versuch pro Tag (`gr.daily.<Datum>`), Serie über `gr.dailyLog`.
+  so bekommen alle am selben Tag dieselben Fragen, ganz ohne Server. Ein Versuch pro Tag (`gr.daily.<Datum>`), Serie über `gr.dailyLog`. Knopf in der Kopfzeile wie in Needle Drop (#1 = 07.11.2026).
 - **Zeitlimit:** Frage 6–10 je 45 s, ab 11 je 30 s (abschaltbar). Die Uhr startet, sobald die Hörprobe spielt.
 - **Audio:** 30-s-Vorschauen von Deezer (JSONP, kein Login). Der Vorschau-Link läuft ab, darum wird er erst kurz vorher per `/track/{id}` geholt.
 - Rekorde und Statistik nur lokal (`gr.*` im Browser-Speicher). Sprache (`mq.lang`) und Profil (`jb.profile`) teilt es mit den anderen Spielen.

@@ -28,17 +28,33 @@ body:has(#game:not(.hidden)) main,body:has(#game:not(.hidden)) header{max-width:
 .hero-plaque{position:relative}
 .hero-plaque{width:128px;height:128px;margin:0 auto 14px;border-radius:30px;overflow:hidden;box-shadow:0 0 0 1px rgba(245,179,1,.5),0 20px 50px -14px rgba(245,179,1,.55),0 18px 40px -18px #000;transform:rotate(-3deg)}
 .hero-plaque img{width:100%;height:100%;display:block}
-.daily{display:flex;align-items:center;gap:14px;margin-top:16px;padding:16px 18px;background:linear-gradient(120deg,rgba(245,179,1,.18),rgba(18,32,110,.55) 55%);
-  border:1px solid rgba(245,179,1,.45);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 30px 60px -30px #000}
-.daily-ic{width:48px;height:48px;flex:none;border-radius:14px;display:grid;place-items:center;color:#2a1d00;background:linear-gradient(180deg,var(--gold1),var(--gold2))}
-.daily-ic .ic{width:26px;height:26px}
-.daily-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;text-align:left}
-.daily-tx b{font-size:1.08rem}
-.daily-tx>span{font-size:.84rem;color:var(--muted)}
-.daily-tx .daily-res{color:var(--text);font-size:.92rem}
-.daily-go{background:linear-gradient(180deg,var(--gold1),var(--gold2));color:#2a1d00;white-space:nowrap}
-.daily-share{display:none;color:var(--text)}
-#dailyBtn.hidden~.daily-share{display:inline-flex}
+/* Tägliche Challenge – Knopf in der Kopfzeile (wie Needle Drop) */
+.daily-hdr{display:inline-flex;align-items:center;gap:9px;min-width:0;padding:5px 14px 5px 5px;border:1px solid rgba(245,179,1,.45);border-radius:99px;
+  background:linear-gradient(120deg,rgba(245,179,1,.16),rgba(18,32,110,.6) 60%);box-shadow:inset 0 1px 0 rgba(255,255,255,.1);color:var(--text);font:inherit;font-weight:700;font-size:.92rem;cursor:pointer;white-space:nowrap}
+.daily-hdr.hidden{display:none}
+@media (hover:hover){.daily-hdr:hover{border-color:var(--gold1)}}
+.dh-ic{width:32px;height:32px;flex:none;border-radius:50%;display:grid;place-items:center;color:#2a1d00;background:linear-gradient(180deg,var(--gold1),var(--gold2));box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+.dh-ic .ic{width:17px;height:17px}
+.dh-t{font-family:Outfit,system-ui,sans-serif;font-weight:800}
+.dh-st{display:inline-flex;align-items:center;gap:6px;color:var(--gold1)}
+.dh-st .dh-x{color:var(--text);font-weight:700}
+.dh-st.done{color:var(--ok1)}
+.dh-st.done .ic{width:1.05em;height:1.05em;stroke-width:3}
+.dh-dot{display:none;width:8px;height:8px;border-radius:50%;background:var(--gold1);box-shadow:0 0 0 3px rgba(245,179,1,.25)}
+@media (max-width:760px){.dh-name{display:none}}
+@media (max-width:640px){
+  .daily-hdr{padding:4px 11px 4px 4px;gap:7px;font-size:.88rem}
+  .dh-ic{width:34px;height:34px}
+  .dh-go{display:none}
+  .dh-dot{display:block}
+}
+@media (max-width:400px){.dh-st .dh-x{display:none}}
+#endNext{font-size:.85rem}
+/* Nochmal hören – fester Knopf an jeder Frage mit Song */
+.replay{flex:none;display:inline-flex;align-items:center;gap:6px;padding:.5em .85em;border-radius:99px;font-size:.82rem;font-weight:700;color:#fff;
+  background:rgba(255,255,255,.08);border:1px solid rgba(201,216,255,.45);box-shadow:none;align-self:center}
+.replay .ic{width:16px;height:16px}
+@media (hover:hover){.replay:hover{background:rgba(255,255,255,.16)}}
 .seg.diff button{gap:3px}
 .lvl{display:flex;align-items:flex-end;gap:2px;height:14px;margin-bottom:3px}
 .lvl b{width:5px;border-radius:2px;background:rgba(255,255,255,.18)}
@@ -134,7 +150,7 @@ button.big small{display:block;font-size:.75rem;font-weight:600;opacity:.75}
 .ans-b b{display:block;font-weight:800;font-size:1.02rem;line-height:1.2;overflow-wrap:anywhere}
 .ans-b small{display:block;font-size:.8rem;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ans-b .num{font-family:Outfit,system-ui,sans-serif;font-size:1.45rem;font-weight:900;font-variant-numeric:tabular-nums}
-.ans-2{min-width:0}
+.ans-2{min-width:0;flex:1}
 .ans-th{width:40px;height:40px;border-radius:8px;object-fit:cover;flex:none;background:#0a0f2e}
 .ans-th.ph{visibility:hidden}
 .ans-x{flex:none;display:flex;align-items:center}
@@ -173,7 +189,7 @@ button.big small{display:block;font-size:.75rem;font-weight:600;opacity:.75}
 
 /* Joker: ovale Plaketten über der Stufenleiter */
 .show-side{display:flex;flex-direction:column;gap:12px;position:sticky;top:12px}
-.jokers{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:10px 8px;border-radius:20px;background:rgba(2,6,30,.55);border:1px solid rgba(143,180,255,.25)}
+.jokers{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 8px;border-radius:20px;background:rgba(2,6,30,.55);border:1px solid rgba(143,180,255,.25)}
 .jk{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:0;background:none;box-shadow:none;color:#fff;font-weight:700;font-size:.66rem;border-radius:0;min-width:0}
 .jk .jk-ic{width:100%;max-width:58px;height:34px;border-radius:50%;font-size:.7rem;
   background:radial-gradient(120% 100% at 50% 20%,#3557d6,#0b1652 70%);border:2px solid #dbe6ff;box-shadow:0 0 14px -4px #7aa2ff,inset 0 1px 0 rgba(255,255,255,.35)}
@@ -267,12 +283,14 @@ html.ios .vol-game{flex:0}
   .arow::before{display:none}
   .answers.t-cover .arow{grid-template-columns:1fr 1fr}
   .q-box::before{left:-10px;right:-10px}
-  .daily{flex-wrap:wrap;padding:14px}
-  .daily-go,.daily-share{flex:1 1 100%;justify-content:center}
   .ans{--tip:16px;min-height:54px}
   .q-song,.q-only{--tip:22px}
   .q-song{gap:12px;padding:10px calc(var(--tip) + 4px)}
   .q-only{padding:22px calc(var(--tip) + 6px)}
+  .q-song{flex-wrap:wrap}
+  .q-tx{flex:1 1 140px}
+  .replay span{display:none}
+  .replay{padding:.55em}
   .foot{flex-direction:column;align-items:stretch;gap:10px}
   .vol-game{margin:0;max-width:none;width:100%}
 }

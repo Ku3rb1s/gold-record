@@ -1,7 +1,14 @@
 # Neuerungen
 
+## 1.2.0 – 07.11.2026
+- **Nochmal hören** ist kein Joker mehr, sondern geht **immer**: Knopf direkt an der Frage spielt die ganzen 30 Sekunden von vorn
+- Dafür **4 Joker**: 50:50, Publikum, Telefon und Frage tauschen
+- **Tägliche Challenge** jetzt wie in Needle Drop als Knopf in der Kopfzeile (mit Nummer, Serie und ✓ Ergebnis) – antippen zeigt das heutige Ergebnis nochmal
+- Antworten: Titel und Interpret stehen untereinander, nichts wird mehr abgeschnitten
+- Logo überarbeitet: Etikett der goldenen Platte jetzt dunkel mit Goldring statt Cyan
+
 ## 1.1.0 – 07.11.2026
-- **5 Joker** wie in der Show: 50:50, **Publikum**, **Telefon** (ein Musik-Freund sagt, was er denkt – und wie sicher er ist), **Frage tauschen** und Nochmal hören
+- **Joker** wie in der Show: 50:50, **Publikum**, **Telefon** (ein Musik-Freund sagt, was er denkt – und wie sicher er ist) und **Frage tauschen**
 - **Schwierigkeit** Leicht, Normal oder Schwer – unabhängig von den Jokern, die gibt es immer alle
 - **Tägliche Challenge:** jeden Tag 15 neue Fragen, für alle gleich – ein Versuch pro Tag, Ergebnis teilen, Serie über die Tage
 - Neues Bühnen-Design: Frage und Antworten als lange Balken mit Spitzen auf einer Linie, Lichtkegel, Joker als ovale Plaketten über der Stufenleiter
