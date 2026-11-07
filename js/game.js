@@ -2,7 +2,7 @@
    Quiz-Leiter mit 15 Stufen: Jede richtige Antwort bringt eine Stufe höher, von der Kassette bis zum Diamanten.
    Gold (Stufe 5) und Platin (Stufe 10) sind sicher: Bei einem Fehler fällt man auf die letzte erreichte Sicherheitsstufe.
    Aussteigen geht jederzeit vor dem Antworten – dann bleibt die erreichte Stufe. */
-const APP_VERSION = '1.10.6', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
+const APP_VERSION = '1.10.7', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
@@ -110,8 +110,8 @@ const lerp = (a, b, k) => a + (b - a) * k;
 // Eigene Versionsnummer für die Songdaten (data/*.json), unabhängig von APP_VERSION: So bleiben die rund 375 KB bei einem
 // normalen Update im Zwischenspeicher des Handys. Bei GEÄNDERTEN Songdaten DATA_V erhöhen – sonst sieht man sie erst beim
 // übernächsten Öffnen (der Zwischenspeicher lädt sie im Hintergrund trotzdem nach, siehe sw.js).
-const DATA_V = 'd2';
-let SONGS = [], STREAMS = [], FAME = new Map(), GENRE = new Map();
+const DATA_V = 'd3';
+let SONGS = [], STREAMS = [], FAME = new Map(), GENRE = new Map(), FEAT = new Map();
 async function loadData() {
   if (SONGS.length) return;
   const [a, b, x] = await Promise.all([
@@ -122,7 +122,10 @@ async function loadData() {
     fetch('data/more.json?v=' + DATA_V).then(r => r.ok ? r.json() : { songs: [] }).catch(() => ({ songs: [] })),
     fetch('data/years.json?v=' + DATA_V).then(r => r.ok ? r.json() : {}).catch(() => ({})),
     fetch('data/covers.json?v=' + DATA_V).then(r => r.ok ? r.json() : {}).catch(() => ({})),
-  ]).then(([a, b, x, g, m, yrs, cv]) => {
+    fetch('data/feat.json?v=' + DATA_V).then(r => r.ok ? r.json() : {}).catch(() => ({})),
+  ]).then(([a, b, x, g, m, yrs, cv, ft]) => {
+    // weitere Interpreten (Duette, Gäste) laut Deezer, z. B. „Komet“: Udo Lindenberg + Apache 207 (scripts/build-feat.js)
+    for (const k in ft) FEAT.set(+k, ft[k]);
     // Original-Cover statt Sampler-Cover (data/covers.json)
     const fix = cv.covers || {};
     for (const s of [...a.songs, ...x.songs, ...m.songs]) if (fix[s.id]) { s.c0 = s.c; s.c = fix[s.id]; }
@@ -233,12 +236,12 @@ function makeQuestion(i, type) {
   Q.hp = Math.max(h, i / 14 * .6);
   if (type === 'listen' || type === 'flash' || type === 'artist' || type === 'whosings' || type === 'cover') {
     Q.song = subj;
-    const key = type === 'listen' || type === 'flash' ? s => s.t.toLowerCase() : type === 'artist' || type === 'whosings' ? s => artistKey(s.a) : s => s.c;
+    const key = type === 'listen' || type === 'flash' ? s => s.t.toLowerCase() : type === 'artist' || type === 'whosings' ? artistOf : s => s.c;
     const seen = new Set([key(subj)]);
     // beim Cover: gleicher Interpret macht es schwer (Cover sehen sich oft ähnlich)
     const extra = type === 'cover' ? s => (s.a === subj.a ? -6 * h : 0) : type === 'listen' || type === 'flash' ? s => (s.a === subj.a ? -4 * h : 0) : () => 0;
     const wrong = [];
-    const cand = distractors().filter(s => s.id !== subj.id && s.c), fresh = cand.filter(s => !G.used.has(s.id));
+    const cand = distractors().filter(s => s.id !== subj.id && s.c && (key !== artistOf || !shares(s, subj))), fresh = cand.filter(s => !G.used.has(s.id));
     for (const s of similar(subj, fresh.length > 200 ? fresh : cand, h, extra)) {
       if (seen.has(key(s)) || !key(s)) continue;
       seen.add(key(s)); wrong.push(s);
@@ -320,7 +323,7 @@ function notByQuestion(i) {
   const top = arts.slice(0, Math.max(6, Math.round(arts.length * lerp(D.f0 + .2, D.f1, curve(i)))));
   const A = top[rnd(top.length)], seen = new Set();
   const three = shuffle([...A.l]).filter(s => !seen.has(s.t.toLowerCase()) && seen.add(s.t.toLowerCase())).slice(0, 3);
-  const odd = similar(three[0], distractors().filter(s => s.a.toLowerCase() !== three[0].a.toLowerCase() && !seen.has(s.t.toLowerCase())), h)[0];
+  const odd = similar(three[0], distractors().filter(s => !features(s, three[0].a) && !seen.has(s.t.toLowerCase())), h)[0];
   if (!odd) return null;
   (G.usedArtists ??= new Set()).add(A.l[0].a);
   return { type: 'notby', i, h, hp: Math.max(h, i / 14 * .6), fame: A.f, qv: { a: three[0].a }, answers: shuffle([...three, odd]).map(s => ({ s, ok: s === odd })) };
@@ -328,8 +331,20 @@ function notByQuestion(i) {
 
 // Interpret ohne „feat. …“, „The“ usw. (wie in songKey) – damit „Eminem“ und „Eminem feat. Rihanna“ als derselbe gelten
 const artistKey = a => songKey('', a).split('|')[0];
-// enthält der Interpret von s den Interpreten a (auch als Gast)? Dann taugt s nicht als falsche Antwort
-const features = (s, a) => { const k = artistKey(a); return artistKey(s.a) === k || (k.length > 3 && s.a.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '').includes(k)); };
+const artistOf = s => artistKey(s.a);
+// Alle Interpreten eines Songs (als Schlüssel): Hauptinterpret, Teile von „A & B“/„A feat. B“, Gäste im Titel („(feat. X)“)
+// und Mitwirkende laut Deezer (data/feat.json). Wer an einem Song beteiligt ist, taugt dort nicht als falsche Antwort.
+const SPLIT = /\s*(?:,|&|\+|\/|\bfeat\.?|\bft\.?|\bfeaturing\b|\bwith\b|\bx\b|\bund\b|\band\b|\bvs\.?)\s*/i;
+function credits(s) {
+  if (s._cr) return s._cr;
+  const names = [s.a, ...s.a.split(SPLIT), ...(FEAT.get(s.id) || [])];
+  const m = s.t.match(/[([](?:feat\.?|ft\.?|featuring|with|mit)\s+([^)\]]+)[)\]]/i);
+  if (m) names.push(...m[1].split(SPLIT));
+  return (s._cr = new Set(names.map(artistKey).filter(k => k.length > 1)));
+}
+const shares = (s, t) => { const b = credits(t); for (const k of credits(s)) if (b.has(k)) return true; return false; };
+// ist a (Name) an Song s beteiligt?
+const features = (s, a) => credits(s).has(artistKey(a));
 const baseQ = (type, i, extra) => { const h = hOf(i); return { type, i, h, hp: Math.max(h, i / 14 * .6), ...extra }; };
 const fameOf = list => list.reduce((n, s) => n + (FAME.get(s.id) ?? .5), 0) / list.length;
 // „Welcher dieser Songs ist von X?“: ein Song von X, drei von anderen (später: ähnliche Zeit und Sprache)
@@ -340,7 +355,7 @@ function byArtistQuestion(i) {
   const seen = new Set([subj.t.toLowerCase()]), wrong = [], arts = new Set([artistKey(subj.a)]);
   // falsche Antworten aus ähnlich bekannten Songs – unbekannte Namen würden die Lösung verraten
   const src = pool.length >= 150 ? pool : distractors();
-  for (const s of similar(subj, src.filter(s => !features(s, subj.a) && !features(subj, s.a)), h)) {
+  for (const s of similar(subj, src.filter(s => !shares(s, subj)), h)) {
     if (seen.has(s.t.toLowerCase()) || arts.has(artistKey(s.a))) continue;
     seen.add(s.t.toLowerCase()); arts.add(artistKey(s.a)); wrong.push(s);
     if (wrong.length === 3) break;

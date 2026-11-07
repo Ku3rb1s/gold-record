@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.10.7 – 07.11.2026
+- Fehler behoben: Bei Duetten kam der zweite Interpret als „falsche“ Antwort (z. B. Apache 207 bei „Komet“ von Udo Lindenberg & Apache 207). Jetzt sind alle Beteiligten eines Songs bekannt (Duette, Gäste, „feat.“) und tauchen nicht mehr als falsche Antwort auf
+
 ## 1.10.6 – 07.11.2026
 - Fünf neue Fragearten: „Wer singt das?“ (nur hören), „Welcher dieser Songs ist von …?“, „Welcher dieser Songs ist aus Jahr X?“, „Welcher Song ist NICHT aus den 80ern?“ und „Welches Wort fehlt im Titel?“ – jetzt 15 Fragearten, jede höchstens zweimal pro Runde
 
