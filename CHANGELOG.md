@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.10.5 – 07.11.2026
+- Spiele-Menü: Logo oben lange gedrückt halten (am Computer Rechtsklick) – zurück zur Jukebox oder direkt in ein anderes Spiel
+
 ## 1.10.4 – 07.11.2026
 - Jahre geprüft: Jetzt haben über 4.000 der neueren Songs ein mit MusicBrainz geprüftes Originaljahr (statt des Jahres einer späteren Neuauflage) – Jahresfragen werden dadurch fairer
 
