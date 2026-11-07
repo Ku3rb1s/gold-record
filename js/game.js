@@ -2,7 +2,7 @@
    Quiz-Leiter mit 15 Stufen: Jede richtige Antwort bringt eine Stufe höher, von der Kassette bis zum Diamanten.
    Gold (Stufe 5) und Platin (Stufe 10) sind sicher: Bei einem Fehler fällt man auf die letzte erreichte Sicherheitsstufe.
    Aussteigen geht jederzeit vor dem Antworten – dann bleibt die erreichte Stufe. */
-const APP_VERSION = '1.2.0', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
+const APP_VERSION = '1.3.0', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
@@ -26,7 +26,9 @@ const DIFF_INFO = {
   normal: 'Wird nach oben immer kniffliger: unbekanntere Songs, ähnlichere Antworten.',
   hard: 'Von Anfang an knifflig – nahe Jahreszahlen, ähnliche Songs, auch Album-Tracks.',
 };
-const JOKERS = ['fifty', 'people', 'phone', 'swap'];
+// Joker wie im Fernsehen: 50:50, Publikum, Telefon und Zusatzjoker (jemand aus dem Publikum steht auf)
+const JOKERS = ['fifty', 'people', 'phone', 'extra'];
+const EXTRA_NAMES = ['Lena', 'Murat', 'Sophie', 'Jonas', 'Aylin', 'Tom', 'Mia', 'Elias', 'Nora', 'Ben', 'Sara', 'Luca', 'Emma', 'Noah'];
 // Was der Freund am Telefon sagt – je nachdem, wie sicher er ist (0 unsicher … 2 ganz sicher)
 const PHONE_LINES = [
   'Puh, schwierig … ich würde {a} sagen, aber verlass dich nicht drauf.',
@@ -255,8 +257,6 @@ async function startGame(daily = false) {
   R = daily ? seeded('gold-record-' + day) : Math.random;
   G.types = pickTypes();
   G.qs = G.types.map((t, i) => makeQuestion(i, t));
-  // Ersatzfragen für den Joker „Frage tauschen“: gleiche Stufe, andere Frageart
-  G.spare = G.types.map((t, i) => { const alt = kinds().filter(k => k !== t); return makeQuestion(i, alt[rnd(alt.length)]); });
   R = Math.random;
   // nur ein Versuch pro Tag – auch wenn man mittendrin abbricht
   if (daily) LS.set('daily.' + day, { final: 0, row: '', done: false });
@@ -356,14 +356,8 @@ function useJoker(k) {
   const Q = G.q;
   G.jokers[k] = false;
   G.usedJokers = (G.usedJokers || 0) + 1;
-  if (k === 'swap') {
-    // Frage tauschen: gleiche Stufe, andere Frageart – bereits eingesetzte Joker bleiben verbraucht
-    stopTimer(); stop();
-    sound('joker');
-    renderJokers();
-    return nextQuestion(G.spare[G.level]);
-  }
   if (k === 'phone') { sound('joker'); renderJokers(); return phoneCall(); }
+  if (k === 'extra') { sound('joker'); renderJokers(); return extraJoker(); }
   if (k === 'fifty') {
     const wrong = shuffle(Q.answers.map((a, i) => i).filter(i => !Q.answers[i].ok && !G.hidden.has(i)));
     wrong.slice(0, 2).forEach(i => G.hidden.add(i));
@@ -393,9 +387,10 @@ const ansLabel = (Q, i) => {
   const a = Q.answers[i], L = LETTERS[i];
   return Q.type === 'year' ? `${L}: ${a.y}` : Q.type === 'artist' ? `${L}: ${a.s.a}` : Q.type === 'cover' ? L : Q.type === 'streams' ? `${L}: ${a.st.title}` : `${L}: ${a.s.t}`;
 };
+const bubble = (ic, who, text, extra = '') => `<div class="call"><span class="call-ic">${ic}</span><span class="call-tx"><b>${who}</b><span>${text}</span></span>${extra}</div>`;
 async function phoneCall() {
   const Q = G.q, box = $('#helpBox');
-  box.innerHTML = `<div class="call"><span class="call-ic">📞</span><span class="call-tx"><b>${tx('Telefon')}</b><span>${tx('Es klingelt …')}</span></span></div>`;
+  box.innerHTML = bubble('📞', tx('Telefonjoker'), tx('Es klingelt …'));
   await sleep(1400);
   if (!G || G.q !== Q) return;
   const vis = Q.answers.map((a, i) => i).filter(i => !G.hidden.has(i));
@@ -406,8 +401,27 @@ async function phoneCall() {
   const pick = knows || !others.length ? right : others[Math.floor(Math.random() * others.length)];
   const sure = knows ? (c > .72 ? 2 : c > .45 ? 1 : 0) : (Math.random() < .3 ? 1 : 0);
   const line = PHONE_LINES[sure];
-  box.innerHTML = `<div class="call"><span class="call-ic">📞</span><span class="call-tx"><b>${tx('Dein Musik-Freund am Telefon')}</b>
-    <span>„${tx(line, { a: `<b>${esc(ansLabel(Q, pick))}</b>` })}“</span></span><span class="call-sure s${sure}">${'●'.repeat(sure + 1)}${'○'.repeat(2 - sure)}</span></div>`;
+  box.innerHTML = bubble('📞', tx('Dein Musik-Freund am Telefon'), `„${tx(line, { a: `<b>${esc(ansLabel(Q, pick))}</b>` })}“`,
+    `<span class="call-sure s${sure}">${'●'.repeat(sure + 1)}${'○'.repeat(2 - sure)}</span>`);
+}
+/* Zusatzjoker: Wer im Publikum die Antwort zu wissen glaubt, steht auf. Steht niemand auf, behält man den Joker.
+   Wer aufsteht, ist sich sicher – liegt bei großen Hits fast immer richtig, bei unbekannten Songs öfter daneben. */
+async function extraJoker() {
+  const Q = G.q, box = $('#helpBox');
+  box.innerHTML = bubble('🙋', tx('Zusatzjoker'), tx('Wer die Antwort weiß, steht bitte auf …'));
+  await sleep(1600);
+  if (!G || G.q !== Q || G.locked) return;
+  const c = Math.min(.97, Math.max(.3, .97 - .4 * Q.fame - .3 * Q.hp));
+  if (Math.random() > .45 + .55 * c) {
+    G.jokers.extra = true; G.usedJokers--; renderJokers();
+    box.innerHTML = bubble('🪑', tx('Zusatzjoker'), tx('Niemand steht auf – du behältst deinen Zusatzjoker.'));
+    return;
+  }
+  const vis = Q.answers.map((a, i) => i).filter(i => !G.hidden.has(i));
+  const right = Q.answers.findIndex(a => a.ok), others = vis.filter(i => i !== right);
+  const pick = Math.random() < c || !others.length ? right : others[Math.floor(Math.random() * others.length)];
+  const name = EXTRA_NAMES[Math.floor(Math.random() * EXTRA_NAMES.length)];
+  box.innerHTML = bubble('🙋', tx('{n} aus dem Publikum', { n: name }), `„${tx('Ich bin mir sicher, das ist {a}.', { a: `<b>${esc(ansLabel(Q, pick))}</b>` })}“`);
 }
 function drawPoll() {
   $$('#answers .ans').forEach(b => {
@@ -418,13 +432,13 @@ function drawPoll() {
 
 /* ---------- Zeitlimit ----------
    Die Uhr startet, wenn die Hörprobe spielt (Laden zählt nicht) – spätestens nach 3 Sekunden. Bei Fragen ohne Song sofort.
-   „Nochmal hören“ setzt die Uhr zurück. Läuft sie ab, zählt das wie eine falsche Antwort. */
+   Läuft sie ab, zählt das wie eine falsche Antwort. */
 let timerRaf = 0, timerFallback = 0;
 function armTimer(restart = false) {
   stopTimer();
   const t = timeFor(G.level);
   $('#timebar').classList.toggle('hidden', !t);
-  if (!t) return;
+  if (!t) { G.tTotal = 0; return; }
   G.tEnd = 0; G.tTotal = t * 1000;
   drawTimer(1, G.tTotal);
   timerFallback = setTimeout(startTimer, G.q.song && (opt.auto || restart) ? 3000 : 400);
@@ -445,8 +459,8 @@ function startTimer() {
 function stopTimer() { cancelAnimationFrame(timerRaf); clearTimeout(timerFallback); }
 function drawTimer(k, left) {
   const tb = $('#timebar');
-  tb.querySelector('i').style.transform = `scaleX(${k})`;
-  tb.querySelector('span').textContent = Math.max(0, Math.ceil(left / 1000)) + ' s';
+  tb.querySelector('.arc').style.strokeDashoffset = 100 * (1 - k);
+  tb.querySelector('span').textContent = Math.max(0, Math.ceil(left / 1000));
   tb.classList.toggle('urgent', left < 8000);
 }
 player.addEventListener('playing', () => { if (G && G.q?.song && playingId === G.q.song.id && G.tTotal && !G.tEnd) startTimer(); });
@@ -467,7 +481,7 @@ async function choose(k) {
   const ok = k != null && Q.answers[k].ok;
   const right = Q.answers.findIndex(a => a.ok);
   btns[right].classList.add('right');
-  if (k != null && !ok) btns[k].classList.add('wrong');
+  if (k != null && !ok) btns[k].classList.add('wrong');   // bleibt orange (wie im Fernsehen) und bekommt ein ✗
   // Hörfrage: jetzt Titel und Cover zeigen; bei Jahr/Ältester/Streams die Zahlen dazuschreiben
   renderReveal();
   sound(ok ? 'ok' : 'miss');

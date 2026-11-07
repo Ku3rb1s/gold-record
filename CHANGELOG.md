@@ -1,5 +1,13 @@
 # Neuerungen
 
+## 1.3.0 – 07.11.2026
+- Joker heißen jetzt wie im Fernsehen: **50:50-Joker, Publikumsjoker, Telefonjoker** und neu der **Zusatzjoker**
+- **Zusatzjoker** statt „Frage tauschen“: Wer im Publikum die Antwort zu wissen glaubt, steht auf und sagt sie – steht niemand auf, behältst du den Joker
+- Neue Farben: tieferes Studio-Blau mit violettem Licht von unten, Antwortfelder mit Glanz und silbernem Rand, Buchstaben in Orange-Gold
+- **Runde Uhr** zwischen Frage und Antworten statt Zeitbalken – in den letzten Sekunden orange und pulsierend
+- Falsche Antwort bleibt **orange** mit ✗, die richtige blinkt **grün** – wie in der Show
+- Stufenleiter mit orange-goldenen Nummern und Markierung der aktuellen Stufe
+
 ## 1.2.0 – 07.11.2026
 - **Nochmal hören** ist kein Joker mehr, sondern geht **immer**: Knopf direkt an der Frage spielt die ganzen 30 Sekunden von vorn
 - Dafür **4 Joker**: 50:50, Publikum, Telefon und Frage tauschen
