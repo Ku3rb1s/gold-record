@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.7.1 – 07.11.2026
+- Kopfzeile aufgeräumt: Die Tägliche Challenge sitzt jetzt rechts neben den Einstellungen im gleichen Stil, und „Gold Record“ wird auch auf kleinen iPhones nie mehr abgeschnitten
+
 ## 1.7.0 – 07.11.2026
 - **Rund 4.000 Songs** statt 1.900 – davon über **1.100 deutsche** (Deutschpop, Deutschrap, Schlager, NDW, Deutschrock …) und mehr Rock, Hip-Hop, Dance und R&B.
   Coverversionen, Remixe, Medleys und sehr unbekannte Songs sind aussortiert
