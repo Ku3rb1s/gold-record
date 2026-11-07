@@ -158,9 +158,6 @@ button.big small{display:block;font-size:.75rem;font-weight:600;opacity:.75}
 .round-meta{margin-bottom:14px}
 
 /* Frage-Feld: länglich mit Spitzen, wie die Antworten */
-.lz{--tip:22px;position:relative;isolation:isolate;clip-path:polygon(0 50%,var(--tip) 0,calc(100% - var(--tip)) 0,100% 50%,calc(100% - var(--tip)) 100%,var(--tip) 100%);
-  background:linear-gradient(180deg,var(--edge2),var(--edge) 50%,var(--edge3))}
-.lz::before{content:"";position:absolute;inset:2px;z-index:-1;clip-path:inherit;background:linear-gradient(180deg,var(--box1),var(--box2))}
 .q-box{min-height:112px;display:grid;align-items:center;position:relative}
 .q-box::before,.arow::before{content:"";position:absolute;left:-24px;right:-24px;top:50%;height:2px;z-index:0;
   background:linear-gradient(90deg,transparent,var(--edge) 6%,var(--edge) 94%,transparent);opacity:.45}
@@ -382,3 +379,6 @@ html.ios .vol-game{justify-content:center}
   .replay{padding:.55em}
   .foot{flex-direction:column;align-items:stretch;gap:10px}
 }
+/* Kopfzeile: Ist die Challenge-Pille sichtbar, zeigt „Einstellungen“ nur das Symbol – sonst wird „Gold Record“ abgeschnitten */
+header:has(.daily-hdr:not(.hidden)) #btnSettings .lbl{display:none}
+header:has(.daily-hdr:not(.hidden)) #btnSettings{width:44px;height:44px;padding:0;border-radius:50%;justify-content:center}

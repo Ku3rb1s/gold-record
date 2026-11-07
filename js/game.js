@@ -2,7 +2,7 @@
    Quiz-Leiter mit 15 Stufen: Jede richtige Antwort bringt eine Stufe höher, von der Kassette bis zum Diamanten.
    Gold (Stufe 5) und Platin (Stufe 10) sind sicher: Bei einem Fehler fällt man auf die letzte erreichte Sicherheitsstufe.
    Aussteigen geht jederzeit vor dem Antworten – dann bleibt die erreichte Stufe. */
-const APP_VERSION = '1.6.0', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
+const APP_VERSION = '1.6.1', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
@@ -526,7 +526,7 @@ let timerRaf = 0, timerFallback = 0;
 function armTimer(restart = false) {
   stopTimer();
   const t = timeFor(G.level);
-  $('#timebar').classList.toggle('hidden', !t);
+  $('#timer').classList.toggle('hidden', !t);
   if (!t) { G.tTotal = 0; return; }
   G.tEnd = 0; G.tTotal = t * 1000; G.lastTick = 0;
   drawTimer(1, G.tTotal);
@@ -550,7 +550,7 @@ function startTimer() {
 }
 function stopTimer() { cancelAnimationFrame(timerRaf); clearTimeout(timerFallback); }
 function drawTimer(k, left) {
-  const tb = $('#timebar');
+  const tb = $('#timer');
   tb.querySelector('.arc').style.strokeDashoffset = 100 * (1 - k);
   tb.querySelector('span').textContent = Math.max(0, Math.ceil(left / 1000));
   tb.classList.toggle('urgent', left < 8000);

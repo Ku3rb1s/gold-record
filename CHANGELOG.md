@@ -1,5 +1,9 @@
 # Neuerungen
 
+## 1.6.1 – 07.11.2026
+- Kopfzeile: „Gold Record“ wird neben der Challenge-Pille nicht mehr abgeschnitten (Einstellungen dort nur als Symbol)
+- Aufgeräumt: ungenutzte Stile entfernt; geprüft mit 312 Probespielen (4.680 Fragen) über alle Themen und Schwierigkeiten – ohne Fehler
+
 ## 1.6.0 – 07.11.2026
 - **Genre-Themen:** Pop, Rock, Hip-Hop, Dance & Electro, R&B & Soul (Genres von Deezer)
 - **Startseite neu:** zwei ruhige Blöcke „Deine Runde“ und „So läuft's“ statt vieler Kästen, Joker als Plaketten-Reihe, Stufen zum Aufklappen
