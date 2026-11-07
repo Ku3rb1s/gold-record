@@ -7,7 +7,8 @@ const fs = require('fs'), path = require('path');
 const root = path.join(__dirname, '..');
 const songs = JSON.parse(fs.readFileSync(path.join(root, 'data/songs.json'), 'utf8')).songs;
 const bill = JSON.parse(fs.readFileSync(path.join(root, 'data/billions.json'), 'utf8')).tracks;
-const norm = s => String(s).toLowerCase().replace(/\(.*?\)|\[.*?\]|feat\..*$|ft\..*$/g, '').replace(/[^a-z0-9äöüß]+/g, ' ').trim();
+// Zusätze in Klammern UND nach „ - “ zählen nicht („Numb - Unshatter Film Soundtrack“ ist dieselbe Nummer wie „Numb“)
+const norm = s => String(s).toLowerCase().replace(/\(.*?\)|\[.*?\]|feat\..*$|ft\..*$/g, '').replace(/\s+-\s+.*$/, '').replace(/[^a-z0-9äöüß]+/g, ' ').trim();
 const have = new Set(songs.flatMap(s => [String(s.id), norm(s.t) + '|' + norm(s.a)]));
 const cacheF = path.join(root, 'data/extra-cache.json');
 const cache = fs.existsSync(cacheF) ? JSON.parse(fs.readFileSync(cacheF, 'utf8')) : {};

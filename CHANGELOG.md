@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.10.14 – 07.11.2026
+- „Numb“ von Linkin Park kam doppelt vor (zusätzlich als Film-Fassung von 2026) – entfernt; dazu zwei neue Hits aus der aktuellen Milliarden-Liste (Get You, Cinnamon Girl)
+
 ## 1.10.13 – 07.11.2026
 - Zwei Jahreszahlen korrigiert: „What's Up?“ (4 Non Blondes) 1992 und „You're Beautiful“ (James Blunt) 2004 – jeweils das Jahr des Albums, das vor der Single erschien
 
