@@ -32,7 +32,7 @@ for (const m of code.matchAll(/\btx\(/g)) {
   for (const s of arg.matchAll(/'((?:\\.|[^'\\])*)'/g)) add(unq(s[1]));
 }
 // 3) Tabellen, deren Texte über tx(Variable) laufen: Namen der Songs/Schwierigkeiten/Modi, Modus-Infos, Farbthemen
-for (const tbl of ['POOL_NAMES', 'TIMER_NAMES', 'TIMER_INFO']) {
+for (const tbl of ['POOL_NAMES', 'TIMER_NAMES', 'TIMER_INFO', 'DIFF_NAMES', 'DIFF_INFO']) {
   const m = code.match(new RegExp('const ' + tbl + ' = \\{([\\s\\S]*?)\\};'));
   if (m) for (const s of m[1].matchAll(/:\s*'((?:\\.|[^'\\])*)'/g)) add(unq(s[1]));
 }
@@ -41,8 +41,10 @@ for (const m of code.matchAll(/\['(?:graphit|ozean|wald|abend|lila|oled)', '([^'
 for (const k of [...keys]) if (/^(https?:|#)/.test(k)) keys.delete(k);
 ['de', 'intl'].forEach(k => keys.delete(k));
 // Stufen-Namen (STAGES) und Fragetexte (TYPES … q: '…') laufen ebenfalls über tx(Variable)
-const stg = code.match(/const STAGES = \[([\s\S]*?)\];/);
-if (stg) for (const s of stg[1].matchAll(/'((?:\\.|[^'\\])*)'/g)) add(unq(s[1]));
+for (const arr of ['STAGES', 'PHONE_LINES']) {
+  const stg = code.match(new RegExp('const ' + arr + ' = \\[([\\s\\S]*?)\\];'));
+  if (stg) for (const s of stg[1].matchAll(/'((?:\\.|[^'\\])*)'/g)) add(unq(s[1]));
+}
 for (const s of code.matchAll(/\bq: '((?:\\.|[^'\\])*)'/g)) add(unq(s[1]));
 ['Gold', 'Single', 'Top 40', 'Top 10', 'Demo-Tape', 'Mixtape', 'Hall of Fame', 'Radio-Hit'].forEach(add); // evtl. gleich, aber je Sprache prüfbar
 

@@ -2,7 +2,7 @@
    Quiz-Leiter mit 15 Stufen: Jede richtige Antwort bringt eine Stufe höher, von der Kassette bis zum Diamanten.
    Gold (Stufe 5) und Platin (Stufe 10) sind sicher: Bei einem Fehler fällt man auf die letzte erreichte Sicherheitsstufe.
    Aussteigen geht jederzeit vor dem Antworten – dann bleibt die erreichte Stufe. */
-const APP_VERSION = '1.0.0', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
+const APP_VERSION = '1.1.0', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
@@ -12,13 +12,34 @@ const STAGES = ['Demo-Tape', 'Kassette', 'Mixtape', 'Single', 'Gold', 'Radio-Hit
 const SAFE = [5, 10];             // nach so vielen richtigen Antworten ist man sicher
 const MEDAL = n => n >= 15 ? '💎' : n >= 10 ? '💿' : n >= 5 ? '📀' : n >= 1 ? '📼' : '🎵';
 const POOL_NAMES = { all: 'Alle', intl: 'International', de: 'Deutsch' };
+/* Schwierigkeit (unabhängig von den Jokern – die gibt es immer alle):
+   h0/h1 = Ähnlichkeit der falschen Antworten bei Frage 1 bzw. 15 (0 = zufällig, 1 = sehr ähnlich)
+   f0/f1 = Anteil der bekanntesten Songs (nach Deezer-Rang), aus dem bei Frage 1 bzw. 15 gezogen wird */
+const DIFF = {
+  easy: { h0: 0, h1: .55, f0: .12, f1: .5 },
+  normal: { h0: 0, h1: 1, f0: .18, f1: 1 },
+  hard: { h0: .35, h1: 1, f0: .4, f1: 1 },
+};
+const DIFF_NAMES = { easy: 'Leicht', normal: 'Normal', hard: 'Schwer' };
+const DIFF_INFO = {
+  easy: 'Nur große Hits, die falschen Antworten liegen weit daneben – zum Reinkommen.',
+  normal: 'Wird nach oben immer kniffliger: unbekanntere Songs, ähnlichere Antworten.',
+  hard: 'Von Anfang an knifflig – nahe Jahreszahlen, ähnliche Songs, auch Album-Tracks.',
+};
+const JOKERS = ['fifty', 'people', 'phone', 'swap', 'replay'];
+// Was der Freund am Telefon sagt – je nachdem, wie sicher er ist (0 unsicher … 2 ganz sicher)
+const PHONE_LINES = [
+  'Puh, schwierig … ich würde {a} sagen, aber verlass dich nicht drauf.',
+  'Ich glaube, es ist {a}.',
+  'Da bin ich mir ganz sicher: {a}!',
+];
 const TIMER_NAMES = { on: 'Mit Zeitlimit', off: 'Ohne Zeitlimit' };
 const TIMER_INFO = {
   on: 'Frage 1–5 ohne Uhr, Frage 6–10 je 45 Sekunden, ab Frage 11 je 30 Sekunden.',
   off: 'Keine Uhr – denk so lange nach, wie du willst.',
 };
 // Zeitlimit je Frage (Index 0–14) in Sekunden
-const timeFor = i => opt.timer === 'off' ? 0 : i >= 10 ? 30 : i >= 5 ? 45 : 0;
+const timeFor = i => cfg().timer === 'off' ? 0 : i >= 10 ? 30 : i >= 5 ? 45 : 0;
 const SNIPPET = 15;               // so viele Sekunden spielt eine Hörprobe normal (Joker „Nochmal hören“: die ganzen 30)
 
 const LOC = () => ({ de: 'de-DE', en: 'en-GB', fr: 'fr-FR', es: 'es-ES', nb: 'nb-NO' }[curLang] || 'de-DE');
@@ -30,14 +51,27 @@ const LS = {
   get(k, d) { try { const v = localStorage.getItem('gr.' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
   set(k, v) { try { localStorage.setItem('gr.' + k, JSON.stringify(v)); } catch {} },
 };
-const opt = { pool: LS.get('pool', 'all'), timer: LS.get('timer', 'on'), auto: LS.get('auto', true), sfx: LS.get('sfx', true), vol: LS.get('vol', 80), muted: false };
+const opt = { pool: LS.get('pool', 'all'), diff: LS.get('diff', 'normal'), timer: LS.get('timer', 'on'), auto: LS.get('auto', true), sfx: LS.get('sfx', true), vol: LS.get('vol', 80), muted: false };
 if (!POOL_NAMES[opt.pool]) opt.pool = 'all';
+if (!DIFF[opt.diff]) opt.diff = 'normal';
 if (!TIMER_NAMES[opt.timer]) opt.timer = 'on';
+// Im Spiel gelten die Einstellungen der Runde (Tägliche Challenge: immer Alle · Normal · mit Zeitlimit)
+const cfg = () => G?.daily ? { pool: 'all', diff: 'normal', timer: 'on' } : opt;
+const bestKey = (p = opt.pool, d = opt.diff) => `best.${p}.${d}`;
 
-const modeLabel = () => [POOL_NAMES[opt.pool], TIMER_NAMES[opt.timer]].map(s => tx(s)).join(' · ');
+const modeLabel = () => G?.daily ? tx('Tägliche Challenge') + ' · ' + G.day
+  : [POOL_NAMES[opt.pool], DIFF_NAMES[opt.diff], TIMER_NAMES[opt.timer]].map(s => tx(s)).join(' · ');
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-const rnd = n => Math.floor(Math.random() * n);
+/* Zufall: normal Math.random; bei der Täglichen Challenge ein fester Startwert aus dem Datum,
+   damit alle am selben Tag dieselben 15 Fragen bekommen (mulberry32) */
+let R = Math.random;
+function seeded(str) {
+  let a = 0; for (const c of str) a = Math.imul(a ^ c.charCodeAt(0), 2654435761) >>> 0;
+  return () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+const rnd = n => Math.floor(R() * n);
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const cover = (s, size = 500) => s.c ? `https://e-cdns-images.dzcdn.net/images/cover/${s.c}/${size}x${size}-000000-80-0-0.jpg` : '';
 const lerp = (a, b, k) => a + (b - a) * k;
@@ -69,36 +103,38 @@ const TYPES = {
   oldest: { q: 'Welcher dieser Songs ist am ältesten?' },
   streams: { q: 'Welcher Song hat bei Spotify die meisten Streams?' },
 };
-// Anteil der bekanntesten Songs je Frage
-const FAME_TOP = [.18, .22, .26, .3, .35, .42, .5, .56, .62, .7, .78, .85, .92, 1, 1];
-
+const hOf = i => { const D = DIFF[cfg().diff]; return lerp(D.h0, D.h1, i / 14); };
 function famePool(i) {
-  const all = poolOf(opt.pool).sort((a, b) => (b.r || 0) - (a.r || 0));
-  return all.slice(0, Math.max(60, Math.round(all.length * FAME_TOP[i])));
+  const D = DIFF[cfg().diff];
+  const all = poolOf(cfg().pool).sort((a, b) => (b.r || 0) - (a.r || 0) || a.id - b.id);
+  return all.slice(0, Math.max(60, Math.round(all.length * lerp(D.f0, D.f1, i / 14))));
 }
 // Ähnlichste Kandidaten zuerst – bei leichten Fragen überdeckt Zufall die Ähnlichkeit
 function similar(subj, cands, h, extra = () => 0) {
-  return cands.map(s => ({ s, d: Math.abs(s.y - subj.y) + (s.de !== subj.de ? 8 : 0) + extra(s) + Math.random() * lerp(60, 4, h) }))
+  return cands.map(s => ({ s, d: Math.abs(s.y - subj.y) + (s.de !== subj.de ? 8 : 0) + extra(s) + R() * lerp(60, 4, h) }))
     .sort((a, b) => a.d - b.d).map(x => x.s);
 }
+const kinds = () => Object.keys(TYPES).filter(t => t !== 'streams' || (STREAMS.length >= 40 && cfg().pool !== 'de'));
 function pickTypes() {
   // abwechslungsreich: jeder Typ kommt 2–3-mal vor, nicht zweimal hintereinander
-  const kinds = Object.keys(TYPES).filter(t => t !== 'streams' || (STREAMS.length >= 40 && opt.pool !== 'de'));
+  const ks = kinds();
   const out = [];
   for (let i = 0; i < 15; i++) {
-    let c = shuffle(kinds.filter(k => k !== out[i - 1] && out.filter(x => x === k).length < 3));
+    let c = shuffle(ks.filter(k => k !== out[i - 1] && out.filter(x => x === k).length < 3));
     // zum Einstieg lieber Hören und Interpret
     if (i < 2) c = c.filter(k => k === 'listen' || k === 'artist').concat(c);
-    out.push(c[0] || kinds[rnd(kinds.length)]);
+    out.push(c[0] || ks[rnd(ks.length)]);
   }
   return out;
 }
 
 function makeQuestion(i, type) {
-  const h = i / 14, pool = famePool(i);
+  const h = hOf(i), pool = famePool(i);
   const free = pool.filter(s => !G.used.has(s.id));
   const subj = free[rnd(free.length)] || pool[rnd(pool.length)];
   const Q = { type, i, h, fame: FAME.get(subj.id) ?? .5 };
+  // Schwierigkeit fürs Publikum/Telefon: Frage-Nummer zählt mit, damit auch „Leicht“ nach oben etwas unsicherer wird
+  Q.hp = Math.max(h, i / 14 * .6);
   if (type === 'listen' || type === 'artist' || type === 'cover') {
     Q.song = subj;
     const key = type === 'listen' ? s => s.t.toLowerCase() : type === 'artist' ? s => s.a.toLowerCase() : s => s.c;
@@ -209,24 +245,36 @@ function applyVol() {
 
 /* ---------- Spiel ---------- */
 let G = null;
-async function startGame() {
+async function startGame(daily = false) {
   try { await loadData(); } catch { return toast(tx('Die Songliste konnte nicht geladen werden.')); }
-  G = { level: 0, used: new Set(), types: pickTypes(), log: [], jokers: { fifty: true, replay: true, people: true }, best: LS.get('best.' + opt.pool, 0) };
+  const day = today();
+  if (daily && LS.get('daily.' + day)) { renderHome(); return toast(tx('Die heutige Challenge hast du schon gespielt – morgen gibt es neue Fragen.')); }
+  stop();
+  G = { daily, day, level: 0, used: new Set(), log: [], jokers: Object.fromEntries(JOKERS.map(k => [k, true])) };
+  // Alle Fragen gleich zu Beginn bauen – bei der Täglichen Challenge mit dem Startwert des Tages
+  R = daily ? seeded('gold-record-' + day) : Math.random;
+  G.types = pickTypes();
+  G.qs = G.types.map((t, i) => makeQuestion(i, t));
+  // Ersatzfragen für den Joker „Frage tauschen“: gleiche Stufe, andere Frageart
+  G.spare = G.types.map((t, i) => { const alt = kinds().filter(k => k !== t); return makeQuestion(i, alt[rnd(alt.length)]); });
+  R = Math.random;
+  // nur ein Versuch pro Tag – auch wenn man mittendrin abbricht
+  if (daily) LS.set('daily.' + day, { final: 0, row: '', done: false });
   show('game');
   nextQuestion();
 }
 const safeOf = n => SAFE.filter(s => s <= n).pop() || 0;
 const stageName = n => n ? tx(STAGES[n - 1]) : tx('Noch keine Stufe');
 
-async function nextQuestion() {
+async function nextQuestion(Q = G.qs[G.level]) {
   const i = G.level;
-  let Q = makeQuestion(i, G.types[i]);
   // Hörfrage ohne Hörprobe (Deezer liefert keine) → andere Frage
   if (TYPES[Q.type].blind) {
     try { await previewOf(Q.song); } catch { Q = makeQuestion(i, 'artist'); }
   }
   if (!G) return;
   G.q = Q; G.locked = false; G.hidden = new Set(); G.replayed = false; G.poll = null;
+  $('#helpBox').innerHTML = '';
   if (Q.song) previewOf(Q.song).catch(() => {});
   renderLadder();
   renderQuestion(true);
@@ -271,7 +319,8 @@ function renderQuestion(fresh = false) {
   } else subj = `<div class="q-only">${tx(T.q)}</div>`;
   $('#qBox').innerHTML = subj;
   $('#answers').className = 'answers t-' + Q.type;
-  $('#answers').innerHTML = Q.answers.map(answerHtml).join('');
+  // je zwei Antworten in einer Reihe – die Reihe liegt auf einer durchgehenden Linie
+  $('#answers').innerHTML = [0, 2].map(r => `<div class="arow">${Q.answers.slice(r, r + 2).map((a, j) => answerHtml(a, r + j)).join('')}</div>`).join('');
   if (fresh) $('#qBox').classList.remove('enter'), void $('#qBox').offsetWidth, $('#qBox').classList.add('enter');
   for (const k of G.hidden) $(`#answers [data-k="${k}"]`).classList.add('gone');
   if (G.poll) drawPoll();
@@ -295,11 +344,11 @@ function renderWalk() {
 
 /* ---------- Joker ---------- */
 function renderJokers() {
-  const can = k => G && G.jokers[k] && !G.locked;
-  $('#jk50').disabled = !can('fifty');
-  $('#jkReplay').disabled = !can('replay') || !G.q.song;
-  $('#jkPeople').disabled = !can('people');
-  for (const [id, k] of [['#jk50', 'fifty'], ['#jkReplay', 'replay'], ['#jkPeople', 'people']]) $(id).classList.toggle('used', !G?.jokers[k]);
+  for (const b of $$('#jokers [data-jk]')) {
+    const k = b.dataset.jk;
+    b.disabled = !G || !G.jokers[k] || G.locked || (k === 'replay' && !G.q?.song);
+    b.classList.toggle('used', !G?.jokers[k]);
+  }
 }
 function useJoker(k) {
   if (!G || G.locked || !G.jokers[k]) return;
@@ -307,6 +356,14 @@ function useJoker(k) {
   if (k === 'replay' && !Q.song) return;
   G.jokers[k] = false;
   G.usedJokers = (G.usedJokers || 0) + 1;
+  if (k === 'swap') {
+    // Frage tauschen: gleiche Stufe, andere Frageart – bereits eingesetzte Joker bleiben verbraucht
+    stopTimer(); stop();
+    sound('joker');
+    renderJokers();
+    return nextQuestion(G.spare[G.level]);
+  }
+  if (k === 'phone') { sound('joker'); renderJokers(); return phoneCall(); }
   if (k === 'fifty') {
     const wrong = shuffle(Q.answers.map((a, i) => i).filter(i => !Q.answers[i].ok && !G.hidden.has(i)));
     wrong.slice(0, 2).forEach(i => G.hidden.add(i));
@@ -328,12 +385,33 @@ function useJoker(k) {
 function audience() {
   const Q = G.q;
   const vis = Q.answers.map((a, i) => i).filter(i => !G.hidden.has(i));
-  const pc = Math.max(.22, .82 - .4 * Q.fame - .25 * Q.h);
+  const pc = Math.max(.22, .82 - .4 * Q.fame - .25 * Q.hp);
   const w = vis.map(i => Q.answers[i].ok ? pc * (0.75 + Math.random() * .5) * vis.length / 2 : (1 - pc) * (0.3 + Math.random()));
   const sum = w.reduce((a, b) => a + b, 0);
   const pct = w.map(x => Math.round(x / sum * 100));
   pct[pct.indexOf(Math.max(...pct))] += 100 - pct.reduce((a, b) => a + b, 0);
   return Object.fromEntries(vis.map((i, k) => [i, pct[k]]));
+}
+// Telefon: ein Musik-Freund nennt eine Antwort. Wie sicher er ist (und ob er recht hat), hängt von Bekanntheit und Stufe ab
+const ansLabel = (Q, i) => {
+  const a = Q.answers[i], L = LETTERS[i];
+  return Q.type === 'year' ? `${L}: ${a.y}` : Q.type === 'artist' ? `${L}: ${a.s.a}` : Q.type === 'cover' ? L : Q.type === 'streams' ? `${L}: ${a.st.title}` : `${L}: ${a.s.t}`;
+};
+async function phoneCall() {
+  const Q = G.q, box = $('#helpBox');
+  box.innerHTML = `<div class="call"><span class="call-ic">📞</span><span class="call-tx"><b>${tx('Telefon')}</b><span>${tx('Es klingelt …')}</span></span></div>`;
+  await sleep(1400);
+  if (!G || G.q !== Q) return;
+  const vis = Q.answers.map((a, i) => i).filter(i => !G.hidden.has(i));
+  const right = Q.answers.findIndex(a => a.ok);
+  const c = Math.min(.95, Math.max(.25, .95 - .45 * Q.fame - .35 * Q.hp));
+  const knows = Math.random() < c;
+  const others = vis.filter(i => i !== right);
+  const pick = knows || !others.length ? right : others[Math.floor(Math.random() * others.length)];
+  const sure = knows ? (c > .72 ? 2 : c > .45 ? 1 : 0) : (Math.random() < .3 ? 1 : 0);
+  const line = PHONE_LINES[sure];
+  box.innerHTML = `<div class="call"><span class="call-ic">📞</span><span class="call-tx"><b>${tx('Dein Musik-Freund am Telefon')}</b>
+    <span>„${tx(line, { a: `<b>${esc(ansLabel(Q, pick))}</b>` })}“</span></span><span class="call-sure s${sure}">${'●'.repeat(sure + 1)}${'○'.repeat(2 - sure)}</span></div>`;
 }
 function drawPoll() {
   $$('#answers .ans').forEach(b => {
@@ -441,11 +519,16 @@ function endGame(how) {
   stop(); stopTimer();
   const final = how === 'fall' ? G.fell : G.level;
   G.final = final; G.how = how;
-  const best = LS.get('best.' + opt.pool, 0), isBest = final > best;
-  if (isBest) LS.set('best.' + opt.pool, final);
+  // Tägliche Challenge zählt nicht für die Rekorde je Einstellung, sondern wird für den Tag gemerkt
+  const best = G.daily ? 0 : LS.get(bestKey(), 0), isBest = !G.daily && final > best;
+  if (isBest) LS.set(bestKey(), final);
+  if (G.daily) {
+    LS.set('daily.' + G.day, { final, row: shareRow(), done: true });
+    const dl = LS.get('dailyLog', {}); dl[G.day] = final; LS.set('dailyLog', dl);
+  }
   recordStats(G);
   $('#endMode').textContent = modeLabel();
-  $('#endBest').textContent = tx('Rekord: {s}', { s: stageName(Math.max(best, final)) });
+  $('#endBest').textContent = G.daily ? tx('Serie: {n} Tage', { n: dailyStreak() }) : tx('Rekord: {s}', { s: stageName(Math.max(best, final)) });
   $('#endMedal').textContent = MEDAL(final);
   $('#endStage').textContent = stageName(final);
   $('#endKick').textContent = final ? tx('Stufe {n} von 15', { n: final }) : tx('Leider');
@@ -465,12 +548,20 @@ function endGame(how) {
   show('end');
 }
 
+const shareRow = () => G.log.map(l => l.ok ? (SAFE.includes(l.Q.i + 1) ? '🟨' : '🟩') : '🟥').join('') + (G.how === 'walk' ? '🚪' : '');
 function shareText() {
-  const row = G.log.map(l => l.ok ? (SAFE.includes(l.Q.i + 1) ? '🟨' : '🟩') : '🟥').join('');
-  return `Gold Record ${MEDAL(G.final)} ${stageName(G.final)} (${G.final}/15)\n${modeLabel()}\n${row}\n${SITE}`;
+  return `Gold Record ${MEDAL(G.final)} ${stageName(G.final)} (${G.final}/15)\n${modeLabel()}\n${shareRow()}\n${SITE}`;
 }
-async function shareResult() {
-  const text = shareText();
+// Tage in Folge, an denen die Tägliche Challenge gespielt wurde (bis heute bzw. gestern)
+function dailyStreak() {
+  const dl = LS.get('dailyLog', {}), d = new Date();
+  const key = x => `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`;
+  if (!(key(d) in dl)) d.setDate(d.getDate() - 1);
+  let n = 0;
+  while (key(d) in dl) { n++; d.setDate(d.getDate() - 1); }
+  return n;
+}
+async function shareResult(text = shareText()) {
   try {
     if (navigator.share) await navigator.share({ text });
     else { await navigator.clipboard.writeText(text); toast(tx('Ergebnis kopiert')); }
@@ -500,7 +591,10 @@ function renderStats() {
     [tx('Joker eingesetzt'), fmtN(st.jokers)],
   ];
   const types = Object.keys(TYPES).filter(t => st.types[t]).map(t => [tx(TYPES[t].q), pc(...st.types[t])]);
-  const bests = Object.keys(POOL_NAMES).map(p => [tx(POOL_NAMES[p]), LS.get('best.' + p, 0)]).filter(x => x[1]).map(([k, v]) => [k, stageName(v)]);
+  const bests = [];
+  for (const p in POOL_NAMES) for (const d in DIFF) { const v = LS.get(bestKey(p, d), 0); if (v) bests.push([tx(POOL_NAMES[p]) + ' · ' + tx(DIFF_NAMES[d]), stageName(v)]); }
+  const dl = LS.get('dailyLog', {});
+  if (Object.keys(dl).length) rows.push([tx('Tägliche Challenge'), tx('{n} gespielt', { n: Object.keys(dl).length }) + ' · ' + tx('Serie: {n} Tage', { n: dailyStreak() })]);
   const grp = r => `<div class="group">${r.map(([k, v]) => `<div class="cell"><span class="grow">${k}</span><b>${v}</b></div>`).join('')}</div>`;
   $('#statsBox').innerHTML = `<div style="margin-top:14px">${grp(rows)}</div>`
     + (types.length ? `<div class="group-h">${tx('Trefferquote je Frage')}</div>${grp(types)}` : '')
@@ -540,9 +634,17 @@ function show(id) {
 }
 function renderHome() {
   const segOn = (id, v) => $$(`#${id} button`).forEach(b => b.classList.toggle('on', b.dataset.v === v));
-  segOn('setPool', opt.pool); segOn('setTimer', opt.timer);
+  segOn('setPool', opt.pool); segOn('setTimer', opt.timer); segOn('setDiff', opt.diff);
   $('#timerInfo').textContent = tx(TIMER_INFO[opt.timer]);
-  const best = LS.get('best.' + opt.pool, 0);
+  $('#diffInfo').textContent = tx(DIFF_INFO[opt.diff]);
+  // Tägliche Challenge: schon gespielt? Dann Ergebnis + Teilen statt Start
+  const d = LS.get('daily.' + today());
+  $('#dailyBtn').classList.toggle('hidden', !!d);
+  $('#dailyDone').classList.toggle('hidden', !d);
+  if (d) $('#dailyRes').innerHTML = `${MEDAL(d.final)} <b>${stageName(d.final)}</b> (${d.final}/15) <span data-no-tx>${d.row || ''}</span>`;
+  const sk = dailyStreak();
+  $('#dailyStreak').textContent = sk ? '🔥 ' + tx('Serie: {n} Tage', { n: sk }) : tx('Jeden Tag neue 15 Fragen – für alle gleich');
+  const best = LS.get(bestKey(), 0);
   $('#bestPill').textContent = best ? `🏆 ${tx('Rekord: {s}', { s: stageName(best) })}` : tx('Noch kein Rekord');
   renderLadder($('#homeLadder'), best, false);
   if (SONGS.length) {
@@ -608,13 +710,19 @@ async function renderChanges() {
 const segPick = (id, fn) => { $('#' + id).onclick = e => { const b = e.target.closest('button'); if (b) { fn(b.dataset.v); renderHome(); } }; };
 segPick('setPool', v => { opt.pool = v; LS.set('pool', v); });
 segPick('setTimer', v => { opt.timer = v; LS.set('timer', v); });
-$('#startBtn').onclick = startGame;
-$('#againBtn').onclick = startGame;
+segPick('setDiff', v => { opt.diff = v; LS.set('diff', v); });
+$('#startBtn').onclick = () => startGame(false);
+$('#dailyBtn').onclick = () => startGame(true);
+$('#dailyShare').onclick = () => { const d = LS.get('daily.' + today()); if (d) shareResult(`Gold Record – ${tx('Tägliche Challenge')} ${today()}
+${MEDAL(d.final)} ${stageName(d.final)} (${d.final}/15)
+${d.row}
+${SITE}`); };
+$('#againBtn').onclick = () => startGame(false);
 $('#answers').addEventListener('click', e => { const b = e.target.closest('.ans'); if (b && !b.disabled) choose(+b.dataset.k); });
 $('#qBox').addEventListener('click', e => { if (e.target.closest('.qdisc') && G?.q?.song) toggle(G.q.song); });
 $('#jokers').addEventListener('click', e => { const b = e.target.closest('[data-jk]'); if (b && !b.disabled) useJoker(b.dataset.jk); });
 $('#btnWalk').onclick = () => { if (G && !G.locked && G.level && confirm(tx('Aussteigen und {s} behalten?', { s: tx(STAGES[G.level - 1]) }))) endGame('walk'); };
-$('#shareBtn').onclick = shareResult;
+$('#shareBtn').onclick = () => shareResult();
 const goHome = () => { stop(); stopTimer(); G = null; renderHome(); show('home'); };
 function leave() {
   if (G && !G.ended && G.level > 0 && !$('#game').classList.contains('hidden') && !confirm(tx('Spiel beenden? Deine Stufe geht verloren.'))) return;
