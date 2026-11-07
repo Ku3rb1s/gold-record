@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.10.3 – 07.11.2026
+- Schnellerer Start nach Updates: Die Songliste bleibt im Speicher des Handys und wird nur neu geladen, wenn sich die Songs wirklich geändert haben
+
 ## 1.10.2 – 07.11.2026
 - Bestenliste: Machst du mit, landen Rekorde und Serien jetzt direkt nach dem Spielen in der Bestenliste – ohne erst die Jukebox zu öffnen
 

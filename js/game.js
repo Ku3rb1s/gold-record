@@ -2,7 +2,7 @@
    Quiz-Leiter mit 15 Stufen: Jede richtige Antwort bringt eine Stufe höher, von der Kassette bis zum Diamanten.
    Gold (Stufe 5) und Platin (Stufe 10) sind sicher: Bei einem Fehler fällt man auf die letzte erreichte Sicherheitsstufe.
    Aussteigen geht jederzeit vor dem Antworten – dann bleibt die erreichte Stufe. */
-const APP_VERSION = '1.10.2', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
+const APP_VERSION = '1.10.3', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
@@ -107,17 +107,21 @@ addEventListener('error', e => { const i = e.target; if (i?.tagName === 'IMG' &&
 const lerp = (a, b, k) => a + (b - a) * k;
 
 /* ---------- Daten ---------- */
+// Eigene Versionsnummer für die Songdaten (data/*.json), unabhängig von APP_VERSION: So bleiben die rund 375 KB bei einem
+// normalen Update im Zwischenspeicher des Handys. Bei GEÄNDERTEN Songdaten DATA_V erhöhen – sonst sieht man sie erst beim
+// übernächsten Öffnen (der Zwischenspeicher lädt sie im Hintergrund trotzdem nach, siehe sw.js).
+const DATA_V = 'd1';
 let SONGS = [], STREAMS = [], FAME = new Map(), GENRE = new Map();
 async function loadData() {
   if (SONGS.length) return;
   const [a, b, x] = await Promise.all([
-    fetch('data/songs.json?v=' + APP_VERSION).then(r => { if (!r.ok) throw new Error(); return r.json(); }),
-    fetch('data/billions.json?v=' + APP_VERSION).then(r => r.ok ? r.json() : { tracks: [] }).catch(() => ({ tracks: [] })),
-    fetch('data/extra.json?v=' + APP_VERSION).then(r => r.ok ? r.json() : { songs: [] }).catch(() => ({ songs: [] })),
-    fetch('data/genres.json?v=' + APP_VERSION).then(r => r.ok ? r.json() : {}).catch(() => ({})),
-    fetch('data/more.json?v=' + APP_VERSION).then(r => r.ok ? r.json() : { songs: [] }).catch(() => ({ songs: [] })),
-    fetch('data/years.json?v=' + APP_VERSION).then(r => r.ok ? r.json() : {}).catch(() => ({})),
-    fetch('data/covers.json?v=' + APP_VERSION).then(r => r.ok ? r.json() : {}).catch(() => ({})),
+    fetch('data/songs.json?v=' + DATA_V).then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+    fetch('data/billions.json?v=' + DATA_V).then(r => r.ok ? r.json() : { tracks: [] }).catch(() => ({ tracks: [] })),
+    fetch('data/extra.json?v=' + DATA_V).then(r => r.ok ? r.json() : { songs: [] }).catch(() => ({ songs: [] })),
+    fetch('data/genres.json?v=' + DATA_V).then(r => r.ok ? r.json() : {}).catch(() => ({})),
+    fetch('data/more.json?v=' + DATA_V).then(r => r.ok ? r.json() : { songs: [] }).catch(() => ({ songs: [] })),
+    fetch('data/years.json?v=' + DATA_V).then(r => r.ok ? r.json() : {}).catch(() => ({})),
+    fetch('data/covers.json?v=' + DATA_V).then(r => r.ok ? r.json() : {}).catch(() => ({})),
   ]).then(([a, b, x, g, m, yrs, cv]) => {
     // Original-Cover statt Sampler-Cover (data/covers.json)
     const fix = cv.covers || {};
