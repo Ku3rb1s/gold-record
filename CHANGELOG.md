@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.10.8 – 07.11.2026
+- Spiele-Menü: neues Spiel **Hit or Miss** – Stimmt’s oder stimmt’s nicht? Musik-Quiz zum Wischen
+
 ## 1.10.7 – 07.11.2026
 - Fehler behoben: Bei Duetten kam der zweite Interpret als „falsche“ Antwort (z. B. Apache 207 bei „Komet“ von Udo Lindenberg & Apache 207). Jetzt sind alle Beteiligten eines Songs bekannt (Duette, Gäste, „feat.“) und tauchen nicht mehr als falsche Antwort auf
 
