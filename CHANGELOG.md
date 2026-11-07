@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.10.13 – 07.11.2026
+- Zwei Jahreszahlen korrigiert: „What's Up?“ (4 Non Blondes) 1992 und „You're Beautiful“ (James Blunt) 2004 – jeweils das Jahr des Albums, das vor der Single erschien
+
 ## 1.10.12 – 07.11.2026
 - Einstellungen: Dein Code steht nicht mehr offen da („✓ Abgeglichen · verwalten in der Jukebox“) – den Code selbst gibt es nur im Fenster „Dein Code“ der Jukebox
 
