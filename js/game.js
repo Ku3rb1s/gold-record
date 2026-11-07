@@ -2,7 +2,7 @@
    Quiz-Leiter mit 15 Stufen: Jede richtige Antwort bringt eine Stufe höher, von der Kassette bis zum Diamanten.
    Gold (Stufe 5) und Platin (Stufe 10) sind sicher: Bei einem Fehler fällt man auf die letzte erreichte Sicherheitsstufe.
    Aussteigen geht jederzeit vor dem Antworten – dann bleibt die erreichte Stufe. */
-const APP_VERSION = '1.8.0', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
+const APP_VERSION = '1.8.1', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
@@ -1017,16 +1017,36 @@ $('#qBox').addEventListener('click', e => {
   else if (e.target.closest('.qdisc')) toggle(G.q.song);
 });
 $('#jokers').addEventListener('click', e => { const b = e.target.closest('[data-jk]'); if (b && !b.disabled) useJoker(b.dataset.jk); });
-$('#btnWalk').onclick = () => { if (G && !G.locked && G.level && confirm(tx('Aussteigen und {s} behalten?', { s: tx(STAGES[G.level - 1]) }))) endGame('walk'); };
+$('#btnWalk').onclick = async () => {
+  if (!G || G.locked || !G.level) return;
+  const ok = await ask(tx('Aussteigen und {s} behalten?', { s: tx(STAGES[G.level - 1]) }), tx('Aussteigen'));
+  if (ok && G && !G.locked && !G.ended) endGame('walk');   // in der Zwischenzeit könnte die Uhr abgelaufen sein
+};
 $('#shareBtn').onclick = () => shareResult();
 $('#endList').addEventListener('click', e => {
   const el = e.target.closest('[data-play]'); if (!el) return;
   const id = +el.dataset.play;
   playingId === id && !player.paused ? stop() : play(SONGS.find(s => s.id === id) || { id }, true);
 });
+/* Rückfrage im Stil des Spiels statt confirm() – liefert true (Bestätigen) oder false (Abbrechen, Esc, daneben tippen) */
+function ask(text, okLabel, danger = false) {
+  const d = $('#askDlg');
+  $('#askText').textContent = text;
+  $('#askOk').textContent = okLabel;
+  $('#askOk').classList.toggle('danger', danger);
+  return new Promise(res => {
+    const done = v => { d.onclose = null; if (d.open) d.close(); res(v); };
+    $('#askOk').onclick = () => done(true);
+    $('#askNo').onclick = () => done(false);
+    d.onclick = e => { if (e.target === d) done(false); };
+    d.onclose = () => res(false);
+    d.showModal();
+    $('#askOk').focus();
+  });
+}
 const goHome = () => { stop(); stopTimer(); G = null; renderHome(); show('home'); };
-function leave() {
-  if (G && !G.ended && G.level > 0 && !$('#game').classList.contains('hidden') && !confirm(tx('Spiel beenden? Deine Stufe geht verloren.'))) return;
+async function leave() {
+  if (G && !G.ended && G.level > 0 && !$('#game').classList.contains('hidden') && !(await ask(tx('Spiel beenden? Deine Stufe geht verloren.'), tx('Beenden'), true))) return;
   goHome();
 }
 $('#homeBtn').onclick = goHome;
@@ -1053,8 +1073,8 @@ $('#setDrama').onchange = e => { opt.drama = e.target.checked; LS.set('drama', o
 $('#vol').oninput = e => { opt.vol = +e.target.value; opt.muted = false; LS.set('vol', opt.vol); applyVol(); };
 $('#volMute').onclick = () => { opt.muted = !opt.muted; applyVol(); };
 $('#langSel').onchange = e => setLang(e.target.value);
-$('#btnResetAll').onclick = () => {
-  if (!confirm(tx('Alles löschen, was Gold Record auf diesem Gerät gespeichert hat?'))) return;
+$('#btnResetAll').onclick = async () => {
+  if (!(await ask(tx('Alles löschen, was Gold Record auf diesem Gerät gespeichert hat?'), tx('Löschen'), true))) return;
   try { Object.keys(localStorage).filter(k => k.startsWith('gr.')).forEach(k => localStorage.removeItem(k)); } catch {}
   Sync.leave(); // vom persönlichen Code trennen, sonst käme beim nächsten Abgleich alles zurück
   location.reload();

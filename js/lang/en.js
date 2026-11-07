@@ -5,6 +5,8 @@
   name: "English",
   flag: "🇬🇧",
   dict: {
+    "Löschen": "Delete",
+    "Abbrechen": "Cancel",
     "Schaffst du mehr?": "Can you beat it?",
     "Bild gespeichert, Text kopiert": "Image saved, text copied",
     "Auf allen Geräten spielen": "Play on all your devices",

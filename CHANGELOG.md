@@ -1,5 +1,9 @@
 # Neuerungen
 
+## 1.8.1 – 07.11.2026
+- iPhone/Handy: Die schwebende Knopfleiste (Spielen bzw. Nochmal/Teilen/Start) verdeckt ganz unten nichts mehr
+- Rückfragen (Aussteigen, Beenden, Alles löschen) jetzt als Dialog im Stil des Spiels statt als Systemfenster
+
 ## 1.8.0 – 07.11.2026
 - **Mehr international:** rund 3.000 internationale Songs zusätzlich (Classic Rock, Britpop, Grunge, Motown, Rockballaden, Country, Latin, 80er/90er/2000er …) – insgesamt jetzt über 6.000 Songs
 - **„Alle“ ist wieder international geprägt:** die vielen deutschen Playlist-Songs (Deutschrap, Schlager, Ballermann …) gibt es nur noch im Thema **„Deutsch“** (über 1.200 Songs)

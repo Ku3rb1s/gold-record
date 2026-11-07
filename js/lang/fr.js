@@ -5,6 +5,8 @@
   name: "Français",
   flag: "🇫🇷",
   dict: {
+    "Löschen": "Supprimer",
+    "Abbrechen": "Annuler",
     "Schaffst du mehr?": "Tu fais mieux ?",
     "Bild gespeichert, Text kopiert": "Image enregistrée, texte copié",
     "Auf allen Geräten spielen": "Jouer sur tous tes appareils",

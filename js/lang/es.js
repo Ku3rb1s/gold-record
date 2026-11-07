@@ -5,6 +5,8 @@
   name: "Español",
   flag: "🇪🇸",
   dict: {
+    "Löschen": "Borrar",
+    "Abbrechen": "Cancelar",
     "Schaffst du mehr?": "¿Puedes superarlo?",
     "Bild gespeichert, Text kopiert": "Imagen guardada, texto copiado",
     "Auf allen Geräten spielen": "Juega en todos tus dispositivos",

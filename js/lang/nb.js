@@ -5,6 +5,8 @@
   name: "Norsk",
   flag: "🇳🇴",
   dict: {
+    "Löschen": "Slett",
+    "Abbrechen": "Avbryt",
     "Schaffst du mehr?": "Klarer du mer?",
     "Bild gespeichert, Text kopiert": "Bilde lagret, tekst kopiert",
     "Auf allen Geräten spielen": "Spill på alle enhetene dine",
