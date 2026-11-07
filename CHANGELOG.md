@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.10.10 – 07.11.2026
+- Nach einem Update kommt die neue Version jetzt sofort – vorher konnte der Browser bis zu 10 Minuten lang noch die alte Seite zeigen
+
 ## 1.10.9 – 07.11.2026
 - Bestenliste „Wie oft Diamant“: Statt der höchsten Stufe (die bei fast allen 15 war) zählt jetzt, wie oft du Diamant (15/15) geholt hast – je Schwierigkeit, über alle Geräte. Diamanten aus deinen besten Runden zählen schon mit
 - Statistik: „Diamant geholt“ zeigt jetzt auch, wie viele auf Leicht, Normal und Schwer
