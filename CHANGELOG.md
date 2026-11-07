@@ -8,8 +8,6 @@
 - Die Hörprobe der nächsten Frage lädt schon während der Auflösung – kein Warten mehr
 - Kein Song kommt in einer Runde doppelt vor (auch nicht als falsche Antwort)
 - Kurze Vibration am Handy beim Einloggen und bei Sicherheitsstufen
-
-## 1.6.0 – 07.11.2026
 - Neu: **Auf allen Geräten spielen** – mit einem persönlichen Code aus der Jukebox werden Rekorde, Statistik, Tages-Challenge und Profil zwischen Handy, Tablet und PC abgeglichen. Ohne Konto, verschlüsselt mit deinem Code
 
 ## 1.5.1 – 07.11.2026

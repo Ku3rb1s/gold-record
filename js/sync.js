@@ -14,6 +14,7 @@
  *   day    – ein einzelnes Tagesergebnis (Gold Record): wie bei days
  *   mapmax – Liste Tag → Punkte: alle Tage, je Tag der höhere Wert
  *   union  – Sammlung (Erfolge): alles, was auf irgendeinem Gerät freigeschaltet wurde
+ *   top    – Bestenliste (Gold Record): die 10 besten Runden aller Geräte
  *   device – je Gerät getrennt gespeichert und für die Anzeige zusammengezählt (Statistik; sonst würde doppelt gezählt)
  */
 const Sync = (() => {
@@ -28,6 +29,7 @@ const Sync = (() => {
     [/^gr\.daily\.\d{4}-\d{2}-\d{2}$/, 'day'],
     [/^gr\.dailyLog$/, 'mapmax'],
     [/^gr\.ach$/, 'union'],
+    [/^gr\.top$/, 'top'],
     [/^(mq|oon|gr)\.stats$/, 'device'],
   ];
   // Statistik mehrerer Geräte zusammenzählen (je Spiel eigener Aufbau)
@@ -39,10 +41,9 @@ const Sync = (() => {
         best: [...(a.best || []), ...(b.best || [])].sort((x, y) => x.s - y.s).slice(0, 5) };
     },
     'gr.stats': (a, b) => {
-      const types = { ...a.types };
-      for (const [k, [r, n]] of Object.entries(b.types || {})) { const t = types[k] || [0, 0]; types[k] = [t[0] + r, t[1] + n]; }
+      const pairs = (x = {}, y = {}) => { const o = { ...x }; for (const [k, [r, n]] of Object.entries(y)) { const t = o[k] || [0, 0]; o[k] = [t[0] + r, t[1] + n]; } return o; };
       return { games: a.games + b.games, right: a.right + b.right, asked: a.asked + b.asked, best: Math.max(a.best, b.best),
-        wins: (a.wins || 0) + (b.wins || 0), jokers: (a.jokers || 0) + (b.jokers || 0), types };
+        wins: (a.wins || 0) + (b.wins || 0), jokers: (a.jokers || 0) + (b.jokers || 0), types: pairs(a.types, b.types), dec: pairs(a.dec, b.dec) };
     },
     'oon.stats': (a, b) => ({ games: a.games + b.games, right: a.right + b.right, best: Math.max(a.best, b.best), years: Math.max(a.years || 0, b.years || 0) }),
   };
@@ -156,6 +157,11 @@ const Sync = (() => {
     if (rule === 'days') return { v: mergeDays(a.v, b.v), t };
     if (rule === 'day') return { v: betterDay(a.v, b.v), t };
     if (rule === 'union') return { v: { ...b.v, ...a.v }, t };
+    if (rule === 'top') {                                                    // gleiche Sortierung wie in Gold Record
+      const seen = new Set(), all = [...(a.v || []), ...(b.v || [])].filter(x => { const k = JSON.stringify(x); return !seen.has(k) && seen.add(k); });
+      all.sort((x, y) => y.f - x.f || x.j - y.j || (x.d < y.d ? 1 : -1));
+      return { v: all.slice(0, 10), t };
+    }
     if (rule === 'mapmax') { const v = { ...a.v }; for (const [k, x] of Object.entries(b.v || {})) v[k] = Math.max(+v[k] || 0, +x || 0); return { v, t }; }
     return a.t >= b.t ? a : b;                                               // latest
   }
