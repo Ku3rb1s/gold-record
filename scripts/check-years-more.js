@@ -20,7 +20,15 @@ function readOon() { try { const oon = JSON.parse(fs.readFileSync(path.join(__di
 readOon();
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 // Von Hand korrigiert (MusicBrainz lag daneben)
-const FIX = { 136338504: 1984 };   // Metallica – For Whom the Bell Tolls (Ride the Lightning)
+const FIX = {
+  136338504: 1984,    // Metallica – For Whom the Bell Tolls (Ride the Lightning)
+  1574668: 2006,      // Rihanna – We Ride (A Girl Like Me)
+  3215956841: 2025,   // LISA – Born Again
+  98975170: 2015,     // Chris Stapleton – Tennessee Whiskey (Traveller)
+  547621: 1982,       // Dionne Warwick – Heartbreaker
+  2010880097: 2022,   // Elton John & Britney Spears – Hold Me Closer
+  517656772: 2012,    // Rihanna – Stay (Unapologetic)
+};
 function writeYears() {
   const out = {}; let ok = 0, late = 0, none = 0;
   for (const s of songs) {
@@ -33,7 +41,7 @@ function writeYears() {
     if (!s.h && y > s.y + 1) { late++; continue; }
     out[s.id] = y; ok++;
   }
-  for (const id in FIX) if (id in out) out[id] = FIX[id];
+  for (const id in FIX) if (songs.some(s => s.id == id)) out[id] = FIX[id];   // gilt auch ohne MusicBrainz-Treffer
   fs.writeFileSync(path.join(DATA, 'years.json'), JSON.stringify(out));
   return { ok, late, none };
 }

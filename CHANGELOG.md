@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.10.17 – 07.11.2026
+- - 6 Jahreszahlen korrigiert (u. a. Rihanna – We Ride 2006, Chris Stapleton – Tennessee Whiskey 2015, LISA – Born Again 2025)
+
 ## 1.10.16 – 07.11.2026
 - - Maroon 5 – This Love: 2002 (Album Songs About Jane)
 
