@@ -2,7 +2,7 @@
    Quiz-Leiter mit 15 Stufen: Jede richtige Antwort bringt eine Stufe höher, von der Kassette bis zum Diamanten.
    Gold (Stufe 5) und Platin (Stufe 10) sind sicher: Bei einem Fehler fällt man auf die letzte erreichte Sicherheitsstufe.
    Aussteigen geht jederzeit vor dem Antworten – dann bleibt die erreichte Stufe. */
-const APP_VERSION = '1.5.0', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
+const APP_VERSION = '1.5.1', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
@@ -57,7 +57,7 @@ const LS = {
   get(k, d) { try { const v = localStorage.getItem('gr.' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
   set(k, v) { try { localStorage.setItem('gr.' + k, JSON.stringify(v)); } catch {} },
 };
-const opt = { pool: LS.get('pool', 'all'), diff: LS.get('diff', 'normal'), timer: LS.get('timer', 'on'), auto: LS.get('auto', true), sfx: LS.get('sfx', true), vol: LS.get('vol', 80), muted: false };
+const opt = { pool: LS.get('pool', 'all'), diff: LS.get('diff', 'normal'), timer: LS.get('timer', 'on'), auto: LS.get('auto', true), sfx: LS.get('sfx', true), drama: LS.get('drama', true), vol: LS.get('vol', 80), muted: false };
 if (!POOL_NAMES[opt.pool]) opt.pool = 'all';
 if (!DIFF[opt.diff]) opt.diff = 'normal';
 if (!TIMER_NAMES[opt.timer]) opt.timer = 'on';
@@ -776,8 +776,10 @@ function renderStats() {
 
 /* ---------- Töne & Konfetti ---------- */
 let actx = null;
+const DRAMA = new Set(['lock', 'tick', 'safe', 'win']);   // Spannungs-Sounds – eigener Schalter
 function sound(type) {
   if (!opt.sfx || opt.muted) return;
+  if (DRAMA.has(type) && !opt.drama) { if (type === 'safe' || type === 'win') type = 'ok'; else return; }
   try {
     actx ??= new (window.AudioContext || window.webkitAudioContext)();
     // [Frequenz, Start, Dauer, Lautstärke, Wellenform]
@@ -830,14 +832,15 @@ function renderDailyHdr() {
 function renderThemes() {
   const box = $('#setPool');
   const groups = [['all', 'intl', 'de'], ['d70', 'd80', 'd90', 'd00', 'd10'], ['pop', 'rock', 'hiphop', 'dance', 'rnb']];
-  box.innerHTML = groups.map(g => `<div class="chips">${g.filter(p => p in POOL_NAMES && (SONGS.length === 0 || poolOf(p).length > 0)).map(p => {
+  const GL = ['Sprache', 'Jahrzehnt', 'Genre'];
+  box.innerHTML = groups.map((g, gi) => `<div class="chip-row"><span class="chip-l">${tx(GL[gi])}</span><div class="chips">${g.filter(p => p in POOL_NAMES && (SONGS.length === 0 || poolOf(p).length > 0)).map(p => {
     const n = SONGS.length ? poolOf(p).length : 0;
     return `<button data-v="${p}" class="${opt.pool === p ? 'on' : ''}" ${SONGS.length && n < THEME_MIN ? 'disabled' : ''}>${tx(POOL_NAMES[p])}${n ? `<small>${fmtN(n)}</small>` : ''}</button>`;
-  }).join('')}</div>`).join('');
+  }).join('')}</div></div>`).filter(x => x.includes('data-v')).join('');
 }
 function renderHome() {
   const segOn = (id, v) => $$(`#${id} button`).forEach(b => b.classList.toggle('on', b.dataset.v === v));
-  renderThemes(); segOn('setTimer', opt.timer); segOn('setDiff', opt.diff);
+  renderThemes(); $('#setTimer').checked = opt.timer === 'on'; segOn('setDiff', opt.diff);
   $('#timerInfo').textContent = tx(TIMER_INFO[opt.timer]);
   $('#diffInfo').textContent = tx(DIFF_INFO[opt.diff]);
   renderDailyHdr();
@@ -855,7 +858,9 @@ function toast(msg, ms = 3500) { const t = $('#toast'); t.textContent = msg; t.c
 function renderSettings() {
   $('#setAuto').checked = !!opt.auto;
   $('#setSfx').checked = !!opt.sfx;
-  $('#subHelp').textContent = [opt.auto ? 'Autoplay an' : 'Autoplay aus', opt.sfx ? '' : 'Töne aus'].filter(Boolean).map(s => tx(s)).join(' · ');
+  $('#setDrama').checked = !!opt.drama;
+  $('#setDrama').disabled = !opt.sfx;
+  $('#subHelp').textContent = [opt.auto ? 'Autoplay an' : 'Autoplay aus', opt.sfx ? (opt.drama ? '' : 'Spannungs-Sounds aus') : 'Töne aus'].filter(Boolean).map(s => tx(s)).join(' · ');
   $('#langSel').innerHTML = langOptions();
   const st = LS.get('stats', null);
   $('#subStats').textContent = st?.games ? tx(st.games === 1 ? '{n} Spiel' : '{n} Spiele', { n: st.games }) + ' · ' + tx('Höchste Stufe') + ': ' + stageName(st.best) : tx('Noch keine Spiele');
@@ -909,7 +914,7 @@ async function renderChanges() {
 /* ---------- Ereignisse ---------- */
 const segPick = (id, fn) => { $('#' + id).onclick = e => { const b = e.target.closest('button'); if (b) { fn(b.dataset.v); renderHome(); } }; };
 segPick('setPool', v => { opt.pool = v; LS.set('pool', v); });
-segPick('setTimer', v => { opt.timer = v; LS.set('timer', v); });
+$('#setTimer').onchange = e => { opt.timer = e.target.checked ? 'on' : 'off'; LS.set('timer', opt.timer); renderHome(); };
 segPick('setDiff', v => { opt.diff = v; LS.set('diff', v); });
 $('#startBtn').onclick = () => startGame(false);
 $('#dailyHdr').onclick = () => { if (G && !G.ended) return; LS.get('daily.' + today()) ? showDaily() : startGame(true); };
@@ -948,6 +953,7 @@ $('#profName').oninput = () => Profile.set({ name: $('#profName').value });
 $('#profName').onkeydown = e => { if (e.key === 'Enter') $('#profName').blur(); };
 $('#setAuto').onchange = e => { opt.auto = e.target.checked; LS.set('auto', opt.auto); renderSettings(); };
 $('#setSfx').onchange = e => { opt.sfx = e.target.checked; LS.set('sfx', opt.sfx); renderSettings(); sound('ok'); };
+$('#setDrama').onchange = e => { opt.drama = e.target.checked; LS.set('drama', opt.drama); renderSettings(); sound('safe'); };
 $('#vol').oninput = e => { opt.vol = +e.target.value; opt.muted = false; LS.set('vol', opt.vol); applyVol(); };
 $('#volMute').onclick = () => { opt.muted = !opt.muted; applyVol(); };
 $('#langSel').onchange = e => setLang(e.target.value);

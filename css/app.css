@@ -72,15 +72,26 @@ body:has(#game:not(.hidden)) main,body:has(#game:not(.hidden)) header{max-width:
 .replay .ic{width:16px;height:16px}
 @media (hover:hover){.replay:hover{background:rgba(255,255,255,.16)}}
 /* Themen als Chips (Startseite) */
-.themes{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.themes{display:flex;flex-direction:column;gap:10px;margin-top:8px;padding:12px;border-radius:16px;background:rgba(255,255,255,.035);border:1px solid var(--line2)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chips button{display:inline-flex;align-items:baseline;gap:6px;padding:.5em .9em;border-radius:99px;font-size:.9rem;font-weight:700;color:var(--text);
   background:rgba(255,255,255,.06);border:1px solid var(--line2);box-shadow:none}
 .chips button small{font-size:.72rem;font-weight:600;color:var(--muted)}
-.chips button.on{background:linear-gradient(180deg,var(--gold1),var(--gold2));color:#2a1d00;border-color:transparent}
-.chips button.on small{color:#5a4300}
+.chips button.on{background:linear-gradient(180deg,rgba(253,230,138,.2),rgba(212,160,23,.08));border-color:rgba(245,179,1,.75);box-shadow:0 6px 18px -10px rgba(245,179,1,.6)}
+.chips button.on small{color:var(--gold1)}
+.chip-row{display:flex;align-items:baseline;gap:10px}
+.chip-l{flex:none;width:78px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-top:.6em}
+@media (max-width:520px){.chip-row{flex-direction:column;gap:4px}.chip-l{width:auto;padding:0}}
 .chips button:disabled{opacity:.35}
 .seg.diff button{gap:3px}
+/* Joker auf der Startseite als Kacheln */
+.jk-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}
+.jk-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 12px;border-radius:16px;text-align:center;
+  background:rgba(255,255,255,.035);border:1px solid var(--line2)}
+.jk-card .jk-ic{width:58px;height:34px;border-radius:50%;font-size:.72rem}
+.jk-card b{font-size:.95rem}
+.jk-card small{font-size:.78rem;color:var(--muted);line-height:1.35}
+.panel .group-h{margin-top:22px}
 .lvl{display:flex;align-items:flex-end;gap:2px;height:14px;margin-bottom:3px}
 .lvl b{width:5px;border-radius:2px;background:rgba(255,255,255,.18)}
 .lvl b:nth-child(1){height:6px}.lvl b:nth-child(2){height:10px}.lvl b:nth-child(3){height:14px}
@@ -90,10 +101,11 @@ body:has(#game:not(.hidden)) main,body:has(#game:not(.hidden)) header{max-width:
 .home-title{font-family:Outfit,system-ui,sans-serif;font-weight:900;font-size:clamp(2.1rem,8vw,3.1rem);line-height:1.2;padding:.1em .05em 0;letter-spacing:-.02em;color:#fff}
 .stage,.panel{background:linear-gradient(180deg,var(--panel1),var(--panel2));border:1px solid var(--line2);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 40px 80px -36px #000}
 .pill{border-color:var(--line2);background:rgba(6,9,26,.5);color:#c3cbe3}
-.seg button.on{background-color:rgba(190,202,235,.16)}
+.seg button.on,.seg button.on:hover{background:linear-gradient(180deg,rgba(253,230,138,.2),rgba(212,160,23,.08));box-shadow:inset 0 0 0 1.5px rgba(245,179,1,.75),0 6px 18px -10px rgba(245,179,1,.6)}
+.seg button.on small{color:var(--gold1)}
 button.big{background:linear-gradient(180deg,var(--gold1),var(--gold2));color:#2a1d00;box-shadow:0 10px 30px -10px rgba(245,179,1,.7),inset 0 1px 0 rgba(255,255,255,.6)}
 button.big small{display:block;font-size:.75rem;font-weight:600;opacity:.75}
-.jk-ic{width:40px;height:30px;flex:none;border-radius:99px;display:grid;place-items:center;font-size:.72rem;font-weight:900;color:#fff;
+.jk-ic{width:40px;height:30px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:.72rem;font-weight:900;color:#fff;
   background:radial-gradient(120% 100% at 50% 10%,#33427f,#141b45 55%,#080c24);border:1.5px solid #d8deef}
 .jk-ic .ic{width:17px;height:17px}
 

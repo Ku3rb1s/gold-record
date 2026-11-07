@@ -17,7 +17,7 @@
 <link rel="preload" href="fonts/outfit-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=1">
 <link rel="stylesheet" href="css/base.css?v=1">
-<link rel="stylesheet" href="css/app.css?v=6">
+<link rel="stylesheet" href="css/app.css?v=7">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -84,18 +84,16 @@
       <div class="group-h">Thema</div>
       <div class="themes" id="setPool"></div>
       <div class="group-h">Zeitlimit</div>
-      <div class="seg" id="setTimer">
-        <button data-v="on">⏱ An<small>ab Frage 6</small></button>
-        <button data-v="off">Aus<small>ganz in Ruhe</small></button>
+      <div class="group">
+        <label class="cell"><span class="grow">Mit Uhr spielen<span class="sub" id="timerInfo"></span></span><span class="switch"><input type="checkbox" id="setTimer"><span></span></span></label>
       </div>
-      <div class="group-f center" id="timerInfo"></div>
 
       <div class="group-h">Joker – jeder einmal pro Spiel</div>
-      <div class="group icons">
-        <div class="cell"><span class="jk-ic">50:50</span><span class="grow">50:50-Joker<span class="sub">Zwei falsche Antworten verschwinden.</span></span></div>
-        <div class="cell"><span class="jk-ic"><svg class="ic"><use href="#i-people"/></svg></span><span class="grow">Publikumsjoker<span class="sub">Das Publikum stimmt ab. Bei großen Hits liegt es meist richtig, bei unbekannteren Songs eher nicht.</span></span></div>
-        <div class="cell"><span class="jk-ic"><svg class="ic"><use href="#i-phone"/></svg></span><span class="grow">Telefonjoker<span class="sub">Ein Musik-Freund sagt dir, was er denkt – und wie sicher er sich ist.</span></span></div>
-        <div class="cell"><span class="jk-ic"><svg class="ic"><use href="#i-hand"/></svg></span><span class="grow">Zusatzjoker<span class="sub">Wer im Publikum die Antwort zu wissen glaubt, steht auf und sagt sie. Steht niemand auf, behältst du den Joker.</span></span></div>
+      <div class="jk-grid">
+        <div class="jk-card"><span class="jk-ic">50:50</span><b>50:50-Joker</b><small>Zwei falsche Antworten verschwinden.</small></div>
+        <div class="jk-card"><span class="jk-ic"><svg class="ic"><use href="#i-people"/></svg></span><b>Publikumsjoker</b><small>Das Publikum stimmt ab – bei großen Hits meist richtig.</small></div>
+        <div class="jk-card"><span class="jk-ic"><svg class="ic"><use href="#i-phone"/></svg></span><b>Telefonjoker</b><small>Ein Musik-Freund sagt, was er denkt – und wie sicher er ist.</small></div>
+        <div class="jk-card"><span class="jk-ic"><svg class="ic"><use href="#i-hand"/></svg></span><b>Zusatzjoker</b><small>Wer es weiß, steht auf. Steht niemand auf, bleibt der Joker.</small></div>
       </div>
 
       <div class="group-h">Die Stufen</div>
@@ -239,6 +237,7 @@
       <div class="group" style="margin-top:14px">
         <label class="cell"><span class="grow">Automatisch abspielen<span class="sub">Bei jeder Frage mit Song startet die Musik sofort</span></span><span class="switch"><input type="checkbox" id="setAuto"><span></span></span></label>
         <label class="cell"><span class="grow">Töne &amp; Konfetti<span class="sub">Kurze Töne bei richtig und falsch, Konfetti bei Gold, Platin und Diamant</span></span><span class="switch"><input type="checkbox" id="setSfx"><span></span></span></label>
+        <label class="cell"><span class="grow">Spannungs-Sounds<span class="sub">Tiefer Ton beim Einloggen, Herzschlag in den letzten Sekunden, Fanfare bei Gold, Platin und Diamant</span></span><span class="switch"><input type="checkbox" id="setDrama"><span></span></span></label>
       </div>
       <div class="group-f">Die Lautstärke stellst du direkt im Spiel ein.</div>
     </section>
@@ -259,14 +258,14 @@
 
 <div id="toast" class="hidden"></div>
 
-<script src="js/lang/en.js?v=6"></script>
-<script src="js/lang/fr.js?v=6"></script>
-<script src="js/lang/es.js?v=6"></script>
-<script src="js/lang/nb.js?v=6"></script>
+<script src="js/lang/en.js?v=7"></script>
+<script src="js/lang/fr.js?v=7"></script>
+<script src="js/lang/es.js?v=7"></script>
+<script src="js/lang/nb.js?v=7"></script>
 <script src="js/profile.js?v=1"></script>
 <script src="js/i18n.js?v=1"></script>
 <script src="js/deezer.js?v=1"></script>
-<script src="js/game.js?v=6"></script>
+<script src="js/game.js?v=7"></script>
 <script src="js/pwa.js?v=1"></script>
 </body>
 </html>

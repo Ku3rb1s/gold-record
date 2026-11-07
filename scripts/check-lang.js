@@ -37,7 +37,7 @@ for (const tbl of ['POOL_NAMES', 'TIMER_NAMES', 'TIMER_INFO', 'DIFF_NAMES', 'DIF
   if (m) for (const s of m[1].matchAll(/:\s*'((?:\\.|[^'\\])*)'/g)) add(unq(s[1]));
 }
 for (const m of code.matchAll(/\['(?:graphit|ozean|wald|abend|lila|oled)', '([^']+)'/g)) add(m[1]);
-['Autoplay an', 'Autoplay aus', 'Töne aus'].forEach(add);
+['Autoplay an', 'Autoplay aus', 'Töne aus', 'Spannungs-Sounds aus', 'Sprache', 'Jahrzehnt', 'Genre'].forEach(add);
 for (const k of [...keys]) if (/^(https?:|#)/.test(k)) keys.delete(k);
 ['de', 'intl', 'ach', 'phone', 'extra', 'newest', 'decade', 'C', 'D'].forEach(k => keys.delete(k)); // Code-Kürzel, keine Texte
 // Stufen-Namen (STAGES) und Fragetexte (TYPES … q: '…') laufen ebenfalls über tx(Variable)
@@ -50,7 +50,7 @@ for (const s of code.matchAll(/\bq: '((?:\\.|[^'\\])*)'/g)) add(unq(s[1]));
 for (const s of code.matchAll(/\['\w+', '[^']*', '((?:\\.|[^'\\])*)', '((?:\\.|[^'\\])*)'\]/g)) { add(unq(s[1])); add(unq(s[2])); }
 ['Gold', 'Single', 'Top 40', 'Top 10', 'Demo-Tape', 'Mixtape', 'Hall of Fame', 'Radio-Hit'].forEach(add); // evtl. gleich, aber je Sprache prüfbar
 
-['ach', 'phone', 'extra', 'newest', 'decade', 'C', 'D'].forEach(k => keys.delete(k)); // Code-Kürzel, keine Texte
+['ach', 'phone', 'extra', 'newest', 'decade', 'C', 'D', 'safe', 'win'].forEach(k => keys.delete(k)); // Code-Kürzel, keine Texte
 if (process.argv.includes('--keys')) { console.log(JSON.stringify([...keys].sort(), null, 1)); process.exit(0); }
 
 /* ---------- Sprachdateien prüfen ---------- */

@@ -1,5 +1,9 @@
 # Neuerungen
 
+## 1.5.1 – 07.11.2026
+- Startseite aufgeräumt: einheitliche Auswahl mit goldenem Rand, Themen nach Sprache und Jahrzehnt gruppiert, Zeitlimit als Schalter, Joker als Kacheln
+- **Spannungs-Sounds** (Einloggen, Herzschlag, Fanfaren) lassen sich unter „Wiedergabe & Töne“ getrennt ausschalten
+
 ## 1.5.0 – 07.11.2026
 - **4 neue Fragearten:** Aus welchem Jahrzehnt? · Welcher Song ist NICHT von …? · Welcher ist am neuesten? · **Nur 3 Sekunden:** Welcher Song läuft? (ab Frage 8)
 - **Themen** für eine Runde: 70er & älter, 80er, 90er, 2000er, 2010er & neuer (zusätzlich zu Alle/International/Deutsch) – Rekorde je Thema
