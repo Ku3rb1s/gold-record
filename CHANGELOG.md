@@ -1,5 +1,17 @@
 # Neuerungen
 
+## 1.6.0 – 07.11.2026
+- **Genre-Themen:** Pop, Rock, Hip-Hop, Dance & Electro, R&B & Soul (Genres von Deezer)
+- **Startseite neu:** zwei ruhige Blöcke „Deine Runde“ und „So läuft's“ statt vieler Kästen, Joker als Plaketten-Reihe, Stufen zum Aufklappen
+- **Persönliche Statistik:** deine 10 besten Runden, Trefferquote je Jahrzehnt und je Frageart als Balken, stärkstes und schwächstes Jahrzehnt
+- **Songs nachhören:** im Ergebnis einen Song antippen spielt die Hörprobe
+- Die Hörprobe der nächsten Frage lädt schon während der Auflösung – kein Warten mehr
+- Kein Song kommt in einer Runde doppelt vor (auch nicht als falsche Antwort)
+- Kurze Vibration am Handy beim Einloggen und bei Sicherheitsstufen
+
+## 1.6.0 – 07.11.2026
+- Neu: **Auf allen Geräten spielen** – mit einem persönlichen Code aus der Jukebox werden Rekorde, Statistik, Tages-Challenge und Profil zwischen Handy, Tablet und PC abgeglichen. Ohne Konto, verschlüsselt mit deinem Code
+
 ## 1.5.1 – 07.11.2026
 - Startseite aufgeräumt: einheitliche Auswahl mit goldenem Rand, Themen nach Sprache und Jahrzehnt gruppiert, Zeitlimit als Schalter, Joker als Kacheln
 - **Spannungs-Sounds** (Einloggen, Herzschlag, Fanfaren) lassen sich unter „Wiedergabe & Töne“ getrennt ausschalten

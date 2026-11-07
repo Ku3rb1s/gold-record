@@ -72,7 +72,7 @@ body:has(#game:not(.hidden)) main,body:has(#game:not(.hidden)) header{max-width:
 .replay .ic{width:16px;height:16px}
 @media (hover:hover){.replay:hover{background:rgba(255,255,255,.16)}}
 /* Themen als Chips (Startseite) */
-.themes{display:flex;flex-direction:column;gap:10px;margin-top:8px;padding:12px;border-radius:16px;background:rgba(255,255,255,.035);border:1px solid var(--line2)}
+.themes{display:flex;flex-direction:column;gap:10px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chips button{display:inline-flex;align-items:baseline;gap:6px;padding:.5em .9em;border-radius:99px;font-size:.9rem;font-weight:700;color:var(--text);
   background:rgba(255,255,255,.06);border:1px solid var(--line2);box-shadow:none}
@@ -80,18 +80,37 @@ body:has(#game:not(.hidden)) main,body:has(#game:not(.hidden)) header{max-width:
 .chips button.on{background:linear-gradient(180deg,rgba(253,230,138,.2),rgba(212,160,23,.08));border-color:rgba(245,179,1,.75);box-shadow:0 6px 18px -10px rgba(245,179,1,.6)}
 .chips button.on small{color:var(--gold1)}
 .chip-row{display:flex;align-items:baseline;gap:10px}
-.chip-l{flex:none;width:78px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-top:.6em}
+.chip-l{flex:none;width:82px;font-size:.8rem;font-weight:600;color:var(--muted);padding-top:.55em}
 @media (max-width:520px){.chip-row{flex-direction:column;gap:4px}.chip-l{width:auto;padding:0}}
 .chips button:disabled{opacity:.35}
 .seg.diff button{gap:3px}
-/* Joker auf der Startseite als Kacheln */
-.jk-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}
-.jk-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 12px;border-radius:16px;text-align:center;
-  background:rgba(255,255,255,.035);border:1px solid var(--line2)}
-.jk-card .jk-ic{width:58px;height:34px;border-radius:50%;font-size:.72rem}
-.jk-card b{font-size:.95rem}
-.jk-card small{font-size:.78rem;color:var(--muted);line-height:1.35}
-.panel .group-h{margin-top:22px}
+/* Startseite: zwei ruhige Blöcke ohne verschachtelte Kästen */
+.panel.menu{padding:20px 22px 22px;text-align:left}
+.menu-h{margin:0 0 16px;font-family:Outfit,system-ui,sans-serif;font-size:1.15rem;font-weight:800;letter-spacing:-.01em}
+.menu-p{margin:0 0 18px;color:var(--muted);font-size:.92rem;line-height:1.5}
+.menu-p b{color:var(--gold1)}
+.opt{display:block;padding:14px 0;border-top:1px solid var(--line)}
+.menu-h+.opt{border-top:0;padding-top:0}
+.opt-l{display:block;margin-bottom:10px;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.opt-f{display:block;margin-top:8px;font-size:.82rem;color:var(--muted);line-height:1.4}
+.opt-row{display:flex;align-items:center;gap:14px;cursor:pointer}
+.opt-row .opt-l{margin-bottom:0}
+.opt-row .opt-f{margin-top:4px}
+.menu .seg{margin-top:0}
+/* Joker: vier Plaketten nebeneinander */
+.jk-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;text-align:center}
+.jk-item{display:flex;flex-direction:column;align-items:center;gap:6px}
+.jk-item .jk-ic{width:58px;height:34px;border-radius:50%;font-size:.72rem}
+.jk-item b{font-size:.88rem}
+.jk-item small{font-size:.74rem;color:var(--muted);line-height:1.35}
+/* Stufen einklappbar */
+.ladder-det{margin-top:18px;border-top:1px solid var(--line);padding-top:12px}
+.ladder-det summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:center;gap:6px;font-size:.88rem;font-weight:700;color:var(--gold1)}
+.ladder-det summary::-webkit-details-marker{display:none}
+.ladder-det summary::after{content:"▾";transition:transform .2s}
+.ladder-det[open] summary::after{transform:rotate(180deg)}
+.ladder-det .home-ladder{margin-top:12px}
+@media (max-width:520px){.jk-strip{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:16px}.panel.menu{padding:18px 16px}}
 .lvl{display:flex;align-items:flex-end;gap:2px;height:14px;margin-bottom:3px}
 .lvl b{width:5px;border-radius:2px;background:rgba(255,255,255,.18)}
 .lvl b:nth-child(1){height:6px}.lvl b:nth-child(2){height:10px}.lvl b:nth-child(3){height:14px}
@@ -300,6 +319,22 @@ html.ios .vol-game{justify-content:center}
 .confetti i{position:absolute;top:-20px;width:9px;height:14px;border-radius:2px;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
 #statsBox .cell b{font-variant-numeric:tabular-nums;text-align:right}
+/* Statistik: Balken und Bestenliste */
+.sbars{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:16px;background:var(--cell);border:1px solid var(--line)}
+.sbar{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(60px,1fr) 3.2em 3.4em;align-items:center;gap:10px;font-size:.84rem}
+.sbar-l{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sbar-t{height:8px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden}
+.sbar-t i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold2),var(--gold1))}
+.sbar b{text-align:right;font-variant-numeric:tabular-nums}
+.sbar small{color:var(--muted);text-align:right;font-variant-numeric:tabular-nums;font-size:.72rem}
+.toplist .top-no{width:24px;text-align:center;font-family:Outfit,system-ui,sans-serif;font-weight:900;color:var(--letter)}
+/* Ergebnisliste: Song antippen = anhören */
+.pl-wrap{position:relative;flex:none;display:grid}
+.pl-pp{position:absolute;inset:0;display:grid;place-items:center;border-radius:8px;background:rgba(0,0,0,.35);opacity:0;transition:opacity .2s}
+.pl-pp .ic{width:18px;height:18px;color:#fff}
+@media (hover:hover){.endlist .cell.tap:hover .pl-pp{opacity:1}}
+.endlist .cell.playing .pl-pp{opacity:1;background:rgba(245,179,1,.45)}
+.endlist .cell.tap{cursor:pointer}
 
 /* Versionsnummer → Neuerungen */
 .app-version{display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;margin-top:28px;padding:10px;background:none;box-shadow:none;

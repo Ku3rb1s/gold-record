@@ -2,7 +2,7 @@
    Quiz-Leiter mit 15 Stufen: Jede richtige Antwort bringt eine Stufe höher, von der Kassette bis zum Diamanten.
    Gold (Stufe 5) und Platin (Stufe 10) sind sicher: Bei einem Fehler fällt man auf die letzte erreichte Sicherheitsstufe.
    Aussteigen geht jederzeit vor dem Antworten – dann bleibt die erreichte Stufe. */
-const APP_VERSION = '1.5.1', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
+const APP_VERSION = '1.6.0', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
@@ -91,9 +91,15 @@ async function loadData() {
     fetch('data/billions.json?v=' + APP_VERSION).then(r => r.ok ? r.json() : { tracks: [] }).catch(() => ({ tracks: [] })),
     fetch('data/extra.json?v=' + APP_VERSION).then(r => r.ok ? r.json() : { songs: [] }).catch(() => ({ songs: [] })),
     fetch('data/genres.json?v=' + APP_VERSION).then(r => r.ok ? r.json() : {}).catch(() => ({})),
-  ]).then(([a, b, x, g]) => { for (const k in g) GENRE.set(+k, g[k]); return [a, b, x]; });
+    fetch('data/more.json?v=' + APP_VERSION).then(r => r.ok ? r.json() : { songs: [] }).catch(() => ({ songs: [] })),
+  ]).then(([a, b, x, g, m]) => {
+    for (const k in g) GENRE.set(+k, g[k]);
+    for (const s of m.songs) if (s.g) GENRE.set(s.id, s.g);
+    x.songs.push(...m.songs);
+    return [a, b, x];
+  });
   poolCache.clear();
-  // songs.json: Jahr geprüft (MusicBrainz). extra.json: weitere Hits, Jahr ungeprüft (ya) – nur für Fragen ohne Jahr
+  // songs.json: Jahr geprüft (MusicBrainz). extra.json (ya 1) und more.json (ya 2): weitere Hits, Jahr ungeprüft – nur für Fragen ohne Jahr
   SONGS = [...a.songs, ...x.songs];
   // Bekanntheit 0 (größter Hit) … 1 (am wenigsten bekannt) nach Deezer-Rang
   [...SONGS].sort((x, y) => (y.r || 0) - (x.r || 0)).forEach((s, i, all) => FAME.set(s.id, i / all.length));
@@ -104,7 +110,7 @@ const poolCache = new Map();
 function poolOf(p) {
   if (poolCache.has(p)) return poolCache.get(p);
   const r = SONGS.filter(s => p === 'all' ? true : p === 'de' ? s.de : p === 'intl' ? !s.de
-    : DEC[p] ? (!s.ya || p === 'd10') && s.y >= DEC[p][0] && s.y <= DEC[p][1]
+    : DEC[p] ? (!s.ya || (p === 'd10' && s.ya === 1)) && s.y >= DEC[p][0] && s.y <= DEC[p][1]
       : GENRE.get(s.id) === p);
   poolCache.set(p, r);
   return r;
@@ -173,7 +179,8 @@ function makeQuestion(i, type) {
     // beim Cover: gleicher Interpret macht es schwer (Cover sehen sich oft ähnlich)
     const extra = type === 'cover' ? s => (s.a === subj.a ? -6 * h : 0) : type === 'listen' || type === 'flash' ? s => (s.a === subj.a ? -4 * h : 0) : () => 0;
     const wrong = [];
-    for (const s of similar(subj, distractors().filter(s => s.id !== subj.id && s.c), h, extra)) {
+    const cand = distractors().filter(s => s.id !== subj.id && s.c), fresh = cand.filter(s => !G.used.has(s.id));
+    for (const s of similar(subj, fresh.length > 200 ? fresh : cand, h, extra)) {
       if (seen.has(key(s)) || !key(s)) continue;
       seen.add(key(s)); wrong.push(s);
       if (wrong.length === 3) break;
@@ -237,6 +244,7 @@ function makeQuestion(i, type) {
     Q.fame = lerp(.2, .7, h);
   }
   if (Q.song) G.used.add(Q.song.id);
+  for (const a of Q.answers) if (a.s) G.used.add(a.s.id);
   return Q;
 }
 // falsche Antworten: aus dem gewählten Thema, wenn es groß genug ist – sonst aus allen Songs
@@ -294,6 +302,9 @@ async function play(s, full = false) {
     if (e?.name !== 'AbortError') toast(e?.name === 'NotAllowedError' ? tx('Tippe auf die Platte, um abzuspielen') : (e?.message || tx('Abspielen klappt gerade nicht')));
   }
 }
+// Hörprobe vorab laden, damit die nächste Frage ohne Wartesekunde startet
+const preAudio = new Audio(); preAudio.preload = 'auto'; preAudio.muted = true;
+function preload(s) { if (s) previewOf(s).then(u => { preAudio.src = u; }).catch(() => {}); }
 function stop() { playingId = null; player.pause(); renderPlaying(); }
 function toggle(s) { playingId === s.id && !player.paused ? stop() : play(s, limit > SNIPPET && G?.q?.song === s); }
 player.addEventListener('timeupdate', () => { if (player.currentTime >= limit) stop(); });
@@ -301,6 +312,7 @@ player.addEventListener('ended', () => { playingId = null; renderPlaying(); });
 player.addEventListener('playing', renderPlaying);
 player.addEventListener('pause', renderPlaying);
 function renderPlaying() {
+  $$('#endList [data-play]').forEach(el => el.classList.toggle('playing', +el.dataset.play === playingId && !player.paused));
   const c = $('#qBox .qdisc'); if (!c) return;
   const on = playingId != null && +c.dataset.id === playingId;
   c.classList.toggle('playing', on && !player.paused);
@@ -554,7 +566,7 @@ async function choose(k) {
   renderJokers(); renderWalk();
   const Q = G.q, btns = $$('#answers .ans');
   btns.forEach(b => b.disabled = true);
-  if (k != null) { btns[k].classList.add('locked'); sound('lock'); }
+  if (k != null) { btns[k].classList.add('locked'); sound('lock'); buzz(15); }
   // Spannung: eingeloggte Antwort leuchtet kurz orange, dann die Auflösung
   await sleep(k == null ? 300 : 1300);
   if (!G) return;
@@ -568,9 +580,10 @@ async function choose(k) {
   G.log.push({ Q, k, ok });
   if (ok) {
     G.level++;
+    preload(G.qs[G.level]?.song);
     renderLadder();
     if (G.level === 15) { confetti(220); await sleep(1400); return endGame('win'); }
-    if (SAFE.includes(G.level)) { confetti(120); toast(`◆ ${tx('{s} ist sicher!', { s: tx(STAGES[G.level - 1]) })}`, 2200); }
+    if (SAFE.includes(G.level)) { buzz([30, 60, 30]); confetti(120); toast(`◆ ${tx('{s} ist sicher!', { s: tx(STAGES[G.level - 1]) })}`, 2200); }
     $('#after').innerHTML = `<div class="verdict good">${tx('Richtig!')}</div>
       <button class="big" id="btnNext">${tx('Weiter zu Frage {n}', { n: G.level + 1 })}<small>${tx(STAGES[G.level])}</small></button>
       <button class="ghost" id="btnWalk2"><svg class="ic"><use href="#i-exit"/></svg>${tx('Aussteigen mit {s}', { s: tx(STAGES[G.level - 1]) })}</button>`;
@@ -578,7 +591,7 @@ async function choose(k) {
     $('#btnWalk2').onclick = () => endGame('walk');
     $('#btnNext').focus({ preventScroll: true });
   } else {
-    if (navigator.vibrate) navigator.vibrate(120);
+    buzz(120);
     G.fell = safeOf(G.level);
     $('#after').innerHTML = `<div class="verdict bad">${k == null ? '⏱ ' + tx('Zeit abgelaufen') : tx('Leider falsch')}</div>
       <button class="big" id="btnEnd">${tx('Zum Ergebnis')}</button>`;
@@ -617,7 +630,9 @@ function endGame(how) {
     const r = Q.answers.find(x => x.ok);
     const sub = Q.type === 'year' ? `${Q.song.t} · ${r.y}` : Q.type === 'decade' ? `${Q.song.t} · ${Q.song.y}` : Q.type === 'artist' ? `${Q.song.t} · ${Q.song.a}`
       : Q.type === 'streams' ? `${r.st.title} · ${r.st.artist}` : `${r.s.t} · ${r.s.a}${Q.type === 'oldest' || Q.type === 'newest' ? ' · ' + r.s.y : ''}`;
-    return { t: Q.type, qv: Q.qv, sub, img: Q.song ? cover(Q.song, 120) : r.s ? cover(r.s, 120) : '', ok, i: Q.i };
+    // Song zum Nachhören: der Frage-Song bzw. die richtige Antwort
+    const sid = Q.song?.id || r.s?.id || r.st?.id;
+    return { t: Q.type, qv: Q.qv, id: sid, sub, img: Q.song ? cover(Q.song, 120) : r.s ? cover(r.s, 120) : '', ok, i: Q.i };
   });
   const res = { final, how, level: G.level, row: shareRow(), items, done: true };
   if (G.daily) {
@@ -646,7 +661,7 @@ function renderEnd(res, o) {
   if (res.ach?.length) setTimeout(() => toast('🏅 ' + tx('Neuer Erfolg: {s}', { s: res.ach.map(id => tx(ACH.find(x => x[0] === id)[2])).join(', ') }), 3200), 600);
   $('#endNext').classList.toggle('hidden', !o.daily);
   if (o.daily) $('#endNext').textContent = tx('Die nächste Challenge gibt es morgen.');
-  $('#endList').innerHTML = (res.items || []).map(it => `<div class="cell">${it.img ? `<img class="pl-cover" src="${it.img}" alt="">` : '<span class="pl-cover">🎵</span>'}
+  $('#endList').innerHTML = (res.items || []).map(it => `<div class="cell ${it.id ? 'tap' : ''}" ${it.id ? `data-play="${it.id}"` : ''}><span class="pl-wrap">${it.img ? `<img class="pl-cover" src="${it.img}" alt="">` : '<span class="pl-cover">🎵</span>'}${it.id ? '<span class="pl-pp"><svg class="ic"><use href="#i-play"/></svg></span>' : ''}</span>
       <span class="grow">${esc(tx(TYPES[it.t].q, it.qv))}<span class="sub">${esc(it.sub)}</span></span><span class="trail ${it.ok ? 'ok' : 'zero'}">${it.ok ? '✓' : '✗'} ${it.i + 1}</span></div>`).join('');
   END = { res, o };
   show('end');
@@ -746,14 +761,23 @@ function recordStats(g) {
   const st = LS.get('stats', { games: 0, right: 0, asked: 0, best: 0, wins: 0, jokers: 0, types: {} });
   st.games++; st.best = Math.max(st.best, g.final); st.jokers += g.usedJokers || 0;
   if (g.how === 'win') st.wins++;
+  st.dec ??= {};
   for (const l of g.log) {
     st.asked++; if (l.ok) st.right++;
     const t = (st.types[l.Q.type] ??= [0, 0]); t[1]++; if (l.ok) t[0]++;
+    // Jahrzehnt des Frage-Songs (bzw. der richtigen Antwort) – nur mit geprüftem Jahr
+    const s = l.Q.song || l.Q.answers.find(a => a.ok)?.s;
+    if (s?.y && !s.ya) { const d = (st.dec[Math.floor(s.y / 10) * 10] ??= [0, 0]); d[1]++; if (l.ok) d[0]++; }
   }
   LS.set('stats', st);
+  // Bestenliste: die 10 besten Runden
+  const top = LS.get('top', []);
+  top.push({ f: g.final, d: today(), p: g.daily ? 'daily' : cfg().pool, df: cfg().diff, j: g.usedJokers || 0 });
+  top.sort((a, b) => b.f - a.f || a.j - b.j || (a.d < b.d ? 1 : -1));
+  LS.set('top', top.slice(0, 10));
 }
 function renderStats() {
-  const st = LS.get('stats', null);
+  const st = Sync.view('gr.stats', LS.get('stats', null)); // alle verbundenen Geräte zusammen
   if (!st?.games) { $('#statsBox').innerHTML = `<div class="group-f" style="margin-top:14px">${tx('Noch keine Spiele')}</div>`; return; }
   const pc = (a, b) => b ? Math.round(a / b * 100) + ' %' : '–';
   const rows = [
@@ -763,19 +787,31 @@ function renderStats() {
     [tx('Richtige Antworten'), `${fmtN(st.right)} / ${fmtN(st.asked)} (${pc(st.right, st.asked)})`],
     [tx('Joker eingesetzt'), fmtN(st.jokers)],
   ];
-  const types = Object.keys(TYPES).filter(t => st.types[t]).map(t => [tx(TYPES[t].q, { a: '…' }), pc(...st.types[t])]);
+  // Balken 0–100 %
+  const bar = (label, [a, b]) => `<div class="sbar"><span class="sbar-l">${label}</span><span class="sbar-t"><i style="width:${b ? Math.round(a / b * 100) : 0}%"></i></span><b>${pc(a, b)}</b><small>${a}/${b}</small></div>`;
+  const types = Object.keys(TYPES).filter(t => st.types[t]).map(t => bar(esc(tx(TYPES[t].q, { a: '…' })), st.types[t])).join('');
+  const decs = Object.keys(st.dec || {}).sort().map(d => [d, st.dec[d]]);
+  const rated = decs.filter(([, v]) => v[1] >= 3).map(([d, v]) => [d, v[0] / v[1]]);
+  const bestD = rated.length > 1 ? rated.reduce((a, b) => b[1] > a[1] ? b : a) : null, worstD = rated.length > 1 ? rated.reduce((a, b) => b[1] < a[1] ? b : a) : null;
+  const decHtml = decs.map(([d, v]) => bar(tx('{d}er', { d }), v)).join('');
+  const top = LS.get('top', []);
+  const topHtml = top.map((r, k) => `<div class="cell"><span class="top-no">${k + 1}</span><span class="grow">${MEDAL(r.f)} ${stageName(r.f)}<span class="sub">${esc(fmtDay(r.d))} · ${r.p === 'daily' ? tx('Tägliche Challenge') : tx(POOL_NAMES[r.p] || 'Alle') + ' · ' + tx(DIFF_NAMES[r.df] || 'Normal')}${r.j ? '' : ' · ' + tx('ohne Joker')}</span></span><b>${r.f}/15</b></div>`).join('');
   const bests = [];
   for (const p in POOL_NAMES) for (const d in DIFF) { const v = LS.get(bestKey(p, d), 0); if (v) bests.push([tx(POOL_NAMES[p]) + ' · ' + tx(DIFF_NAMES[d]), stageName(v)]); }
   const dl = LS.get('dailyLog', {});
   if (Object.keys(dl).length) rows.push([tx('Tägliche Challenge'), tx('{n} gespielt', { n: Object.keys(dl).length }) + ' · ' + tx('Serie: {n} Tage', { n: dailyStreak() })]);
   const grp = r => `<div class="group">${r.map(([k, v]) => `<div class="cell"><span class="grow">${k}</span><b>${v}</b></div>`).join('')}</div>`;
   $('#statsBox').innerHTML = `<div style="margin-top:14px">${grp(rows)}</div>`
-    + (types.length ? `<div class="group-h">${tx('Trefferquote je Frage')}</div>${grp(types)}` : '')
+    + (topHtml ? `<div class="group-h">${tx('Deine besten Runden')}</div><div class="group icons toplist">${topHtml}</div>` : '')
+    + (decHtml ? `<div class="group-h">${tx('Trefferquote je Jahrzehnt')}</div><div class="sbars">${decHtml}</div>`
+      + (bestD && worstD && bestD[0] !== worstD[0] ? `<div class="group-f">${tx('Am stärksten: {a} · am schwächsten: {b}', { a: tx('{d}er', { d: bestD[0] }), b: tx('{d}er', { d: worstD[0] }) })}</div>` : '') : '')
+    + (types ? `<div class="group-h">${tx('Trefferquote je Frage')}</div><div class="sbars">${types}</div>` : '')
     + (bests.length ? `<div class="group-h">${tx('Rekorde')}</div>${grp(bests)}` : '');
 }
 
 /* ---------- Töne & Konfetti ---------- */
 let actx = null;
+const buzz = p => { try { if (opt.sfx && navigator.userActivation?.hasBeenActive) navigator.vibrate?.(p); } catch {} };
 const DRAMA = new Set(['lock', 'tick', 'safe', 'win']);   // Spannungs-Sounds – eigener Schalter
 function sound(type) {
   if (!opt.sfx || opt.muted) return;
@@ -862,7 +898,7 @@ function renderSettings() {
   $('#setDrama').disabled = !opt.sfx;
   $('#subHelp').textContent = [opt.auto ? 'Autoplay an' : 'Autoplay aus', opt.sfx ? (opt.drama ? '' : 'Spannungs-Sounds aus') : 'Töne aus'].filter(Boolean).map(s => tx(s)).join(' · ');
   $('#langSel').innerHTML = langOptions();
-  const st = LS.get('stats', null);
+  const st = Sync.view('gr.stats', LS.get('stats', null)); // alle verbundenen Geräte zusammen
   $('#subStats').textContent = st?.games ? tx(st.games === 1 ? '{n} Spiel' : '{n} Spiele', { n: st.games }) + ' · ' + tx('Höchste Stufe') + ': ' + stageName(st.best) : tx('Noch keine Spiele');
   const open = pastDays().filter(d => !LS.get('daily.' + d)).length;
   $('#subArchive').textContent = pastDays().length ? (open ? tx('{n} nachspielbar', { n: open }) : tx('Die letzten 30 Tage')) : tx('Ab morgen gibt es hier frühere Tage');
@@ -928,6 +964,11 @@ $('#qBox').addEventListener('click', e => {
 $('#jokers').addEventListener('click', e => { const b = e.target.closest('[data-jk]'); if (b && !b.disabled) useJoker(b.dataset.jk); });
 $('#btnWalk').onclick = () => { if (G && !G.locked && G.level && confirm(tx('Aussteigen und {s} behalten?', { s: tx(STAGES[G.level - 1]) }))) endGame('walk'); };
 $('#shareBtn').onclick = () => shareResult();
+$('#endList').addEventListener('click', e => {
+  const el = e.target.closest('[data-play]'); if (!el) return;
+  const id = +el.dataset.play;
+  playingId === id && !player.paused ? stop() : play(SONGS.find(s => s.id === id) || { id }, true);
+});
 const goHome = () => { stop(); stopTimer(); G = null; renderHome(); show('home'); };
 function leave() {
   if (G && !G.ended && G.level > 0 && !$('#game').classList.contains('hidden') && !confirm(tx('Spiel beenden? Deine Stufe geht verloren.'))) return;
@@ -960,6 +1001,7 @@ $('#langSel').onchange = e => setLang(e.target.value);
 $('#btnResetAll').onclick = () => {
   if (!confirm(tx('Alles löschen, was Gold Record auf diesem Gerät gespeichert hat?'))) return;
   try { Object.keys(localStorage).filter(k => k.startsWith('gr.')).forEach(k => localStorage.removeItem(k)); } catch {}
+  Sync.leave(); // vom persönlichen Code trennen, sonst käme beim nächsten Abgleich alles zurück
   location.reload();
 };
 self.liveLang = () => {
@@ -982,3 +1024,6 @@ document.addEventListener('keydown', e => {
 /* ---------- Start ---------- */
 applyVol(); renderHome();
 loadData().then(renderHome).catch(() => {});
+
+// Neue Spielstände von anderen Geräten (js/sync.js, Code in der Jukebox): Startseite und offene Einstellungen neu zeichnen
+addEventListener('jukebox-sync', () => { if (!G) renderHome(); if (document.querySelector('dialog[open]')) renderSettings(); });
