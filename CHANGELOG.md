@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.9.1 – 07.11.2026
+- Weitere Jahre geprüft: jetzt rund 1.950 der neuen Songs mit Originaljahr (80er 278, 90er 295, 2000er 473 Songs mit geprüftem Jahr)
+
 ## 1.9.0 – 07.11.2026
 - **Jahre geprüft:** Für rund 1.650 der neuen Songs steht jetzt das Originaljahr fest (MusicBrainz, wie in Older or Newer) – sie kommen damit auch in Jahres-, Jahrzehnt- und „älteste/neueste“-Fragen vor. Weitere folgen
 - **Größere Jahrzehnte:** 70er 254, 80er 226, 90er 269, 2000er 409 und 2010er 1.459 Songs
