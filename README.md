@@ -14,7 +14,12 @@ Lokal starten: `node server.js` → http://127.0.0.1:8893/
   **Streams:** `data/billions.json` aus Needle Drop (Spotify-Songs mit über einer Milliarde Streams, kworb.net).
 - **Mehr Songs:** `data/extra.json` (rund 1.000 weitere Hits aus der Milliarden-Liste, per `node scripts/build-extra.js` bei Deezer nachgeschlagen).
   Ihr Jahr ist ungeprüft (`ya: 1`) – sie kommen nur in Fragen ohne Jahr (Hören, Interpret, Cover) und als falsche Antworten.
-- **Fragearten** (`TYPES` in `js/game.js`): Welcher Song läuft? (Hörprobe) · Von wem? · Aus welchem Jahr? · Welcher ist am ältesten? · Meiste Streams? · Welches Cover?
+- **Fragearten** (`TYPES` in `js/game.js`): Welcher Song läuft? (Hörprobe) · Nur 3 Sekunden (ab Frage 8) · Von wem? · Aus welchem Jahr? · Aus welchem Jahrzehnt? (nur am Anfang) ·
+  Welcher ist am ältesten/neuesten? · Welcher ist NICHT von …? · Meiste Streams? · Welches Cover? – jede höchstens zweimal pro Spiel.
+- **Themen** (`POOL_NAMES`): Alle, International, Deutsch, Jahrzehnte und – sobald `data/genres.json` da ist (`node scripts/build-genres.js`) – Pop, Rock, Hip-Hop, Dance, R&B.
+  Themen mit weniger als 80 Songs sind nicht wählbar.
+- **Archiv** der Täglichen Challenge (letzte 30 Tage, nachgespielt zählt nicht für die Serie) und **Erfolge** (`ACH`, gespeichert in `gr.ach`).
+- **Sounds:** alle mit der Web-Audio-Schnittstelle erzeugt (keine Audiodateien, kein fremder Jingle).
 - **Schwierigkeit** steigt mit der Frage-Nummer: `DIFF` (f0/f1) legt fest, aus wie vielen der bekanntesten Songs (Deezer-Rang) gezogen wird;
   `similar()` wählt falsche Antworten anfangs zufällig, später aus derselben Zeit/Sprache bzw. vom selben Interpreten.
   Jahresfragen: Abstand der Jahreszahlen von 8 Jahren runter auf 1. Ältester/Streams: Songs liegen später immer enger beieinander.

@@ -17,7 +17,7 @@
 <link rel="preload" href="fonts/outfit-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=1">
 <link rel="stylesheet" href="css/base.css?v=1">
-<link rel="stylesheet" href="css/app.css?v=5">
+<link rel="stylesheet" href="css/app.css?v=6">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -81,12 +81,8 @@
       </div>
       <div class="group-f center" id="diffInfo"></div>
 
-      <div class="group-h">Songs</div>
-      <div class="seg" id="setPool">
-        <button data-v="all">Alle<small id="nAll"></small></button>
-        <button data-v="intl">International<small id="nIntl"></small></button>
-        <button data-v="de">Deutsch<small id="nDe"></small></button>
-      </div>
+      <div class="group-h">Thema</div>
+      <div class="themes" id="setPool"></div>
       <div class="group-h">Zeitlimit</div>
       <div class="seg" id="setTimer">
         <button data-v="on">⏱ An<small>ab Frage 6</small></button>
@@ -143,7 +139,7 @@
   <!-- ============ Ende ============ -->
   <section id="end" class="stage glass hidden">
     <div class="round-meta"><span class="pill" id="endMode"></span><span class="pill" id="endBest"></span></div>
-    <div class="lib-hero"><div class="cat-kicker" id="endKick">Erreicht</div><div class="end-medal" id="endMedal"></div><div class="lib-num" id="endStage"></div><div class="lib-sub" id="endSub"></div><div class="lib-sub hidden" id="endNext"></div></div>
+    <div class="lib-hero"><div class="cat-kicker" id="endKick">Erreicht</div><div class="end-medal" id="endMedal"></div><div class="lib-num" id="endStage"></div><div class="lib-sub" id="endSub"></div><div class="lib-sub hidden" id="endNext"></div><div class="end-ach" id="endAch"></div></div>
     <div class="group-h" style="text-align:left">Deine Fragen</div>
     <div class="group icons endlist" id="endList" data-no-tx></div>
     <div class="controls" style="margin-top:20px">
@@ -191,6 +187,16 @@
         </button>
       </div>
       <div class="group icons" style="margin-top:22px">
+        <button class="cell tap" data-go="archive">
+          <span class="cell-ic" style="background:linear-gradient(135deg,#fde68a,#d4a017);color:#2a1d00"><svg class="ic"><use href="#i-cal"/></svg></span>
+          <span class="grow">Archiv der Challenge<span class="sub" id="subArchive"></span></span>
+          <svg class="ic chev"><use href="#i-chev"/></svg>
+        </button>
+        <button class="cell tap" data-go="ach">
+          <span class="cell-ic" style="background:linear-gradient(135deg,#a78bfa,#6366f1)">🏅</span>
+          <span class="grow">Erfolge<span class="sub" id="subAch"></span></span>
+          <svg class="ic chev"><use href="#i-chev"/></svg>
+        </button>
         <button class="cell tap" data-go="stats">
           <span class="cell-ic" style="background:linear-gradient(135deg,#fde68a,#d4a017)"><svg class="ic"><use href="#i-chart"/></svg></span>
           <span class="grow">Deine Statistik<span class="sub" id="subStats"></span></span>
@@ -210,6 +216,15 @@
         </a>
       </div>
       <button class="app-version" id="appVersion" data-go="changes"></button>
+    </section>
+
+    <section class="page" data-page="archive" data-title="Archiv der Challenge">
+      <div class="group icons" id="archiveList" style="margin-top:14px"></div>
+      <div class="group-f">Verpasste Tage kannst du nachspielen. Sie zählen nicht für deine Serie.</div>
+    </section>
+
+    <section class="page" data-page="ach" data-title="Erfolge">
+      <div class="group icons" id="achList" style="margin-top:14px"></div>
     </section>
 
     <section class="page" data-page="stats" data-title="Deine Statistik">
@@ -244,14 +259,14 @@
 
 <div id="toast" class="hidden"></div>
 
-<script src="js/lang/en.js?v=5"></script>
-<script src="js/lang/fr.js?v=5"></script>
-<script src="js/lang/es.js?v=5"></script>
-<script src="js/lang/nb.js?v=5"></script>
+<script src="js/lang/en.js?v=6"></script>
+<script src="js/lang/fr.js?v=6"></script>
+<script src="js/lang/es.js?v=6"></script>
+<script src="js/lang/nb.js?v=6"></script>
 <script src="js/profile.js?v=1"></script>
 <script src="js/i18n.js?v=1"></script>
 <script src="js/deezer.js?v=1"></script>
-<script src="js/game.js?v=5"></script>
+<script src="js/game.js?v=6"></script>
 <script src="js/pwa.js?v=1"></script>
 </body>
 </html>

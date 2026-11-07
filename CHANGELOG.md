@@ -1,5 +1,12 @@
 # Neuerungen
 
+## 1.5.0 – 07.11.2026
+- **4 neue Fragearten:** Aus welchem Jahrzehnt? · Welcher Song ist NICHT von …? · Welcher ist am neuesten? · **Nur 3 Sekunden:** Welcher Song läuft? (ab Frage 8)
+- **Themen** für eine Runde: 70er & älter, 80er, 90er, 2000er, 2010er & neuer (zusätzlich zu Alle/International/Deutsch) – Rekorde je Thema
+- **Archiv der Täglichen Challenge** (Einstellungen): verpasste Tage nachspielen – zählt nicht für die Serie
+- **13 Erfolge** zum Freischalten, z. B. „Reiner Diamant“ (ohne Joker), „Blitzmerker“ oder „Eine ganze Woche“
+- **Eigene Sounds:** tiefer Ton beim Einloggen, Herzschlag in den letzten Sekunden der Uhr, kleine Fanfare bei Gold, Platin und Diamant
+
 ## 1.4.0 – 07.11.2026
 - **Fast doppelt so viele Songs:** rund 1.900 statt 915 – dazu alle Milliarden-Hits von Spotify, die noch fehlten
   (die neuen nur bei Fragen, bei denen das Jahr keine Rolle spielt)

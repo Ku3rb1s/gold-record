@@ -39,15 +39,18 @@ for (const tbl of ['POOL_NAMES', 'TIMER_NAMES', 'TIMER_INFO', 'DIFF_NAMES', 'DIF
 for (const m of code.matchAll(/\['(?:graphit|ozean|wald|abend|lila|oled)', '([^']+)'/g)) add(m[1]);
 ['Autoplay an', 'Autoplay aus', 'Töne aus'].forEach(add);
 for (const k of [...keys]) if (/^(https?:|#)/.test(k)) keys.delete(k);
-['de', 'intl'].forEach(k => keys.delete(k));
+['de', 'intl', 'ach', 'phone', 'extra', 'newest', 'decade', 'C', 'D'].forEach(k => keys.delete(k)); // Code-Kürzel, keine Texte
 // Stufen-Namen (STAGES) und Fragetexte (TYPES … q: '…') laufen ebenfalls über tx(Variable)
 for (const arr of ['STAGES', 'PHONE_LINES']) {
   const stg = code.match(new RegExp('const ' + arr + ' = \\[([\\s\\S]*?)\\];'));
   if (stg) for (const s of stg[1].matchAll(/'((?:\\.|[^'\\])*)'/g)) add(unq(s[1]));
 }
 for (const s of code.matchAll(/\bq: '((?:\\.|[^'\\])*)'/g)) add(unq(s[1]));
+// Erfolge: ['id', 'Symbol', 'Name', 'Beschreibung']
+for (const s of code.matchAll(/\['\w+', '[^']*', '((?:\\.|[^'\\])*)', '((?:\\.|[^'\\])*)'\]/g)) { add(unq(s[1])); add(unq(s[2])); }
 ['Gold', 'Single', 'Top 40', 'Top 10', 'Demo-Tape', 'Mixtape', 'Hall of Fame', 'Radio-Hit'].forEach(add); // evtl. gleich, aber je Sprache prüfbar
 
+['ach', 'phone', 'extra', 'newest', 'decade', 'C', 'D'].forEach(k => keys.delete(k)); // Code-Kürzel, keine Texte
 if (process.argv.includes('--keys')) { console.log(JSON.stringify([...keys].sort(), null, 1)); process.exit(0); }
 
 /* ---------- Sprachdateien prüfen ---------- */

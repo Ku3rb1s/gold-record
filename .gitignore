@@ -4,3 +4,4 @@ Thumbs.db
 .claude/
 logo-options/
 data/extra-cache.json
+data/genres-cache.json
