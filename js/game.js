@@ -2,7 +2,7 @@
    Quiz-Leiter mit 15 Stufen: Jede richtige Antwort bringt eine Stufe höher, von der Kassette bis zum Diamanten.
    Gold (Stufe 5) und Platin (Stufe 10) sind sicher: Bei einem Fehler fällt man auf die letzte erreichte Sicherheitsstufe.
    Aussteigen geht jederzeit vor dem Antworten – dann bleibt die erreichte Stufe. */
-const APP_VERSION = '1.10.5', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
+const APP_VERSION = '1.10.6', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
@@ -179,9 +179,14 @@ const TYPES = {
   decade: { q: 'Aus welchem Jahrzehnt ist dieser Song?', song: true },
   notby: { q: 'Welcher Song ist NICHT von {a}?' },
   flash: { q: 'Nur 3 Sekunden: Welcher Song läuft?', song: true, blind: true },
+  whosings: { q: 'Wer singt das?', song: true, blind: true },
+  byartist: { q: 'Welcher dieser Songs ist von {a}?' },
+  fromyear: { q: 'Welcher dieser Songs ist aus {y}?' },
+  notdec: { q: 'Welcher Song ist NICHT aus den {d}ern?' },
+  gap: { q: 'Welches Wort fehlt im Titel?', song: true },
 };
 // Fragearten mit Jahr brauchen geprüfte Jahre (songs.json), die anderen dürfen auch extra.json nutzen
-const NEEDS_YEAR = new Set(['year', 'oldest', 'newest', 'decade']);
+const NEEDS_YEAR = new Set(['year', 'oldest', 'newest', 'decade', 'fromyear', 'notdec']);
 const curve = i => Math.pow(i / 14, 1.4);
 const hOf = i => { const D = DIFF[cfg().diff]; return lerp(D.h0, D.h1, curve(i)); };
 // checked = nur Songs mit geprüftem Jahr (für Jahres- und Älteste-Fragen)
@@ -200,12 +205,14 @@ function pickTypes() {
   // abwechslungsreich: jeder Typ höchstens 2-mal, nicht zweimal hintereinander;
   // Jahrzehnt nur am Anfang (leicht), 3-Sekunden-Intro erst ab Frage 8 (schwer)
   const ks = kinds();
-  const ok = (k, i) => !(k === 'decade' && (i > 6 || DEC[cfg().pool])) && !(k === 'flash' && i < 7);
+  // „Jahr X“ und „NICHT aus den …ern“ sind eher schwer (ab Frage 5); „NICHT aus den …ern“ ergibt in einem Jahrzehnt-Thema keinen Sinn
+  const ok = (k, i) => !(k === 'decade' && (i > 6 || DEC[cfg().pool])) && !(k === 'flash' && i < 7)
+    && !((k === 'fromyear' || k === 'notdec') && i < 4) && !(k === 'notdec' && DEC[cfg().pool]);
   const out = [];
   for (let i = 0; i < 15; i++) {
     let c = shuffle(ks.filter(k => k !== out[i - 1] && ok(k, i) && out.filter(x => x === k).length < 2));
     // zum Einstieg lieber Hören, Interpret oder Jahrzehnt
-    if (i < 3) c = c.filter(k => k === 'listen' || k === 'artist' || k === 'decade').concat(c);
+    if (i < 3) c = c.filter(k => k === 'listen' || k === 'artist' || k === 'decade' || k === 'whosings').concat(c);
     out.push(c[0] || ks.filter(k => ok(k, i))[rnd(ks.filter(k => ok(k, i)).length)]);
   }
   return out;
@@ -213,15 +220,20 @@ function pickTypes() {
 
 function makeQuestion(i, type) {
   if (type === 'notby') { const q = notByQuestion(i); if (q) return q; type = 'artist'; }
+  if (type === 'byartist' || type === 'fromyear' || type === 'notdec' || type === 'gap') {
+    const q = ({ byartist: byArtistQuestion, fromyear: fromYearQuestion, notdec: notDecQuestion, gap: gapQuestion })[type](i);
+    if (q) { if (q.song) G.used.add(q.song.id); for (const a of q.answers) if (a.s) G.used.add(a.s.id); return q; }
+    type = 'artist';
+  }
   const h = hOf(i), pool = famePool(i, NEEDS_YEAR.has(type));
   const free = pool.filter(s => !G.used.has(s.id));
   const subj = free[rnd(free.length)] || pool[rnd(pool.length)];
   const Q = { type, i, h, fame: FAME.get(subj.id) ?? .5 };
   // Schwierigkeit fürs Publikum/Telefon: Frage-Nummer zählt mit, damit auch „Leicht“ nach oben etwas unsicherer wird
   Q.hp = Math.max(h, i / 14 * .6);
-  if (type === 'listen' || type === 'flash' || type === 'artist' || type === 'cover') {
+  if (type === 'listen' || type === 'flash' || type === 'artist' || type === 'whosings' || type === 'cover') {
     Q.song = subj;
-    const key = type === 'listen' || type === 'flash' ? s => s.t.toLowerCase() : type === 'artist' ? s => s.a.toLowerCase() : s => s.c;
+    const key = type === 'listen' || type === 'flash' ? s => s.t.toLowerCase() : type === 'artist' || type === 'whosings' ? s => artistKey(s.a) : s => s.c;
     const seen = new Set([key(subj)]);
     // beim Cover: gleicher Interpret macht es schwer (Cover sehen sich oft ähnlich)
     const extra = type === 'cover' ? s => (s.a === subj.a ? -6 * h : 0) : type === 'listen' || type === 'flash' ? s => (s.a === subj.a ? -4 * h : 0) : () => 0;
@@ -312,6 +324,116 @@ function notByQuestion(i) {
   if (!odd) return null;
   (G.usedArtists ??= new Set()).add(A.l[0].a);
   return { type: 'notby', i, h, hp: Math.max(h, i / 14 * .6), fame: A.f, qv: { a: three[0].a }, answers: shuffle([...three, odd]).map(s => ({ s, ok: s === odd })) };
+}
+
+// Interpret ohne „feat. …“, „The“ usw. (wie in songKey) – damit „Eminem“ und „Eminem feat. Rihanna“ als derselbe gelten
+const artistKey = a => songKey('', a).split('|')[0];
+// enthält der Interpret von s den Interpreten a (auch als Gast)? Dann taugt s nicht als falsche Antwort
+const features = (s, a) => { const k = artistKey(a); return artistKey(s.a) === k || (k.length > 3 && s.a.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '').includes(k)); };
+const baseQ = (type, i, extra) => { const h = hOf(i); return { type, i, h, hp: Math.max(h, i / 14 * .6), ...extra }; };
+const fameOf = list => list.reduce((n, s) => n + (FAME.get(s.id) ?? .5), 0) / list.length;
+// „Welcher dieser Songs ist von X?“: ein Song von X, drei von anderen (später: ähnliche Zeit und Sprache)
+function byArtistQuestion(i) {
+  const h = hOf(i), pool = famePool(i), free = pool.filter(s => !G.used.has(s.id) && !G.usedArtists?.has(s.a));
+  const subj = free[rnd(free.length)];
+  if (!subj) return null;
+  const seen = new Set([subj.t.toLowerCase()]), wrong = [], arts = new Set([artistKey(subj.a)]);
+  // falsche Antworten aus ähnlich bekannten Songs – unbekannte Namen würden die Lösung verraten
+  const src = pool.length >= 150 ? pool : distractors();
+  for (const s of similar(subj, src.filter(s => !features(s, subj.a) && !features(subj, s.a)), h)) {
+    if (seen.has(s.t.toLowerCase()) || arts.has(artistKey(s.a))) continue;
+    seen.add(s.t.toLowerCase()); arts.add(artistKey(s.a)); wrong.push(s);
+    if (wrong.length === 3) break;
+  }
+  if (wrong.length < 3) return null;
+  (G.usedArtists ??= new Set()).add(subj.a);
+  return baseQ('byartist', i, { fame: FAME.get(subj.id) ?? .5, qv: { a: subj.a }, answers: shuffle([subj, ...wrong]).map(s => ({ s, ok: s === subj })) });
+}
+// „Welcher dieser Songs ist aus Jahr X?“: die falschen liegen anfangs weit weg, zum Schluss 2 Jahre daneben
+function fromYearQuestion(i) {
+  const h = hOf(i), pool = famePool(i, true), free = pool.filter(s => !G.used.has(s.id));
+  const gap = Math.max(2, Math.round(lerp(9, 2, h)));
+  for (let t = 0; t < 30; t++) {
+    const subj = free[rnd(free.length)];
+    if (!subj) return null;
+    const got = [subj];
+    for (const s of similar(subj, free.filter(s => Math.abs(s.y - subj.y) >= gap), h)) {
+      // verschiedene Jahre – sonst fiele die richtige Antwort als einzige „andere“ auf
+      if (got.every(g => g.y !== s.y && artistKey(g.a) !== artistKey(s.a) && g.t.toLowerCase() !== s.t.toLowerCase())) got.push(s);
+      if (got.length === 4) break;
+    }
+    if (got.length === 4) return baseQ('fromyear', i, { fame: fameOf(got), qv: { y: String(subj.y) }, answers: shuffle(got).map(s => ({ s, ok: s === subj })) });
+  }
+  return null;
+}
+// „Welcher Song ist NICHT aus den 80ern?“: drei Songs aus dem Jahrzehnt, einer außerhalb (zum Schluss knapp daneben).
+// Keine Songs direkt an der Grenze (…0/…9 bzw. 1 Jahr daneben) – ein um ein Jahr verrutschtes Jahr soll die Frage nicht kippen
+function notDecQuestion(i) {
+  const h = hOf(i), free = famePool(i, true).filter(s => !G.used.has(s.id));
+  const decs = shuffle([...new Set(free.map(s => Math.floor(s.y / 10) * 10))]);
+  const far = Math.max(2, Math.round(lerp(14, 2, h)));
+  for (const d of decs) {
+    const inside = shuffle(free.filter(s => s.y % 10 >= 1 && s.y % 10 <= 8 && Math.floor(s.y / 10) * 10 === d)), three = [];
+    for (const s of inside) { if (three.every(g => artistKey(g.a) !== artistKey(s.a) && g.t.toLowerCase() !== s.t.toLowerCase())) three.push(s); if (three.length === 3) break; }
+    if (three.length < 3) continue;
+    const dist = s => s.y < d ? d - s.y : s.y - (d + 9);
+    const outs = free.filter(s => dist(s) >= far && dist(s) <= far + lerp(30, 4, h) && three.every(g => artistKey(g.a) !== artistKey(s.a)));
+    const odd = similar(three[0], outs, h)[0];
+    if (!odd) continue;
+    return baseQ('notdec', i, { fame: fameOf([...three, odd]), qv: { d: String(d) }, answers: shuffle([...three, odd]).map(s => ({ s, ok: s === odd })) });
+  }
+  return null;
+}
+// „Welches Wort fehlt im Titel?“: ein Wort des Titels wird ausgeblendet; die falschen Wörter stammen aus anderen Titeln
+// (zum Schluss gleich lang und mit gleichem Anfangsbuchstaben)
+const STOP = new Set('the a an and or of to in on at for my me you your i is it be we our this that with from de la le el los las et du des die der das und ein eine ich du mit von zu im am nicht ist sie er es wir ihr mein dein och og en et je tu il mi te se lo yo'.split(' '));
+const wordsOf = t => t.replace(/\s*[([].*?[)\]]/g, '').replace(/\s+[-–—]\s+.*$/, '').split(/\s+/).map(w => w.replace(/^[^\p{L}\p{N}']+|[^\p{L}\p{N}']+$/gu, '')).filter(Boolean);
+const goodWord = w => w.length >= 4 && !STOP.has(w.toLowerCase()) && /^\p{L}[\p{L}']*$/u.test(w);
+// alle brauchbaren Titelwörter des Themas (einmal je Thema berechnet)
+const wordCache = new Map();
+function wordPool() {
+  const d = distractors();
+  // je Wort: Schreibweise, in wie vielen Titeln es vorkommt und wie oft davon in deutschen Titeln (für die Sprache)
+  if (!wordCache.has(d)) {
+    const m = new Map();
+    for (const s of d) for (const w of new Set(wordsOf(s.t).filter(goodWord))) { const k = w.toLowerCase(), e = m.get(k) || m.set(k, { w, n: 0, de: 0 }).get(k); e.n++; if (s.de) e.de++; }
+    wordCache.set(d, [...m]);
+  }
+  return wordCache.get(d);
+}
+function gapQuestion(i) {
+  const h = hOf(i), free = famePool(i).filter(s => !G.used.has(s.id));
+  for (let t = 0; t < 40; t++) {
+    const subj = free[rnd(free.length)];
+    if (!subj) return null;
+    const ws = wordsOf(subj.t);
+    if (ws.length < 2 || ws.length > 7) continue;
+    const cand = ws.filter(goodWord);
+    if (!cand.length) continue;
+    const word = cand[rnd(cand.length)], lw = word.toLowerCase();
+    // nur Titel, in denen das Wort einmal vorkommt
+    if (ws.filter(w => w.toLowerCase() === lw).length > 1) continue;
+    const pool = new Map(wordPool());
+    // Sprache des Titels aus seinen Wörtern schätzen (deutsche Interpreten singen oft englisch), sonst nach dem Song
+    const vote = ws.map(w => pool.get(w.toLowerCase())).filter(e => e && e.n >= 3).map(e => e.de * 2 > e.n ? 1 : -1).reduce((x, y) => x + y, 0);
+    const wordDe = vote ? vote > 0 : !!subj.de;
+    for (const w of ws) pool.delete(w.toLowerCase());   // auch keine Wörter, die schon im Titel stehen
+    // Wörter, die ebenso in den Titel passen würden (Mehrzahl, Groß/Klein), raus
+    const near = w => { const x = w.toLowerCase(); return x === lw + 's' || lw === x + 's' || x.startsWith(lw) || lw.startsWith(x); };
+    // gleiche Sprache (deutsch/nicht deutsch), keine Sonderzeichen-Ausreißer, lieber gängige Wörter – sonst verrät die Sprache die Lösung
+    const acc = x => /[^a-z']/i.test(x);
+    const score = e => Math.abs(e.w.length - word.length) + (e.w[0].toLowerCase() !== lw[0] ? 3 : 0)
+      + ((e.de * 2 > e.n) !== wordDe ? 12 : 0) + (acc(e.w) !== acc(word) ? 8 : 0) + (e.n < 2 ? 5 : 0) + R() * lerp(30, 2, h);
+    const wrong = shuffle([...pool.values()]).slice(0, 600).filter(e => !near(e.w)).map(e => ({ w: e.w, d: score(e) })).sort((a, b) => a.d - b.d).slice(0, 3).map(x => x.w);
+    if (wrong.length < 3) return null;
+    // Groß-/Kleinschreibung angleichen, damit sie nichts verrät
+    const fit = w => word.length > 1 && word === word.toUpperCase() ? w.toUpperCase() : word[0] === word[0].toUpperCase() ? w[0].toUpperCase() + w.slice(1).toLowerCase() : w.toLowerCase();
+    // ohne Zusätze wie „(feat. …)“ oder „- Remastered“
+    const masked = subj.t.replace(/\s*[([].*?[)\]]/g, '').replace(/\s+[-–—]\s+.*$/, '').replace(new RegExp('(^|[^\\p{L}])' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?![\\p{L}])', 'u'), (m, p) => p + '＿＿＿');
+    if (!masked.includes('＿')) continue;
+    return baseQ('gap', i, { song: subj, fame: FAME.get(subj.id) ?? .5, masked, answers: shuffle([word, ...wrong.map(fit)]).map(w => ({ w, ok: w === word })) });
+  }
+  return null;
 }
 
 /* ---------- Wiedergabe: Hörprobe von Deezer ----------
@@ -438,13 +560,15 @@ function answerHtml(a, k) {
   const Q = G.q;
   let body;
   if (Q.type === 'listen') body = `<span class="ans-2"><b>${esc(a.s.t)}</b><small>${esc(a.s.a)}</small></span>`;
-  else if (Q.type === 'artist') body = `<b>${esc(a.s.a)}</b>`;
+  else if (Q.type === 'artist' || Q.type === 'whosings') body = `<b>${esc(a.s.a)}</b>`;
+  else if (Q.type === 'gap') body = `<b>${esc(a.w)}</b>`;
+  else if (Q.type === 'byartist') body = `<span class="ans-2"><b>${esc(a.s.t)}</b></span>`;   // ohne Cover und Interpret – sonst wäre es zu leicht
   else if (Q.type === 'year') body = `<b class="num">${a.y}</b>`;
   else if (Q.type === 'cover') body = `<img class="ans-cv" src="${cover(a.s, 250)}" alt="">`;
   else if (Q.type === 'flash') body = `<span class="ans-2"><b>${esc(a.s.t)}</b><small>${esc(a.s.a)}</small></span>`;
   else if (Q.type === 'decade') body = `<b class="num">${tx('{d}er', { d: a.dec })}</b>`;
   else if (Q.type === 'notby') body = `<span class="ans-2"><b>${esc(a.s.t)}</b></span>`;   // ohne Cover – gleiche Albumcover würden die Lösung verraten
-  else if (Q.type === 'oldest' || Q.type === 'newest') body = `<img class="ans-th" src="${cover(a.s, 120)}" alt=""><span class="ans-2"><b>${esc(a.s.t)}</b><small>${esc(a.s.a)}</small></span>`;
+  else if (Q.type === 'oldest' || Q.type === 'newest' || Q.type === 'fromyear' || Q.type === 'notdec') body = `<img class="ans-th" src="${cover(a.s, 120)}" alt=""><span class="ans-2"><b>${esc(a.s.t)}</b><small>${esc(a.s.a)}</small></span>`;
   else body = `<img class="ans-th ph" data-sid="${a.st.id}" alt=""><span class="ans-2"><b>${esc(a.st.title)}</b><small>${esc(a.st.artist)}</small></span>`;
   return `<button class="ans ${Q.type === 'cover' ? 'is-cover' : ''}" data-k="${k}"><span class="ans-l">${LETTERS[k]}</span><span class="ans-b">${body}</span><span class="ans-x"></span></button>`;
 }
@@ -456,8 +580,8 @@ function renderQuestion(fresh = false) {
   let subj = '';
   if (Q.song) {
     const blind = T.blind && !G.locked;
-    const showCover = !blind && Q.type !== 'cover';
-    const line = Q.type === 'artist' ? `<b>${esc(Q.song.t)}</b>` : blind ? `<b>${tx('Hör genau hin…')}</b>` : Q.type === 'cover' ? `<b>${esc(Q.song.t)}</b><small>${esc(Q.song.a)}</small>` : `<b>${esc(Q.song.t)}</b><small>${esc(Q.song.a)}</small>`;
+    const showCover = !blind && Q.type !== 'cover' && !(Q.type === 'gap' && !G.locked);
+    const line = Q.type === 'gap' ? `<b>${esc(Q.masked)}</b><small>${esc(Q.song.a)}</small>` : Q.type === 'artist' ? `<b>${esc(Q.song.t)}</b>` : blind ? `<b>${tx('Hör genau hin…')}</b>` : Q.type === 'cover' ? `<b>${esc(Q.song.t)}</b><small>${esc(Q.song.a)}</small>` : `<b>${esc(Q.song.t)}</b><small>${esc(Q.song.a)}</small>`;
     subj = `<div class="q-song"><button class="qdisc" data-id="${Q.song.id}" aria-label="${esc(tx('Abspielen'))}">
         ${showCover ? `<img src="${cover(Q.song, 250)}" alt="">` : ''}<span class="vinyl"></span>
         <span class="pp"><svg class="ic i-play"><use href="#i-play"/></svg><span class="eq"><i></i><i></i><i></i><i></i></span></span></button>
@@ -531,7 +655,7 @@ function audience() {
 // Telefon: ein Musik-Freund nennt eine Antwort. Wie sicher er ist (und ob er recht hat), hängt von Bekanntheit und Stufe ab
 const ansLabel = (Q, i) => {
   const a = Q.answers[i], L = LETTERS[i];
-  return Q.type === 'decade' ? `${L}: ${tx('{d}er', { d: a.dec })}` : Q.type === 'year' ? `${L}: ${a.y}` : Q.type === 'artist' ? `${L}: ${a.s.a}` : Q.type === 'cover' ? L : Q.type === 'streams' ? `${L}: ${a.st.title}` : `${L}: ${a.s.t}`;
+  return Q.type === 'decade' ? `${L}: ${tx('{d}er', { d: a.dec })}` : Q.type === 'year' ? `${L}: ${a.y}` : Q.type === 'artist' || Q.type === 'whosings' ? `${L}: ${a.s.a}` : Q.type === 'gap' ? `${L}: ${a.w}` : Q.type === 'cover' ? L : Q.type === 'streams' ? `${L}: ${a.st.title}` : `${L}: ${a.s.t}`;
 };
 const bubble = (ic, who, text, extra = '') => `<div class="call"><span class="call-ic">${ic}</span><span class="call-tx"><b>${who}</b><span>${text}</span></span>${extra}</div>`;
 async function phoneCall() {
@@ -660,7 +784,7 @@ function renderReveal() {
   const Q = G.q;
   if (Q.song) {
     const blind = TYPES[Q.type].blind;
-    if (blind || Q.type === 'cover') {
+    if (blind || Q.type === 'cover' || Q.type === 'gap') {
       const d = $('#qBox .qdisc');
       if (d && !d.querySelector('img')) d.insertAdjacentHTML('afterbegin', `<img src="${cover(Q.song, 250)}" alt="">`);
     }
@@ -668,7 +792,7 @@ function renderReveal() {
   }
   $$('#answers .ans').forEach((b, i) => {
     const a = Q.answers[i];
-    const tag = Q.type === 'oldest' || Q.type === 'newest' ? a.s.y : Q.type === 'notby' ? esc(a.s.a) : Q.type === 'streams' ? tx('{n} Mrd.', { n: (a.st.streams / 1e9).toLocaleString(LOC(), { maximumFractionDigits: 2, minimumFractionDigits: 2 }) }) : '';
+    const tag = Q.type === 'oldest' || Q.type === 'newest' || Q.type === 'fromyear' || Q.type === 'notdec' ? a.s.y : Q.type === 'notby' || Q.type === 'byartist' ? esc(a.s.a) : Q.type === 'streams' ? tx('{n} Mrd.', { n: (a.st.streams / 1e9).toLocaleString(LOC(), { maximumFractionDigits: 2, minimumFractionDigits: 2 }) }) : '';
     if (tag) b.querySelector('.ans-x').innerHTML = `<span class="tag">${tag}</span>`;
   });
 }
@@ -685,8 +809,8 @@ function endGame(how) {
   // Fragen-Liste als Daten (so lässt sich das Ergebnis der Täglichen Challenge später nochmal zeigen)
   const items = G.log.map(({ Q, ok }) => {
     const r = Q.answers.find(x => x.ok);
-    const sub = Q.type === 'year' ? `${Q.song.t} · ${r.y}` : Q.type === 'decade' ? `${Q.song.t} · ${Q.song.y}` : Q.type === 'artist' ? `${Q.song.t} · ${Q.song.a}`
-      : Q.type === 'streams' ? `${r.st.title} · ${r.st.artist}` : `${r.s.t} · ${r.s.a}${Q.type === 'oldest' || Q.type === 'newest' ? ' · ' + r.s.y : ''}`;
+    const sub = Q.type === 'year' ? `${Q.song.t} · ${r.y}` : Q.type === 'decade' ? `${Q.song.t} · ${Q.song.y}` : Q.type === 'artist' || Q.type === 'whosings' || Q.type === 'gap' ? `${Q.song.t} · ${Q.song.a}`
+      : Q.type === 'streams' ? `${r.st.title} · ${r.st.artist}` : `${r.s.t} · ${r.s.a}${Q.type === 'oldest' || Q.type === 'newest' || Q.type === 'fromyear' || Q.type === 'notdec' ? ' · ' + r.s.y : ''}`;
     // Song zum Nachhören: der Frage-Song bzw. die richtige Antwort
     const sid = Q.song?.id || r.s?.id || r.st?.id;
     return { t: Q.type, qv: Q.qv, id: sid, sub, img: Q.song ? cover(Q.song, 120) : r.s ? cover(r.s, 120) : '', ok, i: Q.i };
@@ -784,7 +908,7 @@ function checkAch(g) {
   const cond = {
     first: true, gold: g.final >= 5 || g.level >= 5, platin: g.level >= 10, diamond: g.how === 'win',
     nojoker: g.level >= 10 && !g.usedJokers, pure: g.how === 'win' && !g.usedJokers, hard: g.how === 'win' && cfg().diff === 'hard',
-    ears: right.filter(l => l.Q.type === 'listen' || l.Q.type === 'flash').length >= 3, flash: right.some(l => l.Q.type === 'flash'),
+    ears: right.filter(l => l.Q.type === 'listen' || l.Q.type === 'flash' || l.Q.type === 'whosings').length >= 3, flash: right.some(l => l.Q.type === 'flash'),
     walk: g.how === 'walk' && g.level >= 10, daily3: dailyStreak() >= 3, daily7: dailyStreak() >= 7, games25: st.games >= 25,
   };
   const fresh = ACH.filter(([id]) => cond[id] && !have[id]).map(([id]) => id);
@@ -897,7 +1021,7 @@ function renderStats() {
   ];
   // Balken 0–100 %
   const bar = (label, [a, b]) => `<div class="sbar"><span class="sbar-l">${label}</span><span class="sbar-t"><i style="width:${b ? Math.round(a / b * 100) : 0}%"></i></span><b>${pc(a, b)}</b><small>${a}/${b}</small></div>`;
-  const types = Object.keys(TYPES).filter(t => st.types[t]).map(t => bar(esc(tx(TYPES[t].q, { a: '…' })), st.types[t])).join('');
+  const types = Object.keys(TYPES).filter(t => st.types[t]).map(t => bar(esc(tx(TYPES[t].q, { a: '…', y: '…', d: '…' })), st.types[t])).join('');
   const decs = Object.keys(st.dec || {}).sort().map(d => [d, st.dec[d]]);
   const rated = decs.filter(([, v]) => v[1] >= 3).map(([d, v]) => [d, v[0] / v[1]]);
   const bestD = rated.length > 1 ? rated.reduce((a, b) => b[1] > a[1] ? b : a) : null, worstD = rated.length > 1 ? rated.reduce((a, b) => b[1] < a[1] ? b : a) : null;

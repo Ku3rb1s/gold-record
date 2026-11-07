@@ -5,6 +5,11 @@
   name: "English",
   flag: "🇬🇧",
   dict: {
+    "Wer singt das?": "Who sings this?",
+    "Welcher dieser Songs ist von {a}?": "Which of these songs is by {a}?",
+    "Welcher dieser Songs ist aus {y}?": "Which of these songs is from {y}?",
+    "Welcher Song ist NICHT aus den {d}ern?": "Which song is NOT from the {d}s?",
+    "Welches Wort fehlt im Titel?": "Which word is missing from the title?",
     "Diese Hörprobe lädt gerade nicht – tippe gleich nochmal auf die Platte.": "This preview won’t load right now – tap the record again in a moment.",
     "Serie: 1 Tag": "Streak: 1 day",
     "Löschen": "Delete",

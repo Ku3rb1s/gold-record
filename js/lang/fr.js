@@ -5,6 +5,11 @@
   name: "Français",
   flag: "🇫🇷",
   dict: {
+    "Wer singt das?": "Qui chante ?",
+    "Welcher dieser Songs ist von {a}?": "Laquelle de ces chansons est de {a} ?",
+    "Welcher dieser Songs ist aus {y}?": "Laquelle de ces chansons date de {y} ?",
+    "Welcher Song ist NICHT aus den {d}ern?": "Quelle chanson n’est PAS des années {d} ?",
+    "Welches Wort fehlt im Titel?": "Quel mot manque dans le titre ?",
     "Diese Hörprobe lädt gerade nicht – tippe gleich nochmal auf die Platte.": "Cet extrait ne se charge pas – touche à nouveau le disque dans un instant.",
     "Serie: 1 Tag": "Série : 1 jour",
     "Löschen": "Supprimer",

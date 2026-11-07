@@ -5,6 +5,11 @@
   name: "Español",
   flag: "🇪🇸",
   dict: {
+    "Wer singt das?": "¿Quién canta?",
+    "Welcher dieser Songs ist von {a}?": "¿Cuál de estas canciones es de {a}?",
+    "Welcher dieser Songs ist aus {y}?": "¿Cuál de estas canciones es de {y}?",
+    "Welcher Song ist NICHT aus den {d}ern?": "¿Qué canción NO es de los años {d}?",
+    "Welches Wort fehlt im Titel?": "¿Qué palabra falta en el título?",
     "Diese Hörprobe lädt gerade nicht – tippe gleich nochmal auf die Platte.": "Este fragmento no carga ahora mismo: vuelve a tocar el disco en un momento.",
     "Serie: 1 Tag": "Racha: 1 día",
     "Löschen": "Borrar",

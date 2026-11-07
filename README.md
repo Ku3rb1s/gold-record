@@ -19,7 +19,8 @@ Lokal starten: `node server.js` → http://127.0.0.1:8893/
 - **Dubletten:** `songKey()` in `js/game.js` (= `scripts/songkey.js`) erkennt gleiche Songs trotz anderer Schreibweise; der geprüfte Eintrag bleibt.
 - **Genres:** `data/genres.json` (`node scripts/build-genres.js`) bzw. Feld `g` in `more.json`.
 - **Fragearten** (`TYPES` in `js/game.js`): Welcher Song läuft? (Hörprobe) · Nur 3 Sekunden (ab Frage 8) · Von wem? · Aus welchem Jahr? · Aus welchem Jahrzehnt? (nur am Anfang) ·
-  Welcher ist am ältesten/neuesten? · Welcher ist NICHT von …? · Meiste Streams? · Welches Cover? – jede höchstens zweimal pro Spiel.
+  Welcher ist am ältesten/neuesten? · Welcher ist NICHT von …? · Meiste Streams? · Welches Cover? ·
+  Wer singt das? (Hörprobe) · Welcher ist von …? · Welcher ist aus Jahr X? (ab Frage 5) · Welcher ist NICHT aus den …ern? (ab Frage 5) · Welches Wort fehlt im Titel? – jede höchstens zweimal pro Spiel.
 - **Themen** (`POOL_NAMES`): Alle, International, Deutsch, Jahrzehnte und – sobald `data/genres.json` da ist (`node scripts/build-genres.js`) – Pop, Rock, Hip-Hop, Dance, R&B.
   Themen mit weniger als 80 Songs sind nicht wählbar.
 - **Archiv** der Täglichen Challenge (letzte 30 Tage, nachgespielt zählt nicht für die Serie) und **Erfolge** (`ACH`, gespeichert in `gr.ach`).

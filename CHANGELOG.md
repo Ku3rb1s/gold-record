@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.10.6 – 07.11.2026
+- Fünf neue Fragearten: „Wer singt das?“ (nur hören), „Welcher dieser Songs ist von …?“, „Welcher dieser Songs ist aus Jahr X?“, „Welcher Song ist NICHT aus den 80ern?“ und „Welches Wort fehlt im Titel?“ – jetzt 15 Fragearten, jede höchstens zweimal pro Runde
+
 ## 1.10.5 – 07.11.2026
 - Spiele-Menü: Logo oben lange gedrückt halten (am Computer Rechtsklick) – zurück zur Jukebox oder direkt in ein anderes Spiel
 

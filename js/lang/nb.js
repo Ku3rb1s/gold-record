@@ -5,6 +5,11 @@
   name: "Norsk",
   flag: "🇳🇴",
   dict: {
+    "Wer singt das?": "Hvem synger dette?",
+    "Welcher dieser Songs ist von {a}?": "Hvilken av disse sangene er av {a}?",
+    "Welcher dieser Songs ist aus {y}?": "Hvilken av disse sangene er fra {y}?",
+    "Welcher Song ist NICHT aus den {d}ern?": "Hvilken sang er IKKE fra {d}-tallet?",
+    "Welches Wort fehlt im Titel?": "Hvilket ord mangler i tittelen?",
     "Diese Hörprobe lädt gerade nicht – tippe gleich nochmal auf die Platte.": "Lydprøven lastes ikke akkurat nå – trykk på platen igjen om litt.",
     "Serie: 1 Tag": "Rekke: 1 dag",
     "Löschen": "Slett",
