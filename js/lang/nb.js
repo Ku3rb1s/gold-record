@@ -5,6 +5,12 @@
   name: "Norsk",
   flag: "🇳🇴",
   dict: {
+    "Schaffst du mehr?": "Klarer du mer?",
+    "Bild gespeichert, Text kopiert": "Bilde lagret, tekst kopiert",
+    "Auf allen Geräten spielen": "Spill på alle enhetene dine",
+    "Auf allen Geräten verbunden": "Koblet på alle enhetene dine",
+    "Code {c} · ändern in der Jukebox": "Kode {c} · endre i Jukebox",
+    "Rekorde, Serie und Profil mit einem Code mitnehmen": "Ta med rekorder, rekke og profil med en kode",
     "{a} von {b}": "{a} av {b}",
     "{d}er": "{d}-tallet",
     "{n} aus dem Publikum": "{n} fra publikum",

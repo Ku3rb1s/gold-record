@@ -5,6 +5,12 @@
   name: "Español",
   flag: "🇪🇸",
   dict: {
+    "Schaffst du mehr?": "¿Puedes superarlo?",
+    "Bild gespeichert, Text kopiert": "Imagen guardada, texto copiado",
+    "Auf allen Geräten spielen": "Juega en todos tus dispositivos",
+    "Auf allen Geräten verbunden": "Conectado en todos tus dispositivos",
+    "Code {c} · ändern in der Jukebox": "Código {c} · cámbialo en el Jukebox",
+    "Rekorde, Serie und Profil mit einem Code mitnehmen": "Llévate récords, racha y perfil con un código",
     "{a} von {b}": "{a} de {b}",
     "{d}er": "años {d}",
     "{n} aus dem Publikum": "{n}, del público",

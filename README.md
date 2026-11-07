@@ -12,8 +12,10 @@ Lokal starten: `node server.js` → http://127.0.0.1:8893/
 
 - **Songs:** `data/songs.json` aus Older or Newer (über 900 Hits mit geprüftem Originaljahr, Deezer-ID, Cover und Deezer-Rang).
   **Streams:** `data/billions.json` aus Needle Drop (Spotify-Songs mit über einer Milliarde Streams, kworb.net).
-- **Mehr Songs:** `data/extra.json` (rund 1.000 weitere Hits aus der Milliarden-Liste, per `node scripts/build-extra.js` bei Deezer nachgeschlagen).
-  Ihr Jahr ist ungeprüft (`ya: 1`) – sie kommen nur in Fragen ohne Jahr (Hören, Interpret, Cover) und als falsche Antworten.
+- **Mehr Songs:** `data/extra.json` (rund 1.000 weitere Milliarden-Hits, `node scripts/build-extra.js`) und `data/more.json`
+  (rund 2.200 Songs aus Deezer-Playlists, davon über 1.000 deutsche: `node scripts/build-more.js` sammelt, `node scripts/pick-more.js` sortiert
+  Coverversionen, Remixe, Medleys und Unbekanntes aus). Ihr Jahr ist ungeprüft (`ya`) – sie kommen nur in Fragen ohne Jahr und als falsche Antworten.
+- **Genres:** `data/genres.json` (`node scripts/build-genres.js`) bzw. Feld `g` in `more.json`.
 - **Fragearten** (`TYPES` in `js/game.js`): Welcher Song läuft? (Hörprobe) · Nur 3 Sekunden (ab Frage 8) · Von wem? · Aus welchem Jahr? · Aus welchem Jahrzehnt? (nur am Anfang) ·
   Welcher ist am ältesten/neuesten? · Welcher ist NICHT von …? · Meiste Streams? · Welches Cover? – jede höchstens zweimal pro Spiel.
 - **Themen** (`POOL_NAMES`): Alle, International, Deutsch, Jahrzehnte und – sobald `data/genres.json` da ist (`node scripts/build-genres.js`) – Pop, Rock, Hip-Hop, Dance, R&B.
@@ -33,6 +35,12 @@ Lokal starten: `node server.js` → http://127.0.0.1:8893/
 - **Audio:** 30-s-Vorschauen von Deezer (JSONP, kein Login). Der Vorschau-Link läuft ab, darum wird er erst kurz vorher per `/track/{id}` geholt.
 - Rekorde und Statistik nur lokal (`gr.*` im Browser-Speicher). Sprache (`mq.lang`) und Profil (`jb.profile`) teilt es mit den anderen Spielen.
 
+## Auf allen Geräten
+
+`js/sync.js` (gleiche Datei in allen Jukebox-Spielen) gleicht Rekorde, Erfolge, Tages-Challenge, Bestenliste und Statistik über einen
+persönlichen Code ab, verschlüsselt im Browser. Den Code legt man in der [Jukebox](https://ku3rb1s.github.io/jukebox/#sync) an;
+die Einstellungen zeigen nur den Status. Nach einem Abgleich kommt das Ereignis `jukebox-sync`, dann zeichnet das Spiel neu.
+
 ## Sprachen
 
 Deutsch, Englisch, Französisch, Spanisch, Norwegisch (`js/i18n.js`, `js/lang/*.js`). Texte im Code auf Deutsch mit `tx()`;
@@ -51,5 +59,5 @@ in `js/game.js` erhöhen, `CHANGELOG.md` ergänzen und `?v=` in `index.html` hoc
 | `css/base.css`, `css/fonts.css`, `fonts/` | gemeinsamer Look aus Musik-Bingo, Schrift Outfit lokal |
 | `css/app.css` | Spiel-eigene Teile: Quizbühne, Antwortbalken, Stufenleiter, Joker |
 | `js/game.js` | Fragen bauen, Spielablauf, Wiedergabe, Anzeige, Einstellungen |
-| `js/deezer.js`, `js/i18n.js`, `js/profile.js`, `js/pwa.js` | wie in Older or Newer |
+| `js/deezer.js`, `js/i18n.js`, `js/profile.js`, `js/pwa.js`, `js/sync.js` | gemeinsam mit den anderen Jukebox-Spielen |
 | `logo.svg` | Logo „Plakette“; `node scripts/render-icons.js` rendert daraus die PNG-Icons (headless Edge), `scripts/logo-options.js` baut die Auswahlseite mit Varianten |

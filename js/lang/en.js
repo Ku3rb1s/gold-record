@@ -5,6 +5,12 @@
   name: "English",
   flag: "🇬🇧",
   dict: {
+    "Schaffst du mehr?": "Can you beat it?",
+    "Bild gespeichert, Text kopiert": "Image saved, text copied",
+    "Auf allen Geräten spielen": "Play on all your devices",
+    "Auf allen Geräten verbunden": "Synced across your devices",
+    "Code {c} · ändern in der Jukebox": "Code {c} · change it in the Jukebox",
+    "Rekorde, Serie und Profil mit einem Code mitnehmen": "Take records, streak and profile with you using a code",
     "{a} von {b}": "{a} of {b}",
     "{d}er": "{d}s",
     "{n} aus dem Publikum": "{n} from the audience",

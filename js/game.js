@@ -2,7 +2,7 @@
    Quiz-Leiter mit 15 Stufen: Jede richtige Antwort bringt eine Stufe höher, von der Kassette bis zum Diamanten.
    Gold (Stufe 5) und Platin (Stufe 10) sind sicher: Bei einem Fehler fällt man auf die letzte erreichte Sicherheitsstufe.
    Aussteigen geht jederzeit vor dem Antworten – dann bleibt die erreichte Stufe. */
-const APP_VERSION = '1.6.1', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
+const APP_VERSION = '1.7.0', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
@@ -749,10 +749,60 @@ function dailyStreak() {
   while (key(d) in dl) { n++; d.setDate(d.getDate() - 1); }
   return n;
 }
+/* ---------- Ergebnisbild zum Teilen (1080 × 1350, Hochformat für Story/Status) ----------
+   Gezeichnet auf einem Canvas: Logo, Medaille, erreichte Stufe, die 15 Fragen als Kästchen, Modus und Link. */
+const loadImg = src => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+async function shareImage() {
+  const { res, o } = END, W = 1080, H = 1350;
+  try { await document.fonts.load('900 80px Outfit'); await document.fonts.load('600 40px Outfit'); } catch {}
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const x = cv.getContext('2d');
+  // Bühne: Mitternachtsblau mit Licht von oben
+  let g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#111a48'); g.addColorStop(.55, '#080c24'); g.addColorStop(1, '#05071a');
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  g = x.createRadialGradient(W / 2, -80, 40, W / 2, -80, 900); g.addColorStop(0, 'rgba(110,140,240,.45)'); g.addColorStop(1, 'rgba(110,140,240,0)');
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  g = x.createRadialGradient(W / 2, H + 120, 40, W / 2, H + 120, 700); g.addColorStop(0, 'rgba(120,80,220,.35)'); g.addColorStop(1, 'rgba(120,80,220,0)');
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  const F = (w, s) => `${w} ${s}px Outfit, system-ui, sans-serif`;
+  const center = (t, y, font, color) => { x.font = font; x.fillStyle = color; x.textAlign = 'center'; x.fillText(t, W / 2, y); };
+  // Kopf: Logo + Name
+  try { const logo = await loadImg('icon-192.png?v=2'); x.save(); x.beginPath(); x.roundRect(W / 2 - 230, 90, 96, 96, 24); x.clip(); x.drawImage(logo, W / 2 - 230, 90, 96, 96); x.restore(); } catch {}
+  x.font = F(900, 64); x.fillStyle = '#fff'; x.textAlign = 'left'; x.fillText('Gold Record', W / 2 - 110, 160);
+  // Modus / Challenge
+  const sub = o.daily ? `${tx('Tägliche Challenge')} #${dayNo(o.day)}` : o.label;
+  center(sub, 262, F(600, 38), '#a3b2e0');
+  // Medaille und Stufe
+  center(MEDAL(res.final), 470, '170px system-ui, "Segoe UI Emoji", "Apple Color Emoji", sans-serif', '#fff');
+  g = x.createLinearGradient(0, 520, 0, 640); g.addColorStop(0, '#fff3c4'); g.addColorStop(1, '#e0a412');
+  center(stageName(res.final), 620, F(900, 120), g);
+  center(res.final ? tx('Stufe {n} von 15', { n: res.final }) : tx('Leider'), 700, F(700, 44), '#f2f4fb');
+  // 15 Kästchen: grün richtig, gold = Sicherheitsstufe, rot falsch, grau nicht erreicht
+  const n = 15, size = 50, gap = 12, total = n * size + (n - 1) * gap, x0 = (W - total) / 2, y0 = 780;
+  const row = [...(res.row || '')].filter(ch => ch !== '🚪');
+  for (let i = 0; i < n; i++) {
+    const ch = row[i], col = ch === '🟩' ? '#46d483' : ch === '🟨' ? '#f5b301' : ch === '🟥' ? '#f87171' : 'rgba(255,255,255,.12)';
+    x.fillStyle = col; x.beginPath(); x.roundRect(x0 + i * (size + gap), y0, size, size, 12); x.fill();
+    if ([4, 9].includes(i)) { x.strokeStyle = '#fff'; x.lineWidth = 3; x.beginPath(); x.roundRect(x0 + i * (size + gap) - 5, y0 - 5, size + 10, size + 10, 15); x.stroke(); }
+  }
+  center(res.how === 'walk' ? tx('Ausgestiegen – {s} bleibt dir.', { s: stageName(res.final) }) : res.how === 'win' ? tx('Alle 15 Fragen richtig – Diamant!') : '', 900, F(600, 36), '#c3cbe3');
+  // Fuß: Aufforderung + Link
+  x.fillStyle = 'rgba(255,255,255,.06)'; x.beginPath(); x.roundRect(120, 1080, W - 240, 150, 40); x.fill();
+  x.strokeStyle = 'rgba(245,179,1,.6)'; x.lineWidth = 3; x.stroke();
+  center(tx('Schaffst du mehr?'), 1145, F(800, 46), '#fde68a');
+  center('ku3rb1s.github.io/gold-record', 1198, F(600, 34), '#a3b2e0');
+  return new Promise(r => cv.toBlob(r, 'image/jpeg', .9));
+}
 async function shareResult(text = shareText()) {
+  let file = null;
+  try { const blob = await shareImage(); if (blob) file = new File([blob], 'gold-record.jpg', { type: 'image/jpeg' }); } catch {}
   try {
-    if (navigator.share) await navigator.share({ text });
-    else { await navigator.clipboard.writeText(text); toast(tx('Ergebnis kopiert')); }
+    if (file && navigator.canShare?.({ files: [file] })) return await navigator.share({ files: [file], text });
+    if (navigator.share && !file) return await navigator.share({ text });
+    // Desktop ohne Bild-Teilen: Bild speichern und Text kopieren
+    if (file) { const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = file.name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }
+    await navigator.clipboard?.writeText(text);
+    toast(file ? tx('Bild gespeichert, Text kopiert') : tx('Ergebnis kopiert'));
   } catch { /* abgebrochen */ }
 }
 
@@ -907,7 +957,11 @@ function renderSettings() {
   applyVol();
 }
 function renderProfile() {
-  const p = Profile.get();
+  const p = Profile.get(), s = Sync.status();
+  // Abgleich zwischen Geräten (Code wird in der Jukebox angelegt) – wie in Needle Drop
+  $('#syncTitle').textContent = s.connected ? tx('Auf allen Geräten verbunden') : tx('Auf allen Geräten spielen');
+  $('#syncSub').textContent = s.connected ? tx('Code {c} · ändern in der Jukebox', { c: s.code }) : tx('Rekorde, Serie und Profil mit einem Code mitnehmen');
+  $('#syncIc').style.background = s.connected ? 'linear-gradient(135deg,#10b981,#0ea5e9)' : 'linear-gradient(135deg,#ff4f86,#fbbf24)';
   $('#profEmoji').textContent = p.emoji;
   if (document.activeElement !== $('#profName')) $('#profName').value = p.name;
 }
@@ -1027,3 +1081,9 @@ loadData().then(renderHome).catch(() => {});
 
 // Neue Spielstände von anderen Geräten (js/sync.js, Code in der Jukebox): Startseite und offene Einstellungen neu zeichnen
 addEventListener('jukebox-sync', () => { if (!G) renderHome(); if (document.querySelector('dialog[open]')) renderSettings(); });
+
+// Neue Spielstände von anderen Geräten (js/sync.js, Code in der Jukebox): Startseite, Kopfzeile und offene Einstellungen neu zeichnen
+addEventListener('jukebox-sync', () => {
+  if (!G || G.ended) renderHome();
+  if (sheet.open) { renderSettings(); renderProfile(); goPage($('#sheetSettings .page.active')?.dataset.page || 'main'); }
+});

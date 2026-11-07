@@ -5,6 +5,12 @@
   name: "Français",
   flag: "🇫🇷",
   dict: {
+    "Schaffst du mehr?": "Tu fais mieux ?",
+    "Bild gespeichert, Text kopiert": "Image enregistrée, texte copié",
+    "Auf allen Geräten spielen": "Jouer sur tous tes appareils",
+    "Auf allen Geräten verbunden": "Connecté sur tous tes appareils",
+    "Code {c} · ändern in der Jukebox": "Code {c} · à modifier dans le Jukebox",
+    "Rekorde, Serie und Profil mit einem Code mitnehmen": "Emporte records, série et profil avec un code",
     "{a} von {b}": "{a} sur {b}",
     "{d}er": "années {d}",
     "{n} aus dem Publikum": "{n}, dans le public",

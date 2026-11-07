@@ -1,5 +1,11 @@
 # Neuerungen
 
+## 1.7.0 – 07.11.2026
+- **Rund 4.000 Songs** statt 1.900 – davon über **1.100 deutsche** (Deutschpop, Deutschrap, Schlager, NDW, Deutschrock …) und mehr Rock, Hip-Hop, Dance und R&B.
+  Coverversionen, Remixe, Medleys und sehr unbekannte Songs sind aussortiert
+- **Ergebnis als Bild teilen:** „Teilen“ schickt ein Bild mit Medaille, Stufe und deinen 15 Fragen als Kästchen mit (am PC wird das Bild gespeichert und der Text kopiert)
+- In den Einstellungen siehst du, ob **„Auf allen Geräten spielen“** verbunden ist – den Code legst du in der Jukebox an. Kommen neue Spielstände von einem anderen Gerät, aktualisiert sich die Anzeige sofort
+
 ## 1.6.1 – 07.11.2026
 - Kopfzeile: „Gold Record“ wird neben der Challenge-Pille nicht mehr abgeschnitten (Einstellungen dort nur als Symbol)
 - Aufgeräumt: ungenutzte Stile entfernt; geprüft mit 312 Probespielen (4.680 Fragen) über alle Themen und Schwierigkeiten – ohne Fehler
