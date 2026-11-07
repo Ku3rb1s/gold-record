@@ -2,7 +2,7 @@
    Quiz-Leiter mit 15 Stufen: Jede richtige Antwort bringt eine Stufe höher, von der Kassette bis zum Diamanten.
    Gold (Stufe 5) und Platin (Stufe 10) sind sicher: Bei einem Fehler fällt man auf die letzte erreichte Sicherheitsstufe.
    Aussteigen geht jederzeit vor dem Antworten – dann bleibt die erreichte Stufe. */
-const APP_VERSION = '1.10.8', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
+const APP_VERSION = '1.10.9', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
@@ -1004,10 +1004,30 @@ async function shareResult(text = shareText()) {
 }
 
 /* ---------- Statistik ---------- */
+// Diamanten (15/15) je Schwierigkeit – für die Bestenliste „Wie oft Diamant“ und die Statistik.
+//   gr.diamonds  = { games: Summe, easy, normal, hard } – ab jetzt gezählt, je Gerät (Abgleich „device“, wird zusammengezählt)
+//   gr.diaStart  = Startwert aus den „besten Runden“ (gr.top) von vorher – einmalig, für alle Geräte gleich (Abgleich „mapmax“)
+// Gesamt = Startwert + alle Geräte.
+// „_“ merkt, dass der Startwert berechnet ist – sonst würden spätere Diamanten (die auch in gr.top landen) doppelt zählen.
+if (LS.get('diaStart', null) == null) {
+  const s = { _: 1 };
+  for (const r of LS.get('top', [])) if (r.f === 15 && DIFF[r.df]) s[r.df] = (s[r.df] || 0) + 1;
+  LS.set('diaStart', s);
+}
+function diamonds() {
+  const own = LS.get('diamonds', null), start = LS.get('diaStart', null) || {};
+  const all = (typeof Sync !== 'undefined' && Sync.view('gr.diamonds', own)) || own || {};
+  return Object.fromEntries(Object.keys(DIFF).map(d => [d, (start[d] || 0) + (all[d] || 0)]));
+}
 function recordStats(g) {
   const st = LS.get('stats', { games: 0, right: 0, asked: 0, best: 0, wins: 0, jokers: 0, types: {} });
   st.games++; st.best = Math.max(st.best, g.final); st.jokers += g.usedJokers || 0;
-  if (g.how === 'win') st.wins++;
+  if (g.how === 'win') {
+    st.wins++;
+    const dia = LS.get('diamonds', null) || { games: 0 }, d = cfg().diff;
+    dia[d] = (dia[d] || 0) + 1; dia.games = (dia.games || 0) + 1;
+    LS.set('diamonds', dia);
+  }
   st.dec ??= {};
   for (const l of g.log) {
     st.asked++; if (l.ok) st.right++;
@@ -1030,7 +1050,7 @@ function renderStats() {
   const rows = [
     [tx('Spiele'), fmtN(st.games)],
     [tx('Höchste Stufe'), stageName(st.best)],
-    [tx('Diamant geholt'), fmtN(st.wins)],
+    [tx('Diamant geholt'), fmtN(st.wins) + (dm => dm.length ? ` (${dm.join(' · ')})` : '')(Object.entries(diamonds()).filter(([, n]) => n).map(([d, n]) => `${tx(DIFF_NAMES[d])} ${fmtN(n)}`))],
     [tx('Richtige Antworten'), `${fmtN(st.right)} / ${fmtN(st.asked)} (${pc(st.right, st.asked)})`],
     [tx('Joker eingesetzt'), fmtN(st.jokers)],
   ];

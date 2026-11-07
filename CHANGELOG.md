@@ -1,5 +1,9 @@
 # Neuerungen
 
+## 1.10.9 – 07.11.2026
+- Bestenliste „Wie oft Diamant“: Statt der höchsten Stufe (die bei fast allen 15 war) zählt jetzt, wie oft du Diamant (15/15) geholt hast – je Schwierigkeit, über alle Geräte. Diamanten aus deinen besten Runden zählen schon mit
+- Statistik: „Diamant geholt“ zeigt jetzt auch, wie viele auf Leicht, Normal und Schwer
+
 ## 1.10.8 – 07.11.2026
 - Spiele-Menü: neues Spiel **Hit or Miss** – Stimmt’s oder stimmt’s nicht? Musik-Quiz zum Wischen
 
