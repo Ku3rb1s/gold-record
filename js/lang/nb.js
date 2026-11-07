@@ -5,6 +5,7 @@
   name: "Norsk",
   flag: "🇳🇴",
   dict: {
+    "Serie: 1 Tag": "Rekke: 1 dag",
     "Löschen": "Slett",
     "Abbrechen": "Avbryt",
     "Schaffst du mehr?": "Klarer du mer?",

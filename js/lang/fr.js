@@ -5,6 +5,7 @@
   name: "Français",
   flag: "🇫🇷",
   dict: {
+    "Serie: 1 Tag": "Série : 1 jour",
     "Löschen": "Supprimer",
     "Abbrechen": "Annuler",
     "Schaffst du mehr?": "Tu fais mieux ?",

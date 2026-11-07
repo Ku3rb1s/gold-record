@@ -2,7 +2,7 @@
    Quiz-Leiter mit 15 Stufen: Jede richtige Antwort bringt eine Stufe höher, von der Kassette bis zum Diamanten.
    Gold (Stufe 5) und Platin (Stufe 10) sind sicher: Bei einem Fehler fällt man auf die letzte erreichte Sicherheitsstufe.
    Aussteigen geht jederzeit vor dem Antworten – dann bleibt die erreichte Stufe. */
-const APP_VERSION = '1.8.1', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
+const APP_VERSION = '1.9.0', APP_DATE = '07.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
@@ -92,25 +92,39 @@ async function loadData() {
     fetch('data/extra.json?v=' + APP_VERSION).then(r => r.ok ? r.json() : { songs: [] }).catch(() => ({ songs: [] })),
     fetch('data/genres.json?v=' + APP_VERSION).then(r => r.ok ? r.json() : {}).catch(() => ({})),
     fetch('data/more.json?v=' + APP_VERSION).then(r => r.ok ? r.json() : { songs: [] }).catch(() => ({ songs: [] })),
-  ]).then(([a, b, x, g, m]) => {
+    fetch('data/years.json?v=' + APP_VERSION).then(r => r.ok ? r.json() : {}).catch(() => ({})),
+  ]).then(([a, b, x, g, m, yrs]) => {
     for (const k in g) GENRE.set(+k, g[k]);
-    for (const s of m.songs) if (s.g) GENRE.set(s.id, s.g);
+    for (const s of m.songs) { s.pl = 1; if (s.g) GENRE.set(s.id, s.g); }
     x.songs.push(...m.songs);
+    // Mit MusicBrainz geprüftes Originaljahr (scripts/check-years-more.js): Jahr setzen, Song gilt als geprüft
+    for (const s of x.songs) if (yrs[s.id]) { s.y = yrs[s.id]; delete s.ya; }
     return [a, b, x];
   });
   poolCache.clear();
   // songs.json: Jahr geprüft (MusicBrainz). extra.json (ya 1) und more.json (ya 2): weitere Hits, Jahr ungeprüft – nur für Fragen ohne Jahr
-  SONGS = [...a.songs, ...x.songs];
+  // Dubletten mit anderer Schreibweise raus („Girls Just Wanna …“ = „Girls Just Want to …“) – der erste (geprüfte) Eintrag bleibt
+  const seen = new Set();
+  SONGS = [...a.songs, ...x.songs].filter(s => { const k = songKey(s.t, s.a); return !seen.has(k) && seen.add(k); });
   // Bekanntheit 0 (größter Hit) … 1 (am wenigsten bekannt) nach Deezer-Rang
   [...SONGS].sort((x, y) => (y.r || 0) - (x.r || 0)).forEach((s, i, all) => FAME.set(s.id, i / all.length));
   STREAMS = b.tracks.filter(t => t.streams).sort((x, y) => y.streams - x.streams);
+}
+// Dubletten-Schlüssel (gleich wie scripts/songkey.js): ignoriert Schreibweisen, „The“, wanna/want to, Zusätze in Klammern usw.
+function songKey(t, a) {
+  const n = s => String(s || '').toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '');
+  const title = n(t).replace(/\s*[([].*?[)\]]/g, '').replace(/\s+[-–—]\s+.*$/, '')
+    .replace(/^the\s+/, '').replace(/\bwanna\b/g, 'want to').replace(/\bgonna\b/g, 'going to').replace(/\s+'?n'?\s+/g, ' and ').replace(/&/g, 'and')
+    .replace(/[^a-z0-9äöüß]+/g, '');
+  const artist = n(a).replace(/\s*(feat\.?|ft\.?|featuring|with|&|,| x ).*$/, '').replace(/^the\s+/, '').replace(/[^a-z0-9äöüß]+/g, '');
+  return artist + '|' + title;
 }
 const DEC = { d70: [0, 1979], d80: [1980, 1989], d90: [1990, 1999], d00: [2000, 2009], d10: [2010, 9999] };
 const poolCache = new Map();
 function poolOf(p) {
   if (poolCache.has(p)) return poolCache.get(p);
-  // „Alle“: international geprägt – die vielen deutschen Playlist-Songs (more.json, ya 2) gibt es nur im Thema „Deutsch“
-  const r = SONGS.filter(s => p === 'all' ? !(s.de && s.ya === 2) : p === 'de' ? s.de : p === 'intl' ? !s.de
+  // „Alle“: international geprägt – die vielen deutschen Playlist-Songs (more.json, pl) gibt es nur im Thema „Deutsch“
+  const r = SONGS.filter(s => p === 'all' ? !(s.de && s.pl) : p === 'de' ? s.de : p === 'intl' ? !s.de
     : DEC[p] ? (!s.ya || (p === 'd10' && s.ya === 1)) && s.y >= DEC[p][0] && s.y <= DEC[p][1]
       : GENRE.get(s.id) === p);
   poolCache.set(p, r);
@@ -650,7 +664,7 @@ function endGame(how) {
 function renderEnd(res, o) {
   const { final, how, level } = res;
   $('#endMode').textContent = o.label;
-  $('#endBest').textContent = o.daily ? '🔥 ' + tx('Serie: {n} Tage', { n: dailyStreak() }) : tx('Rekord: {s}', { s: stageName(Math.max(o.best, final)) });
+  $('#endBest').textContent = o.daily ? '🔥 ' + streakTxt(dailyStreak()) : tx('Rekord: {s}', { s: stageName(Math.max(o.best, final)) });
   $('#endMedal').textContent = MEDAL(final);
   $('#endStage').textContent = stageName(final);
   $('#endKick').textContent = final ? tx('Stufe {n} von 15', { n: final }) : tx('Leider');
@@ -675,7 +689,7 @@ const dayNo = d => Math.round((new Date(d + 'T12:00') - new Date('2026-11-07T12:
 function shareText() {
   const { res, o } = END;
   const head = o.daily ? `Gold Record #${dayNo(o.day)} – ${tx('Tägliche Challenge')}` : `Gold Record · ${o.label}`;
-  const st = o.daily && dailyStreak() > 1 ? '\n🔥 ' + tx('Serie: {n} Tage', { n: dailyStreak() }) : '';
+  const st = o.daily && dailyStreak() > 1 ? '\n🔥 ' + streakTxt(dailyStreak()) : '';
   return `${head}\n${MEDAL(res.final)} ${stageName(res.final)} (${res.final}/15)\n${res.row}${st}\n${SITE}`;
 }
 // Ergebnis der heutigen Challenge nochmal zeigen
@@ -741,6 +755,7 @@ function renderAch() {
   $('#achList').innerHTML = ACH.map(([id, ic, name, sub]) => `<div class="cell ach ${have[id] ? 'got' : 'locked'}"><span class="ach-ic">${have[id] ? ic : '🔒'}</span>
     <span class="grow">${tx(name)}<span class="sub">${tx(sub)}</span></span><span class="trail">${have[id] ? '✓' : ''}</span></div>`).join('');
 }
+const streakTxt = n => n === 1 ? tx('Serie: 1 Tag') : tx('Serie: {n} Tage', { n });
 // Tage in Folge, an denen die Tägliche Challenge gespielt wurde (bis heute bzw. gestern)
 function dailyStreak() {
   const dl = LS.get('dailyLog', {}), d = new Date();
@@ -850,7 +865,7 @@ function renderStats() {
   const bests = [];
   for (const p in POOL_NAMES) for (const d in DIFF) { const v = LS.get(bestKey(p, d), 0); if (v) bests.push([tx(POOL_NAMES[p]) + ' · ' + tx(DIFF_NAMES[d]), stageName(v)]); }
   const dl = LS.get('dailyLog', {});
-  if (Object.keys(dl).length) rows.push([tx('Tägliche Challenge'), tx('{n} gespielt', { n: Object.keys(dl).length }) + ' · ' + tx('Serie: {n} Tage', { n: dailyStreak() })]);
+  if (Object.keys(dl).length) rows.push([tx('Tägliche Challenge'), tx('{n} gespielt', { n: Object.keys(dl).length }) + ' · ' + streakTxt(dailyStreak())]);
   const grp = r => `<div class="group">${r.map(([k, v]) => `<div class="cell"><span class="grow">${k}</span><b>${v}</b></div>`).join('')}</div>`;
   $('#statsBox').innerHTML = `<div style="margin-top:14px">${grp(rows)}</div>`
     + (topHtml ? `<div class="group-h">${tx('Deine besten Runden')}</div><div class="group icons toplist">${topHtml}</div>` : '')
@@ -913,7 +928,7 @@ function renderDailyHdr() {
     ? `<span class="dh-st done"><svg class="ic"><use href="#i-check"/></svg><span class="dh-x">${MEDAL(res.final)} ${res.final}/15</span></span>`
     : `<span class="dh-st">${st ? `<span class="dh-x">🔥${st}</span>` : ''}<span class="dh-go">${tx('Spielen')}</span><i class="dh-dot"></i></span>`);
   b.classList.toggle('done', !!res);
-  b.title = res ? tx('Heute: {s}', { s: `${stageName(res.final)} (${res.final}/15)` }) : tx('Jeden Tag neue 15 Fragen – für alle gleich') + (st ? ' · 🔥 ' + tx('Serie: {n} Tage', { n: st }) : '');
+  b.title = res ? tx('Heute: {s}', { s: `${stageName(res.final)} (${res.final}/15)` }) : tx('Jeden Tag neue 15 Fragen – für alle gleich') + (st ? ' · 🔥 ' + streakTxt(st) : '');
   b.setAttribute('aria-label', tx('Tägliche Challenge') + ' #' + dayNo(d) + ' – ' + b.title);
 }
 function renderThemes() {

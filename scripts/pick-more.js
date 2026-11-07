@@ -48,7 +48,7 @@ for (const o of tracks.values()) {
   const hint = qs.map(q => HINT[q]).find(Boolean);
   if (hint && (y < hint || y > hint + 9)) y = hint + 5;
   if (!y) { drop('kein Jahr'); continue; }
-  out.push({ id: o.id, t: o.t, a: o.a, y, c: o.c, r: o.r, ya: 2, ...(de ? { de: true } : {}), ...(MAP[al.g] ? { g: MAP[al.g] } : {}) });
+  out.push({ id: o.id, t: o.t, a: o.a, y, c: o.c, r: o.r, ya: 2, ...(hint ? { h: hint } : {}), ...(de ? { de: true } : {}), ...(MAP[al.g] ? { g: MAP[al.g] } : {}) });   // h = Jahrzehnt der Playlist (für die Jahresprüfung)
 }
 // Interpret mit mindestens einem deutschen Song → alle seine Songs deutsch (z. B. Kraftklub, Casper)
 const deA = new Set(out.filter(x => x.de).map(x => norm(x.a)));

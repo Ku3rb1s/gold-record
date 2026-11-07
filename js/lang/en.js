@@ -5,6 +5,7 @@
   name: "English",
   flag: "🇬🇧",
   dict: {
+    "Serie: 1 Tag": "Streak: 1 day",
     "Löschen": "Delete",
     "Abbrechen": "Cancel",
     "Schaffst du mehr?": "Can you beat it?",

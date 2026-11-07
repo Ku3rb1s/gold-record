@@ -15,6 +15,8 @@ Lokal starten: `node server.js` → http://127.0.0.1:8893/
 - **Mehr Songs:** `data/extra.json` (rund 1.000 weitere Milliarden-Hits, `node scripts/build-extra.js`) und `data/more.json`
   (rund 2.200 Songs aus Deezer-Playlists, davon über 1.000 deutsche: `node scripts/build-more.js` sammelt, `node scripts/pick-more.js` sortiert
   Coverversionen, Remixe, Medleys und Unbekanntes aus). Ihr Jahr ist ungeprüft (`ya`) – sie kommen nur in Fragen ohne Jahr und als falsche Antworten.
+- **Jahre geprüft:** `node scripts/check-years-more.js` schlägt die Jahre der neuen Songs bei MusicBrainz nach (`scripts/mb.js`, gleiche Regeln wie Older or Newer) → `data/years.json`; übernommen nur, wenn plausibel (nicht nach dem Deezer-Album, bei Jahrzehnt-Playlists im Jahrzehnt). Damit gelten die Songs als geprüft.
+- **Dubletten:** `songKey()` in `js/game.js` (= `scripts/songkey.js`) erkennt gleiche Songs trotz anderer Schreibweise; der geprüfte Eintrag bleibt.
 - **Genres:** `data/genres.json` (`node scripts/build-genres.js`) bzw. Feld `g` in `more.json`.
 - **Fragearten** (`TYPES` in `js/game.js`): Welcher Song läuft? (Hörprobe) · Nur 3 Sekunden (ab Frage 8) · Von wem? · Aus welchem Jahr? · Aus welchem Jahrzehnt? (nur am Anfang) ·
   Welcher ist am ältesten/neuesten? · Welcher ist NICHT von …? · Meiste Streams? · Welches Cover? – jede höchstens zweimal pro Spiel.

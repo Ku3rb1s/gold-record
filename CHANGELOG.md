@@ -1,5 +1,11 @@
 # Neuerungen
 
+## 1.9.0 – 07.11.2026
+- **Jahre geprüft:** Für rund 1.650 der neuen Songs steht jetzt das Originaljahr fest (MusicBrainz, wie in Older or Newer) – sie kommen damit auch in Jahres-, Jahrzehnt- und „älteste/neueste“-Fragen vor. Weitere folgen
+- **Größere Jahrzehnte:** 70er 254, 80er 226, 90er 269, 2000er 409 und 2010er 1.459 Songs
+- Dubletten mit anderer Schreibweise entfernt (z. B. „Girls Just Wanna …“ neben „Girls Just Want to …“)
+- „Serie: 1 Tag“ statt „1 Tage“
+
 ## 1.8.1 – 07.11.2026
 - iPhone/Handy: Die schwebende Knopfleiste (Spielen bzw. Nochmal/Teilen/Start) verdeckt ganz unten nichts mehr
 - Rückfragen (Aussteigen, Beenden, Alles löschen) jetzt als Dialog im Stil des Spiels statt als Systemfenster

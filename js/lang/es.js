@@ -5,6 +5,7 @@
   name: "Español",
   flag: "🇪🇸",
   dict: {
+    "Serie: 1 Tag": "Racha: 1 día",
     "Löschen": "Borrar",
     "Abbrechen": "Cancelar",
     "Schaffst du mehr?": "¿Puedes superarlo?",
