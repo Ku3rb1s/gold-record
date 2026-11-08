@@ -1,5 +1,9 @@
 # Neuerungen
 
+## 1.10.28 – 08.11.2026
+- App über Nacht offen: Die Tägliche Challenge zeigt beim Zurückkehren den neuen Tag
+- Zwei falsche Fassungen entfernt (Karaoke-Version von „Take Me to Church“, „It Will Rain“ einer Cover-Band)
+
 ## 1.10.27 – 08.11.2026
 - Fenster: Ein Doppeltipp auf „Fertig“ tippt nicht mehr versehentlich, was darunter liegt
 
