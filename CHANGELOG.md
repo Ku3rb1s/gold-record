@@ -1,19 +1,19 @@
 # Neuerungen
 
 ## 1.10.18 – 07.11.2026
-- - Fenster wie auf dem iPhone: am Kopf (oder oben im Inhalt) nach unten wegwischen; beim Schließen gleiten sie nach unten weg
-- - Knöpfe reagieren schneller beim Drücken, Hover-Effekte nur noch mit Maus
-- - „Bewegung reduzieren“ und „Transparenz reduzieren“ (iPhone-Bedienungshilfen) werden beachtet
+- Fenster wie auf dem iPhone: am Kopf (oder oben im Inhalt) nach unten wegwischen; beim Schließen gleiten sie nach unten weg
+- Knöpfe reagieren schneller beim Drücken, Hover-Effekte nur noch mit Maus
+- „Bewegung reduzieren“ und „Transparenz reduzieren“ (iPhone-Bedienungshilfen) werden beachtet
 
 ## 1.10.17 – 07.11.2026
-- - 6 Jahreszahlen korrigiert (u. a. Rihanna – We Ride 2006, Chris Stapleton – Tennessee Whiskey 2015, LISA – Born Again 2025)
+- 6 Jahreszahlen korrigiert (u. a. Rihanna – We Ride 2006, Chris Stapleton – Tennessee Whiskey 2015, LISA – Born Again 2025)
 
 ## 1.10.16 – 07.11.2026
-- - Maroon 5 – This Love: 2002 (Album Songs About Jane)
+- Maroon 5 – This Love: 2002 (Album Songs About Jane)
 
 ## 1.10.15 – 07.11.2026
-- - Songlisten aktualisiert, Original-Cover ergänzt
-- - Neue Songs werden jetzt jede Woche automatisch ergänzt
+- Songlisten aktualisiert, Original-Cover ergänzt
+- Neue Songs werden jetzt jede Woche automatisch ergänzt
 
 ## 1.10.14 – 07.11.2026
 - „Numb“ von Linkin Park kam doppelt vor (zusätzlich als Film-Fassung von 2026) – entfernt; dazu zwei neue Hits aus der aktuellen Milliarden-Liste (Get You, Cinnamon Girl)
