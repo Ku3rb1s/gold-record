@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.10.29 – 08.11.2026
+- Neue Avatare: über 100 weitere Emojis – mehr Tiere, Winter & Weihnachten, Essen & Trinken und mehr
+
 ## 1.10.28 – 08.11.2026
 - App über Nacht offen: Die Tägliche Challenge zeigt beim Zurückkehren den neuen Tag
 - Zwei falsche Fassungen entfernt (Karaoke-Version von „Take Me to Church“, „It Will Rain“ einer Cover-Band)
