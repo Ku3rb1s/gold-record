@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.10.23 – 08.11.2026
+- Spiele-Menü (Logo lange drücken): neues Spiel On Tour – eine Reise durch die Musikgeschichte
+
 ## 1.10.22 – 07.11.2026
 - Endbildschirm: Ergebnis, Details und Knöpfe erscheinen kurz nacheinander
 - Songdaten aktualisiert (Cover, Genres)
