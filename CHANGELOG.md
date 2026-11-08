@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.10.21 – 07.11.2026
+- Unnötige Anzeige „Musik-Quiz“ auf der Startseite entfernt
+
 ## 1.10.20 – 07.11.2026
 - Kleine iPhones (z. B. SE): nichts läuft mehr seitlich aus dem Bild, Auswahlknöpfe mit langen Wörtern passen
 
