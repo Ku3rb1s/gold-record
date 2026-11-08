@@ -272,5 +272,7 @@
     "<b>Tipp:</b> Logo gedrückt halten – zur Jukebox und zu den anderen Spielen.": "<b>Tips:</b> Hold inne logoen – til Jukebox og de andre spillene.",
     "Dein Profil gilt für alle Spiele der Jukebox.": "Profilen din gjelder for alle spillene i Jukebox.",
     "Abgeglichen · verwalten in der Jukebox": "Synkronisert · administreres i Jukebox",
+    // Adventskalender
+    "Aus dem Adventskalender": "Fra julekalenderen",
   },
 };
