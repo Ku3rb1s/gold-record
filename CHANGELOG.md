@@ -1,5 +1,9 @@
 # Neuerungen
 
+## 1.10.22 – 07.11.2026
+- Endbildschirm: Ergebnis, Details und Knöpfe erscheinen kurz nacheinander
+- Songdaten aktualisiert (Cover, Genres)
+
 ## 1.10.21 – 07.11.2026
 - Unnötige Anzeige „Musik-Quiz“ auf der Startseite entfernt
 
