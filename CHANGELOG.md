@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.10.26 – 08.11.2026
+- Behoben: Direkt nach dem Schließen eines Fensters ging der nächste Tipp verloren, solange das Fenster noch wegglitt
+
 ## 1.10.25 – 08.11.2026
 - Abgleich: Gelöschte Werte (z. B. „Rekorde löschen“) kommen nicht mehr von anderen Geräten zurück
 
