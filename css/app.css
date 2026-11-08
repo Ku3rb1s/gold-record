@@ -18,7 +18,7 @@ button{color:#1f1500}
 .logo span{background:none;color:#fff}
 .logo-btn{background:none;color:inherit;padding:0;border-radius:12px;box-shadow:none;font-size:1.4rem}
 .logo-btn:active{transform:scale(.97)}
-@media (hover:hover){.logo-btn:hover{filter:brightness(1.12)}}
+@media (hover:hover) and (pointer:fine){.logo-btn:hover{filter:brightness(1.12)}}
 main{max-width:680px}
 header{max-width:680px}
 body:has(#game:not(.hidden)) main,body:has(#game:not(.hidden)) header{max-width:980px}
@@ -35,7 +35,7 @@ body:has(#game:not(.hidden)) main,body:has(#game:not(.hidden)) header{max-width:
 .daily-hdr{display:inline-flex;align-items:center;gap:8px;min-width:0;height:44px;padding:0 14px 0 5px;border:1px solid var(--line2);border-radius:99px;
   background:rgba(6,9,26,.55);box-shadow:inset 0 1px 0 rgba(255,255,255,.08);color:var(--text);font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;white-space:nowrap;overflow:hidden}
 .daily-hdr.hidden{display:none}
-@media (hover:hover){.daily-hdr:hover{border-color:var(--gold1)}}
+@media (hover:hover) and (pointer:fine){.daily-hdr:hover{border-color:var(--gold1)}}
 .dh-ic{width:32px;height:32px;flex:none;border-radius:50%;display:grid;place-items:center;color:#2a1d00;background:linear-gradient(180deg,var(--gold1),var(--gold2));box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
 .dh-ic .ic{width:17px;height:17px}
 .dh-t{font-family:Outfit,system-ui,sans-serif;font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis}
@@ -78,7 +78,7 @@ body:has(#game:not(.hidden)) main,body:has(#game:not(.hidden)) header{max-width:
 .replay{flex:none;display:inline-flex;align-items:center;gap:6px;padding:.5em .85em;border-radius:99px;font-size:.82rem;font-weight:700;color:#fff;
   background:rgba(255,255,255,.08);border:1px solid rgba(201,216,255,.45);box-shadow:none;align-self:center}
 .replay .ic{width:16px;height:16px}
-@media (hover:hover){.replay:hover{background:rgba(255,255,255,.16)}}
+@media (hover:hover) and (pointer:fine){.replay:hover{background:rgba(255,255,255,.16)}}
 /* Themen als Chips (Startseite) */
 .themes{display:flex;flex-direction:column;gap:10px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
@@ -221,7 +221,7 @@ button.big small{display:block;font-size:.75rem;font-weight:600;opacity:.75}
 .ans-th.ph{visibility:hidden}
 .ans-x{flex:none;display:flex;align-items:center}
 .ans-x .tag{font-weight:900;font-size:.95rem;font-variant-numeric:tabular-nums;color:var(--gold1);white-space:nowrap}
-@media (hover:hover){.ans:not(:disabled):hover{filter:brightness(1.25)}}
+@media (hover:hover) and (pointer:fine){.ans:not(:disabled):hover{filter:brightness(1.25)}}
 .ans:active:not(:disabled){transform:scale(.98)}
 .ans:disabled{cursor:default;opacity:1}
 .ans.gone{opacity:0;pointer-events:none}
@@ -275,7 +275,7 @@ button.big small{display:block;font-size:.75rem;font-weight:600;opacity:.75}
 .jk.used .jk-ic{background:#1a1f3d;border-color:#5b6488;box-shadow:none}
 .jk.used::before,.jk.used::after{content:"";position:absolute;left:50%;top:16px;width:44px;height:3px;margin-left:-22px;border-radius:2px;background:#ef4444;transform:rotate(-28deg);z-index:1}
 .jk.used::after{transform:rotate(28deg)}
-@media (hover:hover){.jk:not(:disabled):hover .jk-ic{filter:brightness(1.3)}}
+@media (hover:hover) and (pointer:fine){.jk:not(:disabled):hover .jk-ic{filter:brightness(1.3)}}
 /* Telefon: Sprechblase des Freundes */
 .help-box:empty{display:none}
 .call{display:flex;align-items:center;gap:12px;margin-top:14px;padding:12px 14px;border-radius:18px;text-align:left;
@@ -337,7 +337,7 @@ html.ios .vol-game{justify-content:center}
 .pl-wrap{position:relative;flex:none;display:grid}
 .pl-pp{position:absolute;inset:0;display:grid;place-items:center;border-radius:8px;background:rgba(0,0,0,.35);opacity:0;transition:opacity .2s}
 .pl-pp .ic{width:18px;height:18px;color:#fff}
-@media (hover:hover){.endlist .cell.tap:hover .pl-pp{opacity:1}}
+@media (hover:hover) and (pointer:fine){.endlist .cell.tap:hover .pl-pp{opacity:1}}
 .endlist .cell.playing .pl-pp{opacity:1;background:rgba(245,179,1,.45)}
 .endlist .cell.tap{cursor:pointer}
 
