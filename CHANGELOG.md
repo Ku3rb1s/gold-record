@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.10.33 – 16.11.2026
+- Aus der Jukebox („Heute noch offen“) startet die Tägliche Challenge direkt
+
 ## 1.10.32 – 16.11.2026
 - Bestenliste: Rekorde aus Needle Drop werden jetzt auch von hier aus gemeldet (gemeinsame sync.js)
 
