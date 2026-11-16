@@ -14,6 +14,7 @@
     "Serie: 1 Tag": "Série : 1 jour",
     "Löschen": "Supprimer",
     "Abbrechen": "Annuler",
+    "Challenge starten": "Lancer le défi",
     "Schaffst du mehr?": "Tu fais mieux ?",
     "Bild gespeichert, Text kopiert": "Image enregistrée, texte copié",
     "{a} von {b}": "{a} sur {b}",

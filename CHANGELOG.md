@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.10.34 – 16.11.2026
+- Aus der Jukebox: erst ein Knopf „Challenge starten“ statt sofortigem Start (Abbrechen verbraucht die Challenge nicht)
+
 ## 1.10.33 – 16.11.2026
 - Aus der Jukebox („Heute noch offen“) startet die Tägliche Challenge direkt
 

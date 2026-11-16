@@ -14,6 +14,7 @@
     "Serie: 1 Tag": "Racha: 1 día",
     "Löschen": "Borrar",
     "Abbrechen": "Cancelar",
+    "Challenge starten": "Empezar el reto",
     "Schaffst du mehr?": "¿Puedes superarlo?",
     "Bild gespeichert, Text kopiert": "Imagen guardada, texto copiado",
     "{a} von {b}": "{a} de {b}",

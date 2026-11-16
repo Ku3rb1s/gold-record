@@ -14,6 +14,7 @@
     "Serie: 1 Tag": "Rekke: 1 dag",
     "Löschen": "Slett",
     "Abbrechen": "Avbryt",
+    "Challenge starten": "Start utfordringen",
     "Schaffst du mehr?": "Klarer du mer?",
     "Bild gespeichert, Text kopiert": "Bilde lagret, tekst kopiert",
     "{a} von {b}": "{a} av {b}",

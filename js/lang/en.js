@@ -14,6 +14,7 @@
     "Serie: 1 Tag": "Streak: 1 day",
     "Löschen": "Delete",
     "Abbrechen": "Cancel",
+    "Challenge starten": "Start challenge",
     "Schaffst du mehr?": "Can you beat it?",
     "Bild gespeichert, Text kopiert": "Image saved, text copied",
     "{a} von {b}": "{a} of {b}",
