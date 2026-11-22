@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.10.35 – 22.11.2026
+- Über 1.200 neue Songs aus neuen Playlists: aktuelle Hits 2024–2026, 2020er Hip-Hop und Dance, Afrobeats, Indie-Pop, Reggae, Metal, Emo, Italo Disco, Eurovision, Deutschrap, Schlager und Austropop
+
 ## 1.10.34 – 16.11.2026
 - Aus der Jukebox: erst ein Knopf „Challenge starten“ statt sofortigem Start (Abbrechen verbraucht die Challenge nicht)
 
