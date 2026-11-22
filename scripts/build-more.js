@@ -32,6 +32,11 @@ const Q = [
   ['Rock Ballads', 0], ['Power Ballads', 0, 1980], ['Classic Rock', 0], ['Alternative Rock Hits', 0], ['Punk Rock Classics', 0], ['Pop Punk', 0, 2000],
   ['Country Hits', 0], ['Latin Hits', 0], ['Reggaeton Classics', 0], ['K-Pop Hits', 0], ['Love Songs', 0], ['Wedding Songs', 0],
   ['Movie Soundtrack Hits', 0], ['Road Trip Songs', 0], ['Workout Hits', 0], ['Chill Hits', 0], ['Acoustic Covers', 0], ['TikTok Hits', 0],
+  // aktuelle Hits und mehr Vielfalt (Nov. 2026) – Playlists werden einmal geholt und dann zwischengespeichert
+  ['2020s Hits', 0, 2020], ['Hits 2024', 0, 2020], ['Hits 2025', 0, 2020], ['Hits 2026', 0, 2020], ['Viral Hits', 0], ['Hip Hop Hits 2020s', 0, 2020],
+  ['Dance Hits 2020s', 0, 2020], ['Afrobeats Hits', 0], ['Indie Pop Hits', 0], ['Hip Hop 2000s', 0, 2000], ['Rap Hits 2010s', 0, 2010],
+  ['Reggae Classics', 0], ['Metal Classics', 0], ['Emo Classics', 0, 2000], ['Eurovision Hits', 0], ['Italo Disco', 0, 1980],
+  ['Neue Deutsche Hits', 1], ['Deutschrap 2025', 1, 2020], ['Deutschpop 2020er', 1, 2020], ['Schlager 2025', 1, 2020], ['Austropop', 1],
   ['80s Rock', 0, 1980], ['90s Pop', 0, 1990], ['00s Rock', 0, 2000], ['2000s RnB', 0, 2000], ['90s Hip Hop', 0, 1990], ['70s Rock', 0, 1970], ['60s Rock', 0, 1960],
 ];
 const MAP = { 132: 'pop', 116: 'hiphop', 152: 'rock', 85: 'rock', 464: 'rock', 113: 'dance', 106: 'dance', 165: 'rnb', 197: 'latin', 173: 'pop', 84: 'pop', 466: 'pop', 129: 'pop', 98: 'pop', 169: 'rnb', 144: 'reggae' };
