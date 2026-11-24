@@ -2,7 +2,7 @@
    Quiz-Leiter mit 15 Stufen: Jede richtige Antwort bringt eine Stufe höher, von der Kassette bis zum Diamanten.
    Gold (Stufe 5) und Platin (Stufe 10) sind sicher: Bei einem Fehler fällt man auf die letzte erreichte Sicherheitsstufe.
    Aussteigen geht jederzeit vor dem Antworten – dann bleibt die erreichte Stufe. */
-const APP_VERSION = '1.10.36', APP_DATE = '24.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
+const APP_VERSION = '1.10.37', APP_DATE = '24.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
@@ -50,9 +50,9 @@ const SNIPPET = 15;               // so viele Sekunden spielt eine Hörprobe nor
 
 const LOC = () => ({ de: 'de-DE', en: 'en-GB', fr: 'fr-FR', es: 'es-ES', nb: 'nb-NO' }[curLang] || 'de-DE');
 const fmtN = n => Math.round(n).toLocaleString(LOC());
-const SITE = 'https://ku3rb1s.github.io/gold-record/';
+const SITE = 'https://jukeboxquiz.de/gold-record/';
 
-// Gespeichert wird mit „gr.“ vorne – alle Spiele teilen sich den Browser-Speicher von ku3rb1s.github.io
+// Gespeichert wird mit „gr.“ vorne – alle Spiele teilen sich den Browser-Speicher von jukeboxquiz.de
 const LS = {
   get(k, d) { try { const v = localStorage.getItem('gr.' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
   set(k, v) { try { localStorage.setItem('gr.' + k, JSON.stringify(v)); } catch {} },
@@ -987,7 +987,7 @@ async function shareImage() {
   x.fillStyle = 'rgba(255,255,255,.06)'; x.beginPath(); x.roundRect(120, 1080, W - 240, 150, 40); x.fill();
   x.strokeStyle = 'rgba(245,179,1,.6)'; x.lineWidth = 3; x.stroke();
   center(tx('Schaffst du mehr?'), 1145, F(800, 46), '#fde68a');
-  center('ku3rb1s.github.io/gold-record', 1198, F(600, 34), '#a3b2e0');
+  center('jukeboxquiz.de/gold-record', 1198, F(600, 34), '#a3b2e0');
   return new Promise(r => cv.toBlob(r, 'image/jpeg', .9));
 }
 async function shareResult(text = shareText()) {
