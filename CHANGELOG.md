@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.10.36 – 24.11.2026
+- Vorbereitung für die eigene Adresse jukeboxquiz.de: Beim Umzug nimmt das Spiel Profil, Rekorde und Einstellungen von der alten Adresse automatisch mit
+
 ## 1.10.35 – 22.11.2026
 - Über 1.200 neue Songs aus neuen Playlists: aktuelle Hits 2024–2026, 2020er Hip-Hop und Dance, Afrobeats, Indie-Pop, Reggae, Metal, Emo, Italo Disco, Eurovision, Deutschrap, Schlager und Austropop
 
