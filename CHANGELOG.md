@@ -1,5 +1,8 @@
 # Neuerungen
 
+## 1.10.39 – 28.11.2026
+- Tägliche Challenge kommt jetzt aus einer fertig berechneten Datei – so ist sie überall gleich (auch in der kommenden iPhone-App), auch die Ersatzfrage, falls eine Hörprobe fehlt
+
 ## 1.10.38 – 28.11.2026
 - Vorbereitung für die Jukebox-App fürs iPhone: Dort fällt „Als App installieren“ weg
 

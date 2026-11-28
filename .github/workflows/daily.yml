@@ -1,0 +1,39 @@
+name: Tägliche Challenge vorausberechnen
+
+# Jeden Tag um 0:30 UTC: fehlende Dateien data/daily/JJJJ-MM-TT.json für heute − 30 bis heute + 14 Tage anlegen
+# (scripts/build-daily.js – gleiche Logik wie im Spiel, keine Deezer-Anfragen, nur data/*.json).
+# Vorhandene Dateien bleiben unverändert: Eine veröffentlichte Challenge ist fest. Website und iPhone-App lesen dieselbe Datei.
+# Per Hand: Actions → „Tägliche Challenge vorausberechnen“ → Run workflow.
+on:
+  schedule:
+    - cron: '30 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-files
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TZ: Europe/Berlin   # der Tag wie im Spiel (Ortszeit der Spieler)
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Tagesdateien bauen
+        run: node scripts/build-daily.js
+      - name: Neue Dateien hochladen
+        run: |
+          git add data/daily
+          if git diff --cached --quiet; then echo "Nichts Neues."; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Tägliche Challenge: neue Tagesdateien"
+          git pull --rebase
+          git push

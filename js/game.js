@@ -2,7 +2,7 @@
    Quiz-Leiter mit 15 Stufen: Jede richtige Antwort bringt eine Stufe höher, von der Kassette bis zum Diamanten.
    Gold (Stufe 5) und Platin (Stufe 10) sind sicher: Bei einem Fehler fällt man auf die letzte erreichte Sicherheitsstufe.
    Aussteigen geht jederzeit vor dem Antworten – dann bleibt die erreichte Stufe. */
-const APP_VERSION = '1.10.38', APP_DATE = '28.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
+const APP_VERSION = '1.10.39', APP_DATE = '28.11.2026'; // bei jedem Update erhöhen + CHANGELOG.md ergänzen
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
@@ -532,17 +532,72 @@ async function startGame(daily = false, day = today()) {
   }
   if (!daily && !themeOk(opt.pool)) { opt.pool = 'all'; LS.set('pool', 'all'); renderHome(); }
   stop();
-  G = { daily, day, level: 0, used: new Set(), log: [], jokers: Object.fromEntries(JOKERS.map(k => [k, true])) };
-  // Alle Fragen gleich zu Beginn bauen – bei der Täglichen Challenge mit dem Startwert des Tages
-  R = daily ? seeded('gold-record-' + day) : Math.random;
-  G.types = pickTypes();
-  G.qs = G.types.map((t, i) => makeQuestion(i, t));
-  R = Math.random;
+  // Tägliche Challenge: zuerst die fertig berechnete Datei data/daily/<tag>.json (scripts/build-daily.js) –
+  // so ist sie überall gleich (auch in der iPhone-App). Fehlt sie oder ist man offline: selbst berechnen wie bisher.
+  const fileQs = daily ? await loadDailyFile(day) : null;
+  if (daily && G && !G.ended && !$('#game').classList.contains('hidden')) return;   // inzwischen doppelt gestartet
+  G = newRound(daily, day);
+  if (fileQs) G.qs = fileQs; else buildQuestions(daily, day);
   // nur ein Versuch pro Tag – auch wenn man mittendrin abbricht
   if (daily) LS.set('daily.' + day, { final: 0, row: '', done: false });
   show('game');
   nextQuestion();
 }
+const newRound = (daily, day) => ({ daily, day, level: 0, used: new Set(), log: [], jokers: Object.fromEntries(JOKERS.map(k => [k, true])) });
+// Alle Fragen gleich zu Beginn bauen – bei der Täglichen Challenge mit dem Startwert des Tages.
+// Für Hörfragen gleich eine Ersatzfrage (Interpret) dazu, falls Deezer keine Hörprobe liefert – mit eigenem Startwert,
+// damit auch sie überall gleich ist (die 15 Fragen selbst bleiben genau wie vorher)
+function buildQuestions(daily, day) {
+  R = daily ? seeded('gold-record-' + day) : Math.random;
+  G.types = pickTypes();
+  G.qs = G.types.map((t, i) => makeQuestion(i, t));
+  if (daily) R = seeded('gold-record-alt-' + day);
+  G.qs.forEach((Q, i) => { if (TYPES[Q.type].blind) Q.alt = makeQuestion(i, 'artist'); });
+  R = Math.random;
+}
+
+/* ---------- Tägliche Challenge als Datei (data/daily/JJJJ-MM-TT.json) ----------
+   Sprachneutral und fertig aufgelöst: Fragetyp, Werte (qv), Songs, Antworten in fester Reihenfolge, Index der richtigen
+   Antwort (correct), Schwierigkeit für Publikum/Telefon (h, hp, fame) und bei Hörfragen die Ersatzfrage (alt). */
+const DAILY_V = 1;
+const songOut = s => { const o = { id: s.id, t: s.t, a: s.a }; for (const k of ['y', 'c', 'c0', 'de']) if (s[k] != null) o[k] = s[k]; return o; };
+function questionOut(Q) {
+  const o = { type: Q.type, i: Q.i, h: Q.h, hp: Q.hp, fame: Q.fame };
+  if (Q.qv) o.qv = Q.qv;
+  if (Q.masked) o.masked = Q.masked;
+  if (Q.song) o.song = songOut(Q.song);
+  o.answers = Q.answers.map(a => a.s ? { s: songOut(a.s) } : a.st ? { st: { id: a.st.id, title: a.st.title, artist: a.st.artist, streams: a.st.streams } }
+    : a.y != null ? { y: a.y } : a.dec != null ? { dec: a.dec } : { w: a.w });
+  o.correct = Q.answers.findIndex(a => a.ok);
+  if (Q.alt) o.alt = questionOut(Q.alt);
+  return o;
+}
+function questionIn(o) {
+  const Q = { ...o, answers: o.answers.map((a, k) => ({ ...a, ok: k === o.correct })) };
+  delete Q.correct;
+  if (o.alt) Q.alt = questionIn(o.alt);
+  return Q;
+}
+// Inhalt der Tagesdatei – genau so, wie das Spiel die Challenge selbst berechnet (auch für scripts/build-daily.js)
+function dailyData(day) {
+  const keep = [G, R];
+  G = newRound(true, day);
+  try { buildQuestions(true, day); return { v: DAILY_V, game: 'gold-record', day, no: dayNo(day), items: G.qs.map(questionOut) }; }
+  finally { [G, R] = keep; }
+}
+async function loadDailyFile(day) {
+  try {
+    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 5000);
+    const r = await fetch(`data/daily/${day}.json`, { signal: ctl.signal }).finally(() => clearTimeout(t));
+    if (!r.ok) return null;
+    const d = await r.json();
+    if (d.v !== DAILY_V || d.day !== day || d.items?.length !== 15) return null;
+    // Tagesdateien anderer Tage nicht im Zwischenspeicher behalten (sw.js legt sie für offline ab)
+    self.caches?.open('gr-1').then(c => c.keys().then(ks => ks.forEach(k => { if (/\/data\/daily\//.test(k.url) && !k.url.includes(day)) c.delete(k); }))).catch(() => {});
+    return d.items.map(questionIn);
+  } catch { return null; }
+}
+
 const safeOf = n => SAFE.filter(s => s <= n).pop() || 0;
 const stageName = n => n ? tx(STAGES[n - 1]) : tx('Noch keine Stufe');
 
@@ -550,7 +605,7 @@ async function nextQuestion(Q = G.qs[G.level]) {
   const i = G.level;
   // Hörfrage ohne Hörprobe (Deezer liefert keine) → andere Frage
   if (TYPES[Q.type].blind) {
-    try { await previewOf(Q.song); } catch { Q = makeQuestion(i, 'artist'); }
+    try { await previewOf(Q.song); } catch { Q = Q.alt || makeQuestion(i, 'artist'); }
   }
   if (!G) return;
   G.q = Q; G.locked = false; G.hidden = new Set(); G.poll = null;
